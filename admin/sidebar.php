@@ -1,80 +1,97 @@
 <style>
     :root {
-        --nav-bg: black; /* Deep Midnight */
-        --nav-text: white; /* Slate gray */
-        --nav-active: #ffffff;
+        --nav-bg: #000000;
+        --nav-text: #ffffff;
         --nav-hover-bg: #1e293b;
+        --accent-blue: #3b82f6;
     }
 
     .leftside-menu {
         background: var(--nav-bg) !important;
-        box-shadow: 4px 0 10px rgba(0,0,0,0.05);
-    }
-
-    .side-nav-title {
-        color: #475569 !important;
-        font-size: 0.7rem !important;
-        text-transform: uppercase !important;
-        letter-spacing: 0.1em !important;
-        font-weight: 700 !important;
-        padding: 20px 20px 10px !important;
+        width: 260px;
+        position: fixed;
+        height: 100%;
+        box-shadow: 4px 0 10px rgba(0,0,0,0.1);
     }
 
     .side-nav-link {
         color: var(--nav-text) !important;
-        font-weight: 500 !important;
-        font-size: 0.875rem !important;
         padding: 12px 20px !important;
-        transition: all 0.2s ease !important;
         display: flex !important;
-        align-items: center !important;
+        align-items: center;
+        text-decoration: none !important;
+        transition: 0.2s;
     }
 
     .side-nav-link i {
-        font-size: 1.1rem !important;
-        margin-right: 12px !important;
-        color: #64748b !important;
+        font-size: 1.1rem;
+        margin-right: 12px;
+        color: #64748b;
     }
 
-    .side-nav-item:hover .side-nav-link {
-        background: var(--nav-hover-bg);
-        color: var(--nav-active) !important;
+    /* Submenu Arrow logic */
+    .has-arrow::after {
+        content: "\ea4e"; 
+        font-family: 'remixicon';
+        margin-left: auto;
+        transition: transform 0.3s;
     }
 
-    .side-nav-item.active .side-nav-link {
-        color: var(--nav-active) !important;
-        background: var(--nav-hover-bg);
+    .active .has-arrow::after {
+        transform: rotate(180deg);
     }
 
-    .side-nav-item.active i {
-        color: #3b82f6 !important; /* Premium Blue Accent for Active Icon */
+    /* Submenu Container */
+    .side-nav-second-level {
+        list-style: none;
+        padding: 0;
+        display: none; 
+        background: rgba(255, 255, 255, 0.03);
     }
 
-    .logo-lg img {
-        max-height: 40px;
-        margin: 20px 0;
-        filter: brightness(0) invert(1); /* Forces logo to white if it's dark */
+    /* Show submenu if parent is active */
+    .side-nav-item.active .side-nav-second-level {
+        display: block;
+    }
+
+    /* Sub-item Styling with indentation */
+    .side-nav-second-level .side-nav-link {
+        padding: 10px 20px 10px 45px !important; 
+        font-size: 0.825rem !important;
+        opacity: 0.7;
+    }
+
+    .side-nav-second-level .side-nav-link:hover {
+        opacity: 1;
+        background: var(--nav-hover-bg) !important;
+    }
+
+    .side-nav-item.active > .side-nav-link i {
+        color: var(--accent-blue) !important;
     }
 </style>
-
 <?php
-// Simple logic to highlight active page
 $current_page = basename($_SERVER['PHP_SELF']);
+
+// Active State Logic
+$dept_active     = in_array($current_page, ['add-department.php', 'departments.php']);
+$customer_active = in_array($current_page, ['add-customer.php', 'customers.php']);
+$cat_active      = in_array($current_page, ['category_add.php', 'category.php']);
+$subcat_active   = in_array($current_page, ['subcategory_add.php', 'subcategory.php']);
+$service_active  = in_array($current_page, ['add-service.php', 'services.php', 'plan-work.php']);
 ?>
 
 <div class="leftside-menu">
-
     <a href="dashboard.php" class="logo text-center d-block">
         <span class="logo-lg">
-            <img src="uploads/logo-ravi.png" alt="logo">
+            <img src="uploads/logo-ravi.png" alt="logo" style="max-height: 40px; margin: 20px 0; filter: brightness(0) invert(1);">
         </span>
     </a>
 
     <div data-simplebar class="h-100">
         <ul class="side-nav">
-
+            
             <li class="side-nav-title">Main</li>
-
             <li class="side-nav-item <?= ($current_page == 'dashboard.php') ? 'active' : '' ?>">
                 <a href="dashboard.php" class="side-nav-link">
                     <i class="ri-dashboard-2-line"></i>
@@ -82,54 +99,77 @@ $current_page = basename($_SERVER['PHP_SELF']);
                 </a>
             </li>
 
-            <li class="side-nav-title">Categories</li>
+  
+            <li class="side-nav-title">CRM</li>
 
-            <li class="side-nav-item <?= ($current_page == 'add-category.php') ? 'active' : '' ?>">
-                <a href="add-category.php" class="side-nav-link">
-                    <i class="ri-add-circle-line"></i>
-                    <span>Add Category</span>
+
+            
+            <li class="side-nav-item <?= $customer_active ? 'active' : '' ?>">
+                <a href="javascript:void(0);" class="side-nav-link has-arrow">
+                    <i class="ri-user-settings-line"></i>
+                    <span>Manage Customer</span>
                 </a>
+                <ul class="side-nav-second-level">
+                    <li><a href="add-customer.php" class="side-nav-link">➕ Create Customer</a></li>
+                    <li><a href="customers.php" class="side-nav-link">👁 View Customers</a></li>
+                </ul>
             </li>
 
-            <li class="side-nav-item <?= ($current_page == 'categories.php') ? 'active' : '' ?>">
-                <a href="categories.php" class="side-nav-link">
-                    <i class="ri-list-check-2"></i>
-                    <span>View Categories</span>
+
+
+                      <li class="side-nav-item <?= $dept_active ? 'active' : '' ?>">
+                <a href="javascript:void(0);" class="side-nav-link has-arrow">
+                    <i class="ri-building-line"></i>
+                    <span>Manage Department</span>
                 </a>
+                <ul class="side-nav-second-level">
+                    <li><a href="add-department.php" class="side-nav-link">➕ Create</a></li>
+                    <li><a href="departments.php" class="side-nav-link">👁 View</a></li>
+                </ul>
             </li>
 
-            <li class="side-nav-title">Services</li>
+            <li class="side-nav-title">Services & Categories</li>
 
-            <li class="side-nav-item <?= ($current_page == 'add-service.php') ? 'active' : '' ?>">
-                <a href="add-service.php" class="side-nav-link">
-                    <i class="ri-paint-brush-line"></i>
-                    <span>Add Service</span>
+            <li class="side-nav-item <?= $cat_active ? 'active' : '' ?>">
+                <a href="javascript:void(0);" class="side-nav-link has-arrow">
+                    <i class="ri-folder-line"></i>
+                    <span>Manage Category</span>
                 </a>
+                <ul class="side-nav-second-level">
+                    <li><a href="category_add.php" class="side-nav-link">➕ Create</a></li>
+                    <li><a href="category.php" class="side-nav-link">👁 View</a></li>
+                </ul>
             </li>
 
-            <li class="side-nav-item <?= ($current_page == 'services.php') ? 'active' : '' ?>">
-                <a href="services.php" class="side-nav-link">
-                    <i class="ri-stack-line"></i>
-                    <span>View Services</span>
+            <li class="side-nav-item <?= $subcat_active ? 'active' : '' ?>">
+                <a href="javascript:void(0);" class="side-nav-link has-arrow">
+                    <i class="ri-folder-shared-line"></i>
+                    <span>Manage Subcategory</span>
                 </a>
+                <ul class="side-nav-second-level">
+                    <li><a href="subcategory_add.php" class="side-nav-link">➕ Create</a></li>
+                    <li><a href="subcategory.php" class="side-nav-link">👁 View</a></li>
+                </ul>
             </li>
 
-            <li class="side-nav-title">Management</li>
-
-            <li class="side-nav-item <?= ($current_page == 'slider-images.php') ? 'active' : '' ?>">
-                <a href="slider-images.php" class="side-nav-link">
-                    <i class="ri-image-2-line"></i>
-                    <span>Home Sliders</span>
+            <li class="side-nav-item <?= $service_active ? 'active' : '' ?>">
+                <a href="javascript:void(0);" class="side-nav-link has-arrow">
+                    <i class="ri-customer-service-2-line"></i>
+                    <span>Manage Service</span>
                 </a>
+                <ul class="side-nav-second-level">
+                    <li><a href="add-service.php" class="side-nav-link">➕ Create</a></li>
+                    <li><a href="services.php" class="side-nav-link">👁 View</a></li>
+                    <li><a href="plan-work.php" class="side-nav-link">📄 Plan Work Formate</a></li>
+                </ul>
             </li>
 
             <li class="side-nav-item">
-                <a href="logout.php" class="side-nav-link text-danger-hover">
+                <a href="logout.php" class="side-nav-link text-danger">
                     <i class="ri-logout-box-line"></i>
                     <span>Logout</span>
                 </a>
             </li>
-
         </ul>
     </div>
 </div>

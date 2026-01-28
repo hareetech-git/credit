@@ -174,7 +174,23 @@
 	        </div>
 	    </div>
 	</div>
-
+<script>
+    document.querySelectorAll('.has-arrow').forEach(item => {
+        item.addEventListener('click', function(e) {
+            e.preventDefault();
+            const parent = this.parentElement;
+            const menu = parent.querySelector('.side-nav-second-level');
+            
+            if (menu.style.display === "block") {
+                menu.style.display = "none";
+                parent.classList.remove('active');
+            } else {
+                menu.style.display = "block";
+                parent.classList.add('active');
+            }
+        });
+    });
+</script>
 	<!-- Vendor js -->
 	<script src="assets/js/vendor.min.js"></script>
 

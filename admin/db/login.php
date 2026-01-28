@@ -4,19 +4,26 @@ session_start();
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
-    $login = trim($_POST['email']);   // can be email OR username
-    $password = $_POST['password'];   // raw password
+    $email    = trim($_POST['email']);
+    $password = $_POST['password'];
 
-    // Escape only the identifier
-    $login = mysqli_real_escape_string($conn, $login);
-
-    // Fetch admin using email OR username
-    $sql = "SELECT id, name, email, username, password 
+    // Prepare statement (NO SQL injection)
+    $sql = "SELECT id, name, email, password, role 
             FROM admin 
-            WHERE email = '$login' OR username = '$login'
+            WHERE email = ? 
             LIMIT 1";
 
-    $result = mysqli_query($conn, $sql);
+    $stmt = mysqli_prepare($conn, $sql);
+
+    if (!$stmt) {
+        header("Location: ../index.php?err=Server error");
+        exit;
+    }
+
+    mysqli_stmt_bind_param($stmt, "s", $email);
+    mysqli_stmt_execute($stmt);
+
+    $result = mysqli_stmt_get_result($stmt);
 
     if ($result && mysqli_num_rows($result) === 1) {
 
@@ -25,8 +32,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         // 🔐 Verify hashed password
         if (password_verify($password, $admin['password'])) {
 
-            // Store important session data
-          $_SESSION['login_user'] = $admin['username'];
+            // ✅ Store admin session data
+            $_SESSION['admin_id']   = $admin['id'];
+            $_SESSION['admin_name'] = $admin['name'];
+            $_SESSION['admin_email'] = $admin['email'];
+            $_SESSION['admin_role'] = $admin['role'];
 
             header("Location: ../dashboard.php");
             exit;
@@ -37,7 +47,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         }
 
     } else {
-        header("Location: ../index.php?err=Invalid email or username");
+        header("Location: ../index.php?err=Invalid email");
         exit;
     }
 }
