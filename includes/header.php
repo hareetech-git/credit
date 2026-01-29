@@ -1,842 +1,277 @@
 <?php
-
 if (session_status() === PHP_SESSION_NONE) {
+    // session_start();
 }
 
-
-
+include 'includes/connection.php'; 
 
 $current_page = basename($_SERVER['PHP_SELF']);
+
+// --- 1. FETCH MENU STRUCTURE (UPDATED) ---
+// Changed JOIN to LEFT JOIN to show Categories even if they have no services yet.
+$menu_sql = "SELECT 
+                c.id as cat_id, c.category_name,
+                s.id as sub_id, s.sub_category_name,
+                srv.id as service_id, srv.service_name, srv.slug
+            FROM service_categories c
+            LEFT JOIN services_subcategories s ON c.id = s.category_id AND s.status = 'active'
+            LEFT JOIN services srv ON s.id = srv.sub_category_id
+            WHERE c.active = 1 
+            ORDER BY c.sequence ASC, s.sequence ASC, srv.id ASC";
+
+$menu_res = mysqli_query($conn, $menu_sql);
+
+$menuTree = [];
+
+while ($row = mysqli_fetch_assoc($menu_res)) {
+    $cat_id = $row['cat_id'];
+    $sub_id = $row['sub_id'];
+    $srv_id = $row['service_id'];
+
+    // 1. Build Category
+    if (!isset($menuTree[$cat_id])) {
+        $menuTree[$cat_id] = [
+            'name' => $row['category_name'],
+            'subcategories' => []
+        ];
+    }
+
+    // 2. Build Subcategory (Only if it exists)
+    if ($sub_id) {
+        if (!isset($menuTree[$cat_id]['subcategories'][$sub_id])) {
+            $menuTree[$cat_id]['subcategories'][$sub_id] = [
+                'name' => $row['sub_category_name'],
+                'services' => []
+            ];
+        }
+
+        // 3. Add Service (Only if it exists)
+        if ($srv_id) {
+            $final_slug = !empty($row['slug']) ? $row['slug'] : 'service-'.$srv_id;
+            $menuTree[$cat_id]['subcategories'][$sub_id]['services'][] = [
+                'name' => $row['service_name'],
+                'slug' => $final_slug
+            ];
+        }
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Udhar Capital - Let's Grow Together</title>
-    
+    <title>Udhar Capital</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    
-    <style>
-        :root {
-            --primary-color: #0b081b;
-            --primary-dark: #100b2c;
-            --text-dark: #0f172a;
-            --text-muted: #64748b;
-            --accent-teal: #00d4aa;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Plus Jakarta Sans', 'Jost', sans-serif;
-            color: var(--text-dark);
-            background-color: #fff;
-            padding-top: 85px;
-            margin: 0;
-        }
-
-        /* Header Styles */
-        .header-custom {
-            background-color: rgba(255, 255, 255, 0.98);
-            backdrop-filter: blur(12px);
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-            height: 85px;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 1000;
-            transition: all 0.3s ease;
-            border-bottom: 1px solid rgba(0,0,0,0.05);
-        }
-
-        .header-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 2.5rem;
-            height: 100%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 2rem;
-        }
-
-        /* Logo Styling */
-        .logo-custom {
-            font-weight: 800;
-            font-size: 1.5rem;
-            color: var(--primary-color);
-            text-decoration: none;
-            letter-spacing: -0.5px;
-            display: flex;
-            align-items: center;
-            gap: 0;
-            flex-shrink: 0;
-            transition: transform 0.2s ease;
-        }
-
-        .logo-custom:hover {
-            transform: scale(1.02);
-        }
-
-        .logo-img {
-            height: 50px;
-            width: auto;
-            object-fit: contain;
-        }
-
-        .logo-text {
-            display: none;
-        }
-
-        /* Desktop Navigation */
-        .nav-menu-custom {
-            display: flex;
-            list-style: none;
-            gap: 0.25rem;
-            align-items: center;
-            margin: 0;
-            padding: 0;
-            flex-wrap: nowrap;
-            flex: 1;
-            justify-content: center;
-        }
-
-        .nav-item-custom {
-            position: relative;
-            white-space: nowrap;
-            flex-shrink: 0;
-        }
-
-        .nav-link-custom {
-            font-weight: 600;
-            color: var(--text-dark);
-            font-size: 0.9rem;
-            padding: 0.65rem 1rem;
-            transition: all 0.2s ease;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.35rem;
-            cursor: pointer;
-            border-radius: 8px;
-            position: relative;
-        }
-
-        .nav-link-custom::after {
-            content: '';
-            position: absolute;
-            bottom: 0.25rem;
-            left: 50%;
-            transform: translateX(-50%) scaleX(0);
-            width: 60%;
-            height: 2px;
-            background: var(--primary-color);
-            border-radius: 2px;
-            transition: transform 0.2s ease;
-        }
-
-        .nav-link-custom:hover,
-        .nav-link-custom.active {
-            color: var(--primary-color);
-            background: rgba(11, 8, 27, 0.03);
-        }
-
-        .nav-link-custom:hover::after,
-        .nav-link-custom.active::after {
-            transform: translateX(-50%) scaleX(1);
-        }
-
-        .nav-link-custom i {
-            font-size: 0.65rem;
-            opacity: 0.7;
-            transition: transform 0.2s ease;
-        }
-
-        .nav-item-custom:hover .nav-link-custom i {
-            transform: rotate(180deg);
-        }
-
-        /* Mega Menu Dropdown */
-        .mega-dropdown {
-            position: absolute;
-            top: calc(100% + 12px);
-            left: 50%;
-            transform: translateX(-50%);
-            background: white;
-            min-width: 720px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.12);
-            border-radius: 16px;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 1000;
-            display: flex;
-            overflow: hidden;
-            border: 1px solid rgba(0,0,0,0.06);
-        }
-
-        .nav-item-custom:hover .mega-dropdown {
-            opacity: 1;
-            visibility: visible;
-            transform: translateX(-50%) translateY(0);
-        }
-
-        /* Mega Menu Left Panel - Categories */
-        .mega-menu-categories {
-            width: 280px;
-            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-            border-right: 1px solid #e2e8f0;
-            padding: 1.25rem 0;
-        }
-
-        .mega-category-item {
-            padding: 1rem 1.5rem;
-            font-weight: 600;
-            font-size: 0.9rem;
-            color: var(--text-dark);
-            transition: all 0.2s ease;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border-left: 3px solid transparent;
-            margin: 0.15rem 0;
-        }
-
-        .mega-category-item:hover {
-            background-color: white;
-            color: var(--primary-color);
-            border-left-color: var(--primary-color);
-            padding-left: 1.75rem;
-        }
-
-        .mega-category-item.active {
-            background-color: white;
-            color: var(--primary-color);
-            border-left-color: var(--primary-color);
-        }
-
-        .mega-category-item i {
-            font-size: 0.7rem;
-            opacity: 0.5;
-            transition: transform 0.2s ease;
-        }
-
-        .mega-category-item:hover i {
-            transform: translateX(3px);
-            opacity: 0.8;
-        }
-
-        /* Mega Menu Right Panel - Services */
-        .mega-menu-services {
-            flex: 1;
-            padding: 1.5rem;
-            background: white;
-            display: none;
-        }
-
-        .mega-menu-services.active {
-            display: block;
-        }
-
-        .mega-service-header {
-            font-size: 0.7rem;
-            font-weight: 700;
-            color: var(--primary-color);
-            text-transform: uppercase;
-            letter-spacing: 0.8px;
-            margin-bottom: 1rem;
-            padding-bottom: 0.75rem;
-            border-bottom: 2px solid #e2e8f0;
-        }
-
-        .mega-service-item {
-            padding: 0.85rem 1.25rem;
-            border-radius: 8px;
-            font-weight: 500;
-            color: var(--text-dark);
-            transition: all 0.2s ease;
-            text-decoration: none;
-            display: block;
-            font-size: 0.9rem;
-            margin-bottom: 0.35rem;
-            border-left: 2px solid transparent;
-        }
-
-        .mega-service-item:hover {
-            background-color: #f8fafc;
-            color: var(--primary-color);
-            transform: translateX(5px);
-            border-left-color: var(--primary-color);
-        }
-
-        .mega-service-item strong {
-            display: block;
-            font-weight: 600;
-            margin-bottom: 0.15rem;
-        }
-
-        .mega-service-item small {
-            color: var(--text-muted);
-            font-size: 0.8rem;
-        }
-
-        /* Buttons */
-        .nav-buttons-custom {
-            display: flex;
-            gap: 0.75rem;
-            align-items: center;
-            flex-shrink: 0;
-        }
-
-        .btn-login-custom {
-            color: var(--text-dark);
-            font-weight: 600;
-            padding: 0.65rem 1.25rem;
-            transition: all 0.2s ease;
-            text-decoration: none;
-            border-radius: 8px;
-            font-size: 0.9rem;
-        }
-        
-        .btn-login-custom:hover {
-            color: var(--primary-color);
-            background: rgba(11, 8, 27, 0.05);
-        }
-
-        .btn-apply-custom {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
-            color: white;
-            font-weight: 600;
-            padding: 0.65rem 1.75rem;
-            border-radius: 50px;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 4px 14px rgba(11, 8, 27, 0.25);
-            text-decoration: none;
-            display: inline-block;
-            border: none;
-            font-size: 0.9rem;
-        }
-
-        .btn-apply-custom:hover {
-            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-color) 100%);
-            transform: translateY(-2px);
-            color: white;
-            box-shadow: 0 6px 20px rgba(11, 8, 27, 0.35);
-        }
-
-        /* Mobile Toggle */
-        .mobile-toggle-custom {
-            display: none;
-            flex-direction: column;
-            gap: 5px;
-            cursor: pointer;
-            padding: 8px;
-        }
-
-        .mobile-toggle-custom span {
-            width: 25px;
-            height: 3px;
-            background: var(--text-dark);
-            border-radius: 3px;
-            transition: all 0.3s ease;
-        }
-
-        .mobile-toggle-custom.active span:nth-child(1) {
-            transform: rotate(45deg) translate(8px, 8px);
-        }
-
-        .mobile-toggle-custom.active span:nth-child(2) {
-            opacity: 0;
-        }
-
-        .mobile-toggle-custom.active span:nth-child(3) {
-            transform: rotate(-45deg) translate(7px, -7px);
-        }
-
-        /* Mobile Menu */
-        .mobile-menu-custom {
-            display: none;
-            position: fixed;
-            top: 85px;
-            right: -100%;
-            width: 320px;
-            height: calc(100vh - 85px);
-            background: white;
-            box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
-            transition: right 0.3s ease;
-            z-index: 999;
-            overflow-y: auto;
-            overflow-x: hidden;
-            padding: 0;
-            flex-direction: column;
-        }
-
-        .mobile-menu-custom.active {
-            right: 0;
-        }
-
-        .mobile-overlay-custom {
-            display: none;
-            position: fixed;
-            top: 85px;
-            left: 0;
-            width: 100%;
-            height: calc(100vh - 85px);
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 998;
-        }
-
-        .mobile-overlay-custom.active {
-            display: block;
-        }
-
-        .mobile-nav-item-custom {
-            padding: 0;
-            width: 100%;
-        }
-
-        .mobile-nav-link-custom {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 1.25rem 1.5rem;
-            color: var(--text-dark);
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 1rem;
-            transition: all 0.2s ease;
-            border-bottom: 1px solid #f1f5f9;
-            width: 100%;
-            cursor: pointer;
-        }
-
-        .mobile-nav-link-custom:hover {
-            background: #f8fafc;
-            color: var(--primary-color);
-        }
-
-        .mobile-dropdown-custom {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.4s ease;
-            background: #f8fafc;
-            width: 100%;
-        }
-
-        .mobile-dropdown-custom.active {
-            max-height: 1000px;
-        }
-
-        .mobile-category-header {
-            padding: 1rem 1.5rem 0.5rem 2rem;
-            font-size: 0.75rem;
-            font-weight: 700;
-            color: var(--primary-color);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-top: 0.5rem;
-        }
-
-        .mobile-category-header:first-child {
-            margin-top: 0.75rem;
-        }
-
-        .mobile-dropdown-item-custom {
-            padding: 0.75rem 1.5rem 0.75rem 2.5rem;
-            color: var(--text-muted);
-            text-decoration: none;
-            font-weight: 500;
-            font-size: 0.9rem;
-            display: block;
-            transition: all 0.2s ease;
-            width: 100%;
-            border-left: 3px solid transparent;
-        }
-
-        .mobile-dropdown-item-custom:hover {
-            background: #eff6ff;
-            color: var(--primary-color);
-            border-left-color: var(--primary-color);
-        }
-
-        .mobile-buttons-custom {
-            padding: 1.5rem;
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-            margin-top: auto;
-            border-top: 1px solid #e2e8f0;
-            background: white;
-            width: 100%;
-        }
-
-        .mobile-buttons-custom .btn-login-custom,
-        .mobile-buttons-custom .btn-apply-custom {
-            width: 100%;
-            text-align: center;
-            display: block;
-            padding: 0.75rem 1.5rem;
-        }
-
-        /* Responsive */
-        @media (max-width: 991px) {
-            .nav-menu-custom,
-            .nav-buttons-custom {
-                display: none;
-            }
-
-            .mobile-toggle-custom {
-                display: flex;
-            }
-            
-            .mobile-menu-custom {
-                display: flex;
-            }
-        }
-
-        @media (max-width: 768px) {
-            body {
-                padding-top: 75px;
-            }
-
-            .header-custom {
-                height: 75px;
-            }
-
-            .header-container {
-                padding: 0 1.25rem;
-            }
-
-            .mobile-menu-custom {
-                width: 85%;
-                max-width: 320px;
-                top: 75px;
-                height: calc(100vh - 75px);
-            }
-
-            .mobile-overlay-custom {
-                top: 75px;
-                height: calc(100vh - 75px);
-            }
-
-            .logo-img {
-                height: 45px;
-            }
-
-            .mega-dropdown {
-                min-width: 90vw;
-                flex-direction: column;
-            }
-
-            .mega-menu-categories {
-                width: 100%;
-                border-right: none;
-                border-bottom: 1px solid #e2e8f0;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .mobile-menu-custom {
-                width: 90%;
-            }
-
-            .mobile-nav-link-custom {
-                padding: 1rem 1.25rem;
-                font-size: 0.95rem;
-            }
-
-            .mobile-dropdown-item-custom {
-                padding: 0.65rem 1.25rem 0.65rem 2rem;
-                font-size: 0.85rem;
-            }
-
-            .mobile-category-header {
-                padding: 0.75rem 1.25rem 0.5rem 1.75rem;
-                font-size: 0.7rem;
-            }
-
-            .logo-img {
-                height: 42px;
-            }
-        }
-    </style>
+   <link rel="stylesheet" href="includes/css/header.css">
 </head>
 <body>
 
 <header class="header-custom">
     <div class="header-container">
-        <!-- Logo with Image -->
         <a href="index.php" class="logo-custom">
             <img src="includes/assets/udhaar_logo.png" alt="Udhar Capital Logo" class="logo-img">
-            
         </a>
 
-        <!-- Desktop Navigation -->
         <ul class="nav-menu-custom">
             <li class="nav-item-custom">
-                <a href="index.php" class="nav-link-custom <?php echo ($current_page == 'index.php') ? 'active' : ''; ?>">
-                    Home
-                </a>
+                <a href="index.php" class="nav-link-custom <?= ($current_page == 'index.php') ? 'active' : '' ?>">Home</a>
             </li>
+            
             <li class="nav-item-custom">
                 <a href="#" class="nav-link-custom">Become DSA Partner</a>
             </li>
             
-            <li class="nav-item-custom" id="loanProductsMenu">
-                <span class="nav-link-custom">
-                    Loan <i class="fas fa-chevron-down"></i>
-                </span>
-                <div class="mega-dropdown">
-                    <!-- Left Panel - Categories -->
-                    <div class="mega-menu-categories">
-                        <div class="mega-category-item" data-category="personal">
-                            Personal Loan <i class="fas fa-chevron-right"></i>
-                        </div>
-                        <div class="mega-category-item" data-category="business">
-                            Business Loans <i class="fas fa-chevron-right"></i>
-                        </div>
-                        <div class="mega-category-item" data-category="professional">
-                            Professional Loan <i class="fas fa-chevron-right"></i>
-                        </div>
-                        <div class="mega-category-item" data-category="home">
-                            Home Loan <i class="fas fa-chevron-right"></i>
-                        </div>
-                        <div class="mega-category-item" data-category="credit">
-                            Credit Card <i class="fas fa-chevron-right"></i>
-                        </div>
-                    </div>
-                    
-                    <!-- Right Panel - Services for Personal Loan -->
-                    <div class="mega-menu-services" id="personal-services">
-                        <div class="mega-service-header">Personal Loan Options</div>
-                        <a href="services.php?type=salary" class="mega-service-item">
-                            <strong>Salary Based Loan</strong>
-                            <small>For salaried professionals</small>
-                        </a>
-                        <a href="services.php?type=self" class="mega-service-item">
-                            <strong>Self Employed Loan</strong>
-                            <small>For self-employed individuals</small>
-                        </a>
-                        <a href="services.php?type=credit" class="mega-service-item">
-                            <strong>Credit Score Based Loan</strong>
-                            <small>Based on your credit rating</small>
-                        </a>
-                    </div>
-                    
-                    <!-- Right Panel - Services for Business Loans -->
-                    <div class="mega-menu-services" id="business-services">
-                        <div class="mega-service-header">Business Loan Solutions</div>
-                        <a href="services.php?type=secured-business" class="mega-service-item">
-                            <strong>Secured Business Loan</strong>
-                            <small>Loan against collateral</small>
-                        </a>
-                        <a href="services.php?type=unsecured-business" class="mega-service-item">
-                            <strong>Unsecured Business Loan</strong>
-                            <small>No collateral required</small>
-                        </a>
-                        <a href="services.php?type=working" class="mega-service-item">
-                            <strong>Working Capital Loan</strong>
-                            <small>For daily operations</small>
-                        </a>
-                        <a href="services.php?type=msme" class="mega-service-item">
-                            <strong>MSME Terms Loan</strong>
-                            <small>For small & medium enterprises</small>
-                        </a>
-                    </div>
-                    
-                    <!-- Right Panel - Services for Professional Loan -->
-                    <div class="mega-menu-services" id="professional-services">
-                        <div class="mega-service-header">Professional Loan Options</div>
-                        <a href="services.php?type=professional" class="mega-service-item">
-                            <strong>Professional Loan</strong>
-                            <small>For doctors, CAs, engineers</small>
-                        </a>
-                    </div>
-                    
-                    <!-- Right Panel - Services for Home Loan -->
-                    <div class="mega-menu-services" id="home-services">
-                        <div class="mega-service-header">Home Loan Services</div>
-                        <a href="services.php?type=home" class="mega-service-item">
-                            <strong>Home Loan</strong>
-                            <small>Buy your dream home</small>
-                        </a>
-                    </div>
-                    
-                    <!-- Right Panel - Services for Credit Card -->
-                    <div class="mega-menu-services" id="credit-services">
-                        <div class="mega-service-header">Credit Card Options</div>
-                        <a href="services.php?type=creditcard" class="mega-service-item">
-                            <strong>Credit Card</strong>
-                            <small>Lifetime free credit cards</small>
-                        </a>
-                    </div>
-                </div>
-            </li>
+            <?php foreach($menuTree as $catId => $category): 
+                // Check if this category actually has subcategories with data
+                $hasSub = !empty($category['subcategories']);
+            ?>
+                <li class="nav-item-custom" id="menu-cat-<?= $catId ?>">
+                    <?php if($hasSub): ?>
+                        <span class="nav-link-custom">
+                            <?= htmlspecialchars($category['name']) ?> <i class="fas fa-chevron-down"></i>
+                        </span>
+                        
+                        <div class="mega-dropdown">
+                            <div class="mega-menu-categories">
+                                <?php 
+                                $firstSub = true;
+                                foreach($category['subcategories'] as $subId => $subcat): 
+                                    $isActive = $firstSub ? 'active' : '';
+                                ?>
+                                    <div class="mega-category-item <?= $isActive ?>" data-target="sub-panel-<?= $subId ?>">
+                                        <?= htmlspecialchars($subcat['name']) ?> <i class="fas fa-chevron-right"></i>
+                                    </div>
+                                <?php 
+                                    $firstSub = false; 
+                                endforeach; 
+                                ?>
+                            </div>
+                            
+                            <?php 
+                            $firstPanel = true;
+                            foreach($category['subcategories'] as $subId => $subcat): 
+                                $isActivePanel = $firstPanel ? 'active' : '';
+                                $serviceCount = count($subcat['services']);
+                            ?>
+                                <div class="mega-menu-services <?= $isActivePanel ?>" id="sub-panel-<?= $subId ?>">
+                                    <div class="mega-service-header"><?= htmlspecialchars($subcat['name']) ?></div>
+                                    
+                                    <?php if($serviceCount === 0): ?>
+                                        <div class="p-3 text-muted small">Coming Soon</div>
 
-            <li class="nav-item-custom">
-                <a href="#" class="nav-link-custom">Instant Loan</a>
-            </li>
-            
-            <li class="nav-item-custom">
-                <a href="#" class="nav-link-custom">Insurance</a>
-            </li>
+                                    <?php elseif($serviceCount === 1): 
+                                        // SINGLE SERVICE: Show 1 Big Link
+                                        $srv = $subcat['services'][0];
+                                    ?>
+                                        <a href="services.php?slug=<?= $srv['slug'] ?>" class="mega-service-item">
+                                            <strong><?= htmlspecialchars($srv['name']) ?></strong>
+                                            <small>Click to view details</small>
+                                        </a>
 
-            <li class="nav-item-custom">
-                <a href="contact.php" class="nav-link-custom">Contact Us</a>
-            </li>
+                                    <?php else: 
+                                        // MULTIPLE SERVICES: Show List
+                                        foreach($subcat['services'] as $srv): ?>
+                                            <a href="services.php?slug=<?= $srv['slug'] ?>" class="mega-service-item">
+                                                <strong><?= htmlspecialchars($srv['name']) ?></strong>
+                                                <small>View details</small>
+                                            </a>
+                                    <?php endforeach; 
+                                    endif; ?>
+                                </div>
+                            <?php 
+                                $firstPanel = false;
+                            endforeach; 
+                            ?>
+                        </div>
+
+                    <?php else: ?>
+                        <a href="#" class="nav-link-custom"><?= htmlspecialchars($category['name']) ?></a>
+                    <?php endif; ?>
+                </li>
+            <?php endforeach; ?>
+
+            <li class="nav-item-custom"><a href="#" class="nav-link-custom">Insurance</a></li>
+            <li class="nav-item-custom"><a href="contact.php" class="nav-link-custom">Contact Us</a></li>
         </ul>
 
-        <!-- Desktop Buttons -->
         <div class="nav-buttons-custom">
             <a href="login.php" class="btn-login-custom">Login Now</a>
             <a href="apply-loan.php" class="btn-apply-custom" onclick="scrollToForm()">Apply Now</a>
         </div>
 
-        <!-- Mobile Toggle -->
         <div class="mobile-toggle-custom" id="mobileToggle">
-            <span></span>
-            <span></span>
-            <span></span>
+            <span></span><span></span><span></span>
         </div>
     </div>
 </header>
 
-<!-- Mobile Overlay -->
 <div class="mobile-overlay-custom" id="mobileOverlay"></div>
 
-<!-- Mobile Menu -->
 <div class="mobile-menu-custom" id="mobileMenu">
     <div style="flex: 1; overflow-y: auto;">
-        <div class="mobile-nav-item-custom">
-            <a href="index.php" class="mobile-nav-link-custom">Home</a>
-        </div>
+        <div class="mobile-nav-item-custom"><a href="index.php" class="mobile-nav-link-custom">Home</a></div>
+        <div class="mobile-nav-item-custom"><a href="#" class="mobile-nav-link-custom">Become DSA Partner</a></div>
         
-        <div class="mobile-nav-item-custom">
-            <a href="#" class="mobile-nav-link-custom">Become DSA Partner</a>
-        </div>
-        
-        <div class="mobile-nav-item-custom">
-            <span class="mobile-nav-link-custom" id="mobileLoanToggle">
-                Loan Products <i class="fas fa-chevron-down"></i>
-            </span>
-            <div class="mobile-dropdown-custom" id="mobileDropdown">
-                <div class="mobile-category-header">Personal Loan</div>
-                <a href="services.php?type=salary" class="mobile-dropdown-item-custom">Salary Based Loan</a>
-                <a href="services.php?type=self" class="mobile-dropdown-item-custom">Self Employed Loan</a>
-                <a href="services.php?type=credit" class="mobile-dropdown-item-custom">Credit Score Loan</a>
-                
-                <div class="mobile-category-header">Business Loans</div>
-                <a href="services.php?type=secured-business" class="mobile-dropdown-item-custom">Secured Business Loan</a>
-                <a href="services.php?type=unsecured-business" class="mobile-dropdown-item-custom">Unsecured Business Loan</a>
-                <a href="services.php?type=working" class="mobile-dropdown-item-custom">Working Capital</a>
-                <a href="services.php?type=msme" class="mobile-dropdown-item-custom">MSME Terms Loan</a>
-                
-                <div class="mobile-category-header">Other Loans</div>
-                <a href="services.php?type=professional" class="mobile-dropdown-item-custom">Professional Loan</a>
-                <a href="services.php?type=home" class="mobile-dropdown-item-custom">Home Loan</a>
-                <a href="services.php?type=creditcard" class="mobile-dropdown-item-custom">Credit Card</a>
+        <?php foreach($menuTree as $catId => $category): 
+             $hasSub = !empty($category['subcategories']);
+        ?>
+            <div class="mobile-nav-item-custom">
+                <?php if($hasSub): ?>
+                    <span class="mobile-nav-link-custom" onclick="toggleMobileDropdown('mobile-cat-<?= $catId ?>', this)">
+                        <?= htmlspecialchars($category['name']) ?> <i class="fas fa-chevron-down"></i>
+                    </span>
+                    
+                    <div class="mobile-dropdown-custom" id="mobile-cat-<?= $catId ?>">
+                        <?php foreach($category['subcategories'] as $subId => $subcat): 
+                            $serviceCount = count($subcat['services']);
+                        ?>
+                            
+                            <?php if($serviceCount === 1): 
+                                // Single Service -> Link directly using Subcategory Name
+                                $srv = $subcat['services'][0];    
+                            ?>
+                                <a href="services.php?slug=<?= $srv['slug'] ?>" class="mobile-dropdown-item-custom fw-bold">
+                                    <?= htmlspecialchars($subcat['name']) ?>
+                                </a>
+
+                            <?php elseif($serviceCount > 1): 
+                                // Multiple Services -> Header + Links
+                            ?>
+                                <div class="mobile-category-header text-muted mt-2 mb-1 ps-3" style="font-size:0.85rem; text-transform:uppercase; letter-spacing:1px;">
+                                    <?= htmlspecialchars($subcat['name']) ?>
+                                </div>
+                                
+                                <?php foreach($subcat['services'] as $srv): ?>
+                                    <a href="services.php?slug=<?= $srv['slug'] ?>" class="mobile-dropdown-item-custom ps-4">
+                                        <i class="fas fa-angle-right me-2 small"></i> <?= htmlspecialchars($srv['name']) ?>
+                                    </a>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+
+                        <?php endforeach; ?>
+                    </div>
+                <?php else: ?>
+                    <a href="#" class="mobile-nav-link-custom"><?= htmlspecialchars($category['name']) ?></a>
+                <?php endif; ?>
             </div>
-        </div>
+        <?php endforeach; ?>
         
-        <div class="mobile-nav-item-custom">
-            <a href="#" class="mobile-nav-link-custom">Instant Loan</a>
-        </div>
-        
-        <div class="mobile-nav-item-custom">
-            <a href="#" class="mobile-nav-link-custom">Insurance</a>
-        </div>
-        
-        <div class="mobile-nav-item-custom">
-            <a href="contact.php" class="mobile-nav-link-custom">Contact Us</a>
-        </div>
+        <div class="mobile-nav-item-custom"><a href="#" class="mobile-nav-link-custom">Insurance</a></div>
+        <div class="mobile-nav-item-custom"><a href="contact.php" class="mobile-nav-link-custom">Contact Us</a></div>
     </div>
     
     <div class="mobile-buttons-custom">
-        <a href="#" class="btn-login-custom">Login Now</a>
-        <a href="#loanForm" class="btn-apply-custom" onclick="scrollToForm()">Apply Now</a>
+        <a href="login.php" class="btn-login-custom">Login Now</a>
+        <a href="apply-loan.php" class="btn-apply-custom" onclick="scrollToForm()">Apply Now</a>
     </div>
 </div>
 
 <script>
-    // Mega Menu functionality
     const megaCategoryItems = document.querySelectorAll('.mega-category-item');
-    const megaServicePanels = document.querySelectorAll('.mega-menu-services');
-    
-    // Show first category by default
-    if(megaCategoryItems.length > 0) {
-        megaCategoryItems[0].classList.add('active');
-        document.getElementById('personal-services').classList.add('active');
-    }
     
     megaCategoryItems.forEach(item => {
         item.addEventListener('mouseenter', function() {
-            // Remove active class from all categories
-            megaCategoryItems.forEach(cat => cat.classList.remove('active'));
-            // Add active class to current
+            const parentDropdown = this.closest('.mega-dropdown');
+            const targetId = this.getAttribute('data-target');
+
+            parentDropdown.querySelectorAll('.mega-category-item').forEach(cat => cat.classList.remove('active'));
+            parentDropdown.querySelectorAll('.mega-menu-services').forEach(panel => panel.classList.remove('active'));
+
             this.classList.add('active');
-            
-            // Hide all service panels
-            megaServicePanels.forEach(panel => panel.classList.remove('active'));
-            
-            // Show corresponding service panel
-            const category = this.getAttribute('data-category');
-            const servicePanel = document.getElementById(category + '-services');
-            if(servicePanel) {
-                servicePanel.classList.add('active');
-            }
+            const targetPanel = document.getElementById(targetId);
+            if(targetPanel) targetPanel.classList.add('active');
         });
     });
 
-    // Mobile menu toggle
     const mobileToggle = document.getElementById('mobileToggle');
     const mobileMenu = document.getElementById('mobileMenu');
     const mobileOverlay = document.getElementById('mobileOverlay');
-    const mobileLoanToggle = document.getElementById('mobileLoanToggle');
-    const mobileDropdown = document.getElementById('mobileDropdown');
 
-    mobileToggle.addEventListener('click', function() {
+    function toggleMenu() {
         mobileToggle.classList.toggle('active');
         mobileMenu.classList.toggle('active');
         mobileOverlay.classList.toggle('active');
-    });
+    }
 
-    mobileOverlay.addEventListener('click', function() {
-        mobileToggle.classList.remove('active');
-        mobileMenu.classList.remove('active');
-        mobileOverlay.classList.remove('active');
-    });
+    mobileToggle.addEventListener('click', toggleMenu);
+    mobileOverlay.addEventListener('click', toggleMenu);
 
-    mobileLoanToggle.addEventListener('click', function() {
-        mobileDropdown.classList.toggle('active');
-        const icon = this.querySelector('i');
-        if(icon) {
-            icon.style.transform = mobileDropdown.classList.contains('active') ? 'rotate(180deg)' : 'rotate(0)';
-        }
-    });
+    function toggleMobileDropdown(id, triggerElement) {
+        const dropdown = document.getElementById(id);
+        dropdown.classList.toggle('active');
+        const icon = triggerElement.querySelector('i');
+        if(icon) icon.style.transform = dropdown.classList.contains('active') ? 'rotate(180deg)' : 'rotate(0)';
+    }
 
     function scrollToForm() {
         const form = document.getElementById('loanForm');
-        if (form) {
-            form.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
-        // Close mobile menu if open
-        mobileToggle.classList.remove('active');
-        mobileMenu.classList.remove('active');
-        mobileOverlay.classList.remove('active');
+        if (form) form.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        toggleMenu(); 
     }
 </script>
-
-<!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-<!-- Main Content Area -->
-<main>
+</body>
+</html>

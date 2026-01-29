@@ -188,3 +188,4 @@ function togglePassword() {
 }
 </script>
 
+<?php include 'includes/footer.php' ?>
