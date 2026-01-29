@@ -78,7 +78,7 @@ $dept_active     = in_array($current_page, ['add-department.php', 'departments.p
 $customer_active = in_array($current_page, ['add-customer.php', 'customers.php']);
 $cat_active      = in_array($current_page, ['category_add.php', 'category.php']);
 $subcat_active   = in_array($current_page, ['subcategory_add.php', 'subcategory.php']);
-$service_active  = in_array($current_page, ['add-service.php', 'services.php', 'plan-work.php']);
+$service_active  = in_array($current_page, ['service_add.php', 'services.php', 'plan-work.php']);
 ?>
 
 <div class="leftside-menu">
@@ -110,21 +110,21 @@ $service_active  = in_array($current_page, ['add-service.php', 'services.php', '
                     <span>Manage Customer</span>
                 </a>
                 <ul class="side-nav-second-level">
-                    <li><a href="add-customer.php" class="side-nav-link">➕ Create Customer</a></li>
-                    <li><a href="customers.php" class="side-nav-link">👁 View Customers</a></li>
+                    <li><a href="add-customer.php" class="side-nav-link"><i class="fas fa-plus"></i> Create Customer</a></li>
+                    <li><a href="customers.php" class="side-nav-link"><i class="fas fa-eye"></i> View Customers</a></li>
                 </ul>
             </li>
 
 
 
-                      <li class="side-nav-item <?= $dept_active ? 'active' : '' ?>">
+            <li class="side-nav-item <?= $dept_active ? 'active' : '' ?>">
                 <a href="javascript:void(0);" class="side-nav-link has-arrow">
                     <i class="ri-building-line"></i>
                     <span>Manage Department</span>
                 </a>
                 <ul class="side-nav-second-level">
-                    <li><a href="add-department.php" class="side-nav-link">➕ Create</a></li>
-                    <li><a href="departments.php" class="side-nav-link">👁 View</a></li>
+                    <li><a href="add-department.php" class="side-nav-link"><i class="fas fa-plus"></i> Create</a></li>
+                    <li><a href="departments.php" class="side-nav-link"><i class="fas fa-eye"></i> View</a></li>
                 </ul>
             </li>
 
@@ -136,8 +136,8 @@ $service_active  = in_array($current_page, ['add-service.php', 'services.php', '
                     <span>Manage Category</span>
                 </a>
                 <ul class="side-nav-second-level">
-                    <li><a href="category_add.php" class="side-nav-link">➕ Create</a></li>
-                    <li><a href="category.php" class="side-nav-link">👁 View</a></li>
+                    <li><a href="category_add.php" class="side-nav-link"><i class="fas fa-plus"></i> Create</a></li>
+                    <li><a href="category.php" class="side-nav-link"><i class="fas fa-eye"></i> View</a></li>
                 </ul>
             </li>
 
@@ -147,8 +147,8 @@ $service_active  = in_array($current_page, ['add-service.php', 'services.php', '
                     <span>Manage Subcategory</span>
                 </a>
                 <ul class="side-nav-second-level">
-                    <li><a href="subcategory_add.php" class="side-nav-link">➕ Create</a></li>
-                    <li><a href="subcategory.php" class="side-nav-link">👁 View</a></li>
+                    <li><a href="subcategory_add.php" class="side-nav-link"><i class="fas fa-plus"></i> Create</a></li>
+                    <li><a href="subcategory.php" class="side-nav-link"><i class="fas fa-eye"></i> View</a></li>
                 </ul>
             </li>
 
@@ -158,9 +158,9 @@ $service_active  = in_array($current_page, ['add-service.php', 'services.php', '
                     <span>Manage Service</span>
                 </a>
                 <ul class="side-nav-second-level">
-                    <li><a href="add-service.php" class="side-nav-link">➕ Create</a></li>
-                    <li><a href="services.php" class="side-nav-link">👁 View</a></li>
-                    <li><a href="plan-work.php" class="side-nav-link">📄 Plan Work Formate</a></li>
+                    <li><a href="service_add.php" class="side-nav-link"><i class="fas fa-plus"></i> Create</a></li>
+                    <li><a href="services.php" class="side-nav-link"><i class="fas fa-eye"></i> View</a></li>
+                    <li><a href="plan-work.php" class="side-nav-link"><i class="fas fa-file-alt"></i> Plan Work Formate</a></li>
                 </ul>
             </li>
 
