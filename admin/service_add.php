@@ -10,7 +10,7 @@ $msg        = $_GET['msg'] ?? '';
 $error      = $_GET['error'] ?? '';
 
 /* ---------------------------------
-| 2. HIERARCHY LOGIC (Tab 1)
+| 2. HIERARCHY LOGIC
 ----------------------------------*/
 $selected_department = (int)($_GET['department'] ?? 0);
 $selected_category   = (int)($_GET['category'] ?? 0);
@@ -44,7 +44,6 @@ if ($selected_category) {
 
     .content-page { background-color: #fcfcfd; }
     
-    /* Premium Tab Sidebar */
     .tab-navigation {
         background: #ffffff;
         border: 1px solid var(--slate-200);
@@ -74,7 +73,6 @@ if ($selected_category) {
         cursor: not-allowed;
     }
 
-    /* Modern Card */
     .card-modern {
         border: 1px solid var(--slate-200);
         border-radius: 12px;
@@ -97,49 +95,20 @@ if ($selected_category) {
         border: 1px solid #cbd5e1;
     }
 
-    .btn-primary-custom {
-        background-color: var(--slate-900);
-        color: #fff;
-        border: none;
-        padding: 10px 24px;
-        border-radius: 8px;
-        font-weight: 600;
-    }
-
-
-    .btn-submit-dark, .btn-primary-custom, .btn-add-new {
+    .btn-primary-custom, .btn-submit-dark, .btn-add-new {
         background: var(--slate-900);
         color: #ffffff !important;
         border: 1px solid var(--slate-900);
+        padding: 10px 24px;
+        border-radius: 8px;
+        font-weight: 600;
         transition: all 0.2s ease;
     }
 
     .btn-submit-dark:hover, .btn-primary-custom:hover, .btn-add-new:hover {
-        background: #334155 !important; /* Slightly lighter slate, NOT white */
-        color: #ffffff !important;      /* Keep text white */
+        background: #334155 !important;
         border-color: #334155 !important;
     }
-
-    /* Update for the Outline/Light Button */
-    .btn-action-edit, .action-btn-outline {
-        background: transparent;
-        color: var(--slate-900) !important;
-        border: 1px solid var(--slate-200);
-        transition: all 0.2s ease;
-    }
-
-    .btn-action-edit:hover, .action-btn-outline:hover {
-        background: #f8fafc !important; /* Very light grey, NOT pure white */
-        color: var(--slate-900) !important; /* Keep text dark */
-        border-color: var(--slate-900) !important; /* Darken the border */
-    }
-
-    /* Fix for the Save & Continue button in service_add.php */
-    .btn-primary-custom {
-        background-color: var(--slate-900) !important;
-        color: white !important;
-    }
-
 </style>
 
 <div class="content-page">
@@ -241,17 +210,14 @@ if ($selected_category) {
                                                 <label class="form-label">Service Title</label>
                                                 <input type="text" name="title" class="form-control" placeholder="e.g. Personal Loan" required>
                                             </div>
-
                                             <div class="mb-4">
                                                 <label class="form-label">Short Summary</label>
                                                 <textarea name="short_description" class="form-control" rows="2" placeholder="Visible on cards..."></textarea>
                                             </div>
-
                                             <div class="mb-4">
                                                 <label class="form-label">Full Description</label>
                                                 <textarea name="long_description" class="form-control" rows="5" placeholder="Detailed information..."></textarea>
                                             </div>
-
                                             <button class="btn btn-primary-custom px-5">Save & Next</button>
                                         </form>
                                     </div>
@@ -260,38 +226,56 @@ if ($selected_category) {
 
                             <?php 
                             $genericTabs = [
-                                'overview'    => ['title' => 'Service Overview', 'h1' => 'Overview Title', 'k' => 'keys[]', 'v' => 'values[]', 'kp' => 'Feature', 'vp' => 'Details', 'type' => 'save_overview'],
+                                'overview'    => ['title' => 'Service Overview', 'has_title'=>true, 'h1' => 'Overview Title', 'k' => 'keys[]', 'v' => 'values[]', 'kp' => 'Feature', 'vp' => 'Details', 'type' => 'save_overview'],
                                 'features'    => ['title' => 'Key Features', 'h1' => 'Feature Title', 'k' => 'title[]', 'v' => 'description[]', 'kp' => 'Title', 'vp' => 'Description', 'type' => 'add_feature'],
                                 'eligibility' => ['title' => 'Eligibility Criteria', 'h1' => 'Criteria', 'k' => 'criteria_key[]', 'v' => 'criteria_value[]', 'kp' => 'Criteria', 'vp' => 'Value', 'type' => 'add_eligibility'],
                                 'documents'   => ['title' => 'Required Documents', 'h1' => 'Document Name', 'k' => 'doc_name[]', 'v' => 'disclaimer[]', 'kp' => 'Name', 'vp' => 'Notes', 'type' => 'add_document'],
                                 'fees'        => ['title' => 'Fees & Charges', 'h1' => 'Fee Name', 'k' => 'fee_key[]', 'v' => 'fee_value[]', 'kp' => 'Type', 'vp' => 'Amount/%', 'type' => 'add_fee', 'mode' => 'input'],
                                 'repayment'   => ['title' => 'Repayment Details', 'h1' => 'Option', 'k' => 'title[]', 'v' => 'description[]', 'kp' => 'Title', 'vp' => 'Description', 'type' => 'add_repayment'],
-                                'why'         => ['title' => 'Why Choose Us', 'h1' => 'Reason', 'k' => 'title[]', 'v' => 'description[]', 'kp' => 'Benefit', 'vp' => 'Details', 'type' => 'add_why'],
+                                'why'         => ['title' => 'Why Choose Us', 'has_image'=>true, 'h1' => 'Reason', 'k' => 'title[]', 'v' => 'description[]', 'kp' => 'Benefit', 'vp' => 'Details', 'type' => 'add_why'],
                                 'banks'       => ['title' => 'Partner Banks', 'h1' => 'Bank Name', 'k' => 'bank_key[]', 'v' => 'bank_value[]', 'kp' => 'Bank', 'vp' => 'Offers', 'type' => 'add_bank', 'mode' => 'input']
                             ];
 
                             if (array_key_exists($tab, $genericTabs) && $service_id) {
                                 $config = $genericTabs[$tab];
+                                // Check if we need image upload capabilities
+                                $encType = (isset($config['has_image']) && $config['has_image']) ? 'enctype="multipart/form-data"' : '';
                             ?>
                                 <h3 class="fw-bold mb-1"><?= $config['title'] ?></h3>
                                 <p class="text-muted mb-5">Define the data points for this service section.</p>
 
-                                <form method="POST" action="db/insert/service_handler.php">
+                                <form method="POST" action="db/insert/service_handler.php" <?= $encType ?>>
                                     <input type="hidden" name="type" value="<?= $config['type'] ?>">
                                     <input type="hidden" name="service_id" value="<?= $service_id ?>">
 
+                                    <?php if(isset($config['has_title']) && $config['has_title']): ?>
+                                        <div class="mb-4">
+                                            <label class="form-label">Overview Title <span class="text-danger">*</span></label>
+                                            <input type="text" name="title" class="form-control" placeholder="e.g. Service Highlights" required>
+                                        </div>
+                                    <?php endif; ?>
+
                                     <div id="dynamic_container">
                                         <div class="row mb-3 gx-2 input-row align-items-center">
-                                            <div class="col-md-4">
+                                            
+                                            <div class="<?= isset($config['has_image']) ? 'col-md-3' : 'col-md-4' ?>">
                                                 <input type="text" name="<?= $config['k'] ?>" class="form-control" placeholder="<?= $config['kp'] ?>" required>
                                             </div>
-                                            <div class="col-md-7">
+
+                                            <div class="<?= isset($config['has_image']) ? 'col-md-4' : 'col-md-7' ?>">
                                                 <?php if(isset($config['mode']) && $config['mode'] == 'input'): ?>
                                                     <input type="text" name="<?= $config['v'] ?>" class="form-control" placeholder="<?= $config['vp'] ?>">
                                                 <?php else: ?>
                                                     <textarea name="<?= $config['v'] ?>" class="form-control" rows="1" placeholder="<?= $config['vp'] ?>"></textarea>
                                                 <?php endif; ?>
                                             </div>
+
+                                            <?php if(isset($config['has_image']) && $config['has_image']): ?>
+                                                <div class="col-md-4">
+                                                    <input type="file" name="image[]" class="form-control">
+                                                </div>
+                                            <?php endif; ?>
+
                                             <div class="col-md-1">
                                                 <button type="button" class="btn btn-outline-danger border-0" onclick="removeRow(this)"><i class="ri-delete-bin-line"></i></button>
                                             </div>
@@ -299,8 +283,8 @@ if ($selected_category) {
                                     </div>
 
                                     <button type="button" class="btn btn-link text-primary text-decoration-none fw-bold p-0 mb-4" 
-                                            onclick="addGenericRow('dynamic_container', '<?= $config['k'] ?>', '<?= $config['kp'] ?>', '<?= $config['v'] ?>', '<?= $config['vp'] ?>', '<?= $config['mode'] ?? 'textarea' ?>')">
-                                        + Add New Row
+                                            onclick="addGenericRow('dynamic_container', '<?= $config['k'] ?>', '<?= $config['kp'] ?>', '<?= $config['v'] ?>', '<?= $config['vp'] ?>', '<?= $config['mode'] ?? 'textarea' ?>', <?= isset($config['has_image']) ? 'true' : 'false' ?>)">
+                                            + Add New Row
                                     </button>
                                     <br>
                                     <button class="btn btn-primary-custom px-5">Save <?= $config['title'] ?></button>
@@ -317,20 +301,32 @@ if ($selected_category) {
 </div>
 
 <script>
-function addGenericRow(containerId, name1, ph1, name2, ph2, type2) {
+function addGenericRow(containerId, name1, ph1, name2, ph2, type2, hasImage) {
     const container = document.getElementById(containerId);
     const newRow = document.createElement('div');
     newRow.className = 'row mb-3 gx-2 input-row align-items-center';
     
+    // HTML for the second field (textarea or input)
     let field2HTML = (type2 === 'textarea') 
         ? `<textarea name="${name2}" class="form-control" rows="1" placeholder="${ph2}"></textarea>`
         : `<input type="text" name="${name2}" class="form-control" placeholder="${ph2}">`;
 
-    newRow.innerHTML = `
-        <div class="col-md-4"><input type="text" name="${name1}" class="form-control" placeholder="${ph1}" required></div>
-        <div class="col-md-7">${field2HTML}</div>
-        <div class="col-md-1"><button type="button" class="btn btn-outline-danger border-0" onclick="removeRow(this)"><i class="ri-delete-bin-line"></i></button></div>
-    `;
+    // Layout Logic: If we have an image, columns are 3-4-4-1. If not, 4-7-1.
+    if (hasImage) {
+        newRow.innerHTML = `
+            <div class="col-md-3"><input type="text" name="${name1}" class="form-control" placeholder="${ph1}" required></div>
+            <div class="col-md-4">${field2HTML}</div>
+            <div class="col-md-4"><input type="file" name="image[]" class="form-control"></div>
+            <div class="col-md-1"><button type="button" class="btn btn-outline-danger border-0" onclick="removeRow(this)"><i class="ri-delete-bin-line"></i></button></div>
+        `;
+    } else {
+        newRow.innerHTML = `
+            <div class="col-md-4"><input type="text" name="${name1}" class="form-control" placeholder="${ph1}" required></div>
+            <div class="col-md-7">${field2HTML}</div>
+            <div class="col-md-1"><button type="button" class="btn btn-outline-danger border-0" onclick="removeRow(this)"><i class="ri-delete-bin-line"></i></button></div>
+        `;
+    }
+
     container.appendChild(newRow);
 }
 
