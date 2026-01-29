@@ -1,23 +1,64 @@
-<?php
-// Include database connection
-    require_once 'includes/header.php';
+<?php 
+// Start session at the very top
+session_start();
 
+// Include database connection
+require_once 'includes/header.php';
+include 'includes/connection.php';
+
+// Fetch loan types from services_subcategories table
+$loan_types = [];
+if (isset($conn)) {
+    $query = "SELECT id, sub_category_name 
+              FROM services_subcategories 
+              WHERE status = 'active' AND live = 1 
+              ORDER BY sequence ASC";
+    
+    $result = mysqli_query($conn, $query);
+    
+    if ($result && mysqli_num_rows($result) > 0) {
+        while ($row = mysqli_fetch_assoc($result)) {
+            $loan_types[] = $row;
+        }
+    }
+}
+
+// Check for session messages
+$errors = isset($_SESSION['errors']) ? $_SESSION['errors'] : [];
+$success_message = isset($_SESSION['success_message']) ? $_SESSION['success_message'] : '';
+
+// Clear session messages after displaying
+unset($_SESSION['errors']);
+unset($_SESSION['success_message']);
 ?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Udhar Capital - Home</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Your custom CSS will be added below -->
+</head>
+<body>
 
 <style>
     /* Hero Section - Professional Design with Background Image */
-   .hero-section {
-    position: relative;
-    background: 
-        linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.5)),
-        url('includes/assets/hero_section2.png') no-repeat;
-    background-size: cover;
-    background-position: center 0%; /* Start from top */
-    color: white;
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-}
+    .hero-section {
+        position: relative;
+        background: 
+            linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.5)),
+            url('includes/assets/hero_section2.png') no-repeat;
+        background-size: cover;
+        background-position: center 0%;
+        color: white;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+    }
     
     /* Add subtle blur effect to background */
     .hero-section::before {
@@ -86,6 +127,20 @@
         opacity: 0.9;
         margin-top: 5px;
         text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    }
+    
+    /* Button Fixes - Force horizontal layout */
+    .hero-buttons {
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        gap: 20px;
+        margin-bottom: 20px;
+    }
+    
+    .hero-buttons .btn {
+        flex-shrink: 0;
+        white-space: nowrap;
     }
     
     /* Form Styles - Professional */
@@ -403,6 +458,7 @@
         transform: scale(1.1);
     }
     
+    /* Mobile Responsive */
     @media (max-width: 768px) {
         .why-choose-section {
             background-attachment: scroll;
@@ -432,6 +488,17 @@
         
         .form-card {
             margin-top: 40px;
+        }
+        
+        /* Mobile buttons - stack vertically */
+        .hero-buttons {
+            flex-direction: column !important;
+            gap: 15px;
+        }
+        
+        .hero-buttons .btn {
+            width: 100%;
+            justify-content: center;
         }
     }
     
@@ -498,12 +565,13 @@
                     </div>
                 </div>
                 
-                <div class="d-flex gap-3 flex-wrap">
+                <div class="hero-buttons d-flex flex-row gap-3">
                     <a href="#loanForm" class="btn btn-primary btn-lg rounded-pill px-5">
-                        Apply Now <i class="fas fa-arrow-right ms-2"></i>
+                        <i class="fas fa-file-contract me-2"></i> Apply For Loan
                     </a>
-                    <a href="tel:+919569408620" class="btn btn-outline-light btn-lg rounded-pill px-4">
-                        <i class="fas fa-phone me-2"></i> Call Us
+                    
+                    <a href="tel:+919569408620" class="btn btn-outline-light btn-lg rounded-pill px-5">
+                        <i class="fas fa-handshake me-2"></i> Become a DSA Partner
                     </a>
                 </div>
             </div>
@@ -514,48 +582,78 @@
                         <h3 class="form-title">Get Started Today</h3>
                         <p class="form-subtitle">We'll get back to you shortly</p>
                     </div>
-
-                    <?php if (isset($success_message)): ?>
+                    
+                    <?php if (!empty($success_message)): ?>
                         <div class="alert alert-success">
-                            <i class="fas fa-check-circle me-2"></i><?php echo $success_message; ?>
+                            <i class="fas fa-check-circle me-2"></i><?php echo htmlspecialchars($success_message); ?>
                         </div>
                     <?php endif; ?>
                     
                     <?php if (!empty($errors)): ?>
                         <div class="alert alert-danger">
                             <?php foreach ($errors as $error): ?>
-                                <div class="mb-1"><i class="fas fa-exclamation-circle me-2"></i><?php echo $error; ?></div>
+                                <div class="mb-1"><i class="fas fa-exclamation-circle me-2"></i><?php echo htmlspecialchars($error); ?></div>
                             <?php endforeach; ?>
                         </div>
                     <?php endif; ?>
                     
-                    <form method="POST" action="" class="needs-validation" novalidate>
-                        <div class="form-group">
-                            <label class="form-label" for="full_name">Full Name *</label>
-                            <input type="text" name="full_name" id="full_name" class="form-control" 
-                                   placeholder="Enter your full name"
-                                   value="<?php echo isset($_POST['full_name']) ? htmlspecialchars($_POST['full_name']) : ''; ?>" 
-                                   required>
+                    <!-- Note: Form action points to the separate backend file -->
+                    <form method="POST" action="insert/enquiry_form.php" class="needs-validation" novalidate>
+                        <!-- Full Name and Phone in one row -->
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label" for="full_name">Full Name *</label>
+                                    <input type="text" name="full_name" id="full_name" class="form-control"
+                                           placeholder="Enter your full name"
+                                           value=""
+                                           required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label" for="phone">Phone Number *</label>
+                                    <input type="tel" name="phone" id="phone" class="form-control"
+                                           placeholder="10-digit mobile number"
+                                           value=""
+                                           pattern="[0-9]{10}" maxlength="10" required>
+                                </div>
+                            </div>
                         </div>
-
-                        <div class="form-group">
-                            <label class="form-label" for="phone">Phone Number *</label>
-                            <input type="tel" name="phone" id="phone" class="form-control" 
-                                   placeholder="Enter 10-digit mobile number"
-                                   value="<?php echo isset($_POST['phone']) ? htmlspecialchars($_POST['phone']) : ''; ?>" 
-                                   pattern="[0-9]{10}" maxlength="10" required>
-                        </div>
-
+                        
                         <div class="form-group">
                             <label class="form-label" for="email">Email *</label>
-                            <input type="email" name="email" id="email" class="form-control" 
+                            <input type="email" name="email" id="email" class="form-control"
                                    placeholder="Enter your email address"
-                                   value="<?php echo isset($_POST['email']) ? htmlspecialchars($_POST['email']) : ''; ?>" 
+                                   value=""
                                    required>
                         </div>
                         
-                        <button type="submit" class="submit-btn">
-                            Submit Request
+                        <div class="form-group">
+                            <label class="form-label" for="loan_type">Select Loan Type *</label>
+                            <select name="loan_type" id="loan_type" class="form-control" required>
+                                <option value="">-- Select Loan Type --</option>
+                                <?php if (!empty($loan_types)): ?>
+                                    <?php foreach ($loan_types as $loan): ?>
+                                        <option value="<?php echo htmlspecialchars($loan['id']); ?>">
+                                            <?php echo htmlspecialchars($loan['sub_category_name']); ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                <?php else: ?>
+                                    <option value="" disabled>No loan types available</option>
+                                <?php endif; ?>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="query_message">Your Query/Message *</label>
+                            <textarea name="query_message" id="query_message" class="form-control"
+                                      placeholder="Please describe your loan requirements or any questions you have"
+                                      rows="3" required></textarea>
+                        </div>
+                        
+                        <button type="submit" name="submit_enquiry" class="submit-btn">
+                            <i class="fas fa-paper-plane me-2"></i> Submit Enquiry
                         </button>
                         
                         <div class="security-note">
@@ -567,7 +665,6 @@
         </div>
     </div>
 </section>
-
 
 <div class="section-divider"></div>
 
@@ -620,8 +717,7 @@
         </div>
     </div>
 </section>
-
-
+ 
 <!-- Why Choose Us Section -->
 <section class="why-choose-section position-relative py-5" style="background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('includes/assets/why choose us.png') center center / cover no-repeat; min-height: 500px;">
     <div class="container py-5">
@@ -635,11 +731,11 @@
             <!-- Card 1 -->
             <div class="col-lg-3 col-md-6">
                 <div class="why-choose-card bg-white rounded-3 p-4 h-100 shadow-sm position-relative overflow-hidden">
-                    <div class="why-choose-border position-absolute top-0 start-0 bottom-0" 
-                         style="width: 4px; background-color: var(--primary-color);"></div>
+                    <div class="why-choose-border position-absolute top-0 start-0 bottom-0"
+                          style="width: 4px; background-color: var(--primary-color);"></div>
                     <div class="text-center mb-3">
-                        <div class="why-choose-icon bg-danger bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center" 
-                             style="width: 60px; height: 60px;">
+                        <div class="why-choose-icon bg-danger bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center"
+                              style="width: 60px; height: 60px;">
                         <i class="fas fa-clock fs-3" style="color: #2a0a77;"></i>
                         </div>
                     </div>
@@ -651,11 +747,11 @@
             <!-- Card 2 -->
             <div class="col-lg-3 col-md-6">
                 <div class="why-choose-card bg-white rounded-3 p-4 h-100 shadow-sm position-relative overflow-hidden">
-                    <div class="why-choose-border position-absolute top-0 start-0 bottom-0" 
-                         style="width: 4px; background-color: var(--primary-color);"></div>
+                    <div class="why-choose-border position-absolute top-0 start-0 bottom-0"
+                          style="width: 4px; background-color: var(--primary-color);"></div>
                     <div class="text-center mb-3">
-                        <div class="why-choose-icon bg-danger bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center" 
-                             style="width: 60px; height: 60px;">
+                        <div class="why-choose-icon bg-danger bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center"
+                              style="width: 60px; height: 60px;">
                             <i class="fas fa-check-circle fs-3 "style="color: #2a0a77;"></i>
                         </div>
                     </div>
@@ -667,11 +763,11 @@
             <!-- Card 3 -->
             <div class="col-lg-3 col-md-6">
                 <div class="why-choose-card bg-white rounded-3 p-4 h-100 shadow-sm position-relative overflow-hidden">
-                    <div class="why-choose-border position-absolute top-0 start-0 bottom-0" 
-                         style="width: 4px; background-color: var(--primary-color);"></div>
+                    <div class="why-choose-border position-absolute top-0 start-0 bottom-0"
+                          style="width: 4px; background-color: var(--primary-color);"></div>
                     <div class="text-center mb-3">
-                        <div class="why-choose-icon bg-danger bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center" 
-                             style="width: 60px; height: 60px;">
+                        <div class="why-choose-icon bg-danger bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center"
+                              style="width: 60px; height: 60px;">
                             <i class="fas fa-money-bill-wave fs-3"style="color: #2a0a77;"></i>
                         </div>
                     </div>
@@ -683,11 +779,11 @@
             <!-- Card 4 -->
             <div class="col-lg-3 col-md-6">
                 <div class="why-choose-card bg-white rounded-3 p-4 h-100 shadow-sm position-relative overflow-hidden">
-                    <div class="why-choose-border position-absolute top-0 start-0 bottom-0" 
-                         style="width: 4px; background-color: var(--primary-color);"></div>
+                    <div class="why-choose-border position-absolute top-0 start=0 bottom-0"
+                          style="width: 4px; background-color: var(--primary-color);"></div>
                     <div class="text-center mb-3">
-                        <div class="why-choose-icon bg-danger bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center" 
-                             style="width: 60px; height: 60px;">
+                        <div class="why-choose-icon bg-danger bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center"
+                              style="width: 60px; height: 60px;">
                             <i class="fas fa-shield-alt fs-3"style="color: #2a0a77;"></i>
                         </div>
                     </div>
@@ -715,8 +811,8 @@
                     <div class="row">
                         <div class="col-12">
                             <div class="position-relative" style="height: 4px;">
-                                <div class="position-absolute top-0 start-0 end-0" 
-                                     style="background: linear-gradient(90deg, #e2e8f0 0%, var(--primary-color) 50%, #e2e8f0 100%); height: 2px;"></div>
+                                <div class="position-absolute top-0 start-0 end-0"
+                                      style="background: linear-gradient(90deg, #e2e8f0 0%, var(--primary-color) 50%, #e2e8f0 100%); height: 2px;"></div>
                             </div>
                         </div>
                     </div>
@@ -728,10 +824,10 @@
                 <div class="card bg-white border-0 shadow-sm h-100 rounded-4">
                     <div class="card-body p-4 text-center">
                         <div class="position-relative mb-4">
-                            <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center" 
-                                 style="width: 80px; height: 80px;">
-                                <span class="badge bg-primary rounded-circle d-flex align-items-center justify-content-center" 
-                                      style="width: 30px; height: 30px; position: absolute; top: -10px; right: -10px;">1</span>
+                            <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center"
+                                  style="width: 80px; height: 80px;">
+                                <span class="badge bg-primary rounded-circle d-flex align-items-center justify-content-center"
+                                       style="width: 30px; height: 30px; position: absolute; top: -10px; right: -10px;">1</span>
                                 <i class="fas fa-mobile-alt fs-2 text-primary"></i>
                             </div>
                         </div>
@@ -748,10 +844,10 @@
                 <div class="card bg-white border-0 shadow-sm h-100 rounded-4">
                     <div class="card-body p-4 text-center">
                         <div class="position-relative mb-4">
-                            <div class="bg-success bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center" 
-                                 style="width: 80px; height: 80px;">
-                                <span class="badge bg-success rounded-circle d-flex align-items-center justify-content-center" 
-                                      style="width: 30px; height: 30px; position: absolute; top: -10px; right: -10px;">2</span>
+                            <div class="bg-success bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center"
+                                  style="width: 80px; height: 80px;">
+                                <span class="badge bg-success rounded-circle d-flex align-items-center justify-content-center"
+                                       style="width: 30px; height: 30px; position: absolute; top: -10px; right: -10px;">2</span>
                                 <i class="fas fa-file-upload fs-2 text-success"></i>
                             </div>
                         </div>
@@ -782,10 +878,10 @@
                 <div class="card bg-white border-0 shadow-sm h-100 rounded-4">
                     <div class="card-body p-4 text-center">
                         <div class="position-relative mb-4">
-                            <div class="bg-warning bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center" 
-                                 style="width: 80px; height: 80px;">
-                                <span class="badge bg-warning rounded-circle d-flex align-items-center justify-content-center" 
-                                      style="width: 30px; height: 30px; position: absolute; top: -10px; right: -10px;">3</span>
+                            <div class="bg-warning bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center"
+                                  style="width: 80px; height: 80px;">
+                                <span class="badge bg-warning rounded-circle d-flex align-items-center justify-content-center"
+                                       style="width: 30px; height: 30px; position: absolute; top: -10px; right: -10px;">3</span>
                                 <i class="fas fa-rupee-sign fs-2 text-warning"></i>
                             </div>
                         </div>
@@ -814,6 +910,7 @@
 </section>
 
 <hr class="my-5 mx-auto" style="max-width: 1200px; border-top: 2px solid #131416;">
+
 <!-- Simple Interest Based EMI Calculator -->
 <section class="py-5 bg-white">
     <div class="container">
@@ -838,9 +935,9 @@
                                         <span class="input-group-text bg-light">
                                             ₹
                                         </span>
-                                        <input type="number" class="form-control" 
-                                               id="loanAmountInput" 
-                                               placeholder="e.g., 500000"
+                                        <input type="number" class="form-control"
+                                                id="loanAmountInput"
+                                                placeholder="e.g., 500000"
                                                value="500000">
                                     </div>
                                     <small class="text-muted">Enter amount you want to borrow</small>
@@ -852,9 +949,9 @@
                                         <span class="input-group-text bg-light">
                                             %
                                         </span>
-                                        <input type="number" class="form-control" 
-                                               id="interestRateInput" 
-                                               placeholder="e.g., 10.5"
+                                        <input type="number" class="form-control"
+                                                id="interestRateInput"
+                                                placeholder="e.g., 10.5"
                                                value="10.5"
                                                step="0.1">
                                     </div>
@@ -867,9 +964,9 @@
                                         <span class="input-group-text bg-light">
                                             <i class="fas fa-calendar"></i>
                                         </span>
-                                        <input type="number" class="form-control" 
-                                               id="loanPeriodInput" 
-                                               placeholder="e.g., 5"
+                                        <input type="number" class="form-control"
+                                                id="loanPeriodInput"
+                                                placeholder="e.g., 5"
                                                value="5">
                                     </div>
                                     <small class="text-muted">Loan duration in years</small>
@@ -942,10 +1039,6 @@
                                 </div>
                             </div>
                         </div>
-                        
-                        <!-- Formula Explanation -->
-
-                        </div>
                     </div>
                 </div>
             </div>
@@ -1002,29 +1095,6 @@
         document.getElementById('displayPrincipal').textContent = formatCurrency(principal);
         document.getElementById('displayTotalInterest').textContent = formatCurrency(Math.round(simpleInterest));
         document.getElementById('displayTotalPayable').textContent = formatCurrency(Math.round(totalAmount));
-        
-        // Show calculation in console (for debugging)
-        console.log('Calculation:', {
-            principal: principal,
-            rate: rate,
-            years: years,
-            simpleInterest: simpleInterest,
-            totalAmount: totalAmount,
-            months: months,
-            monthlyEMI: monthlyEMI
-        });
-        
-        // Visual feedback
-        const btn = document.querySelector('.btn-primary');
-        btn.innerHTML = '<i class="fas fa-check me-2"></i> Calculated!';
-        btn.classList.add('btn-success');
-        btn.classList.remove('btn-primary');
-        
-        setTimeout(() => {
-            btn.innerHTML = '<i class="fas fa-calculator me-2"></i> Calculate Now';
-            btn.classList.remove('btn-success');
-            btn.classList.add('btn-primary');
-        }, 1500);
     }
     
     // Initialize with default values
@@ -1048,35 +1118,7 @@
             });
         });
     });
-</script>
-
-<style>
-    .input-group-text {
-        background-color: #f8f9fa;
-        border: 1px solid #dee2e6;
-        font-weight: 600;
-    }
     
-    #loanAmountInput,
-    #interestRateInput,
-    #loanPeriodInput {
-        padding: 12px;
-        border: 1px solid #dee2e6;
-        border-left: none;
-        font-size: 1rem;
-    }
-    
-    #loanAmountInput:focus,
-    #interestRateInput:focus,
-    #loanPeriodInput:focus {
-        outline: none;
-        box-shadow: 0 0 0 3px rgba(11, 8, 27, 0.1);
-        border-color: var(--primary-color);
-    }
-</style>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-<script>
     // Form validation
     (function() {
         'use strict';
@@ -1087,8 +1129,8 @@
                     event.preventDefault();
                     event.stopPropagation();
                 }
-                form.classList.add('was-validated');    
-            }, false);
+                form.classList.add('was-validated');
+                }, false);
         });
     })();
 
@@ -1113,7 +1155,11 @@
     });
 </script>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
 <?php
 // Include footer
 require_once 'includes/footer.php';
 ?>
+</body>
+</html>
