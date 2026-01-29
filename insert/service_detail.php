@@ -1,189 +1,80 @@
 <?php
-require_once 'includes/connection.php';
+// Initialize variables
+$service = null;
+$error = null;
 
-class ServiceDetail {
-    private $pdo;
+// Check if slug is provided in the URL
+if(isset($_GET['slug']) && !empty($_GET['slug'])) {
+    $slug = trim($_GET['slug']);
     
-    public function __construct() {
-        $this->pdo = getDBConnection();
-    }
-    
-    /**
-     * Get service basic information
-     */
-    public function getServiceInfo($service_id) {
-        $stmt = $this->pdo->prepare("
-            SELECT s.*, 
-                   sc.sub_category_name,
-                   scat.category_name
-            FROM services s
-            LEFT JOIN services_subcategories sc ON s.sub_category_id = sc.id
-            LEFT JOIN services_categories scat ON s.category_id = scat.id
-            WHERE s.id = ?
-        ");
-        $stmt->execute([$service_id]);
-        return $stmt->fetch();
-    }
-    
-    /**
-     * Get service overview (for hero stats)
-     */
-    public function getServiceOverview($service_id) {
-        $stmt = $this->pdo->prepare("
-            SELECT * FROM service_overview 
-            WHERE service_id = ? 
-            ORDER BY id ASC
-        ");
-        $stmt->execute([$service_id]);
-        return $stmt->fetchAll();
-    }
-    
-    /**
-     * Get service documents (requirements)
-     */
-    public function getServiceDocuments($service_id) {
-        $stmt = $this->pdo->prepare("
-            SELECT * FROM service_documents 
-            WHERE service_id = ? 
-            ORDER BY id ASC
-        ");
-        $stmt->execute([$service_id]);
-        return $stmt->fetchAll();
-    }
-    
-    /**
-     * Get service features (deliverables)
-     */
-    public function getServiceFeatures($service_id) {
-        $stmt = $this->pdo->prepare("
-            SELECT * FROM service_features 
-            WHERE service_id = ? 
-            ORDER BY id ASC
-        ");
-        $stmt->execute([$service_id]);
-        return $stmt->fetchAll();
-    }
-    
-    /**
-     * Get service eligibility criteria (can be used for process flow)
-     */
-    public function getEligibilityCriteria($service_id) {
-        $stmt = $this->pdo->prepare("
-            SELECT * FROM service_eligibility_criteria 
-            WHERE service_id = ? 
-            ORDER BY id ASC
-        ");
-        $stmt->execute([$service_id]);
-        return $stmt->fetchAll();
-    }
-    
-    /**
-     * Get service fees and charges (for timeline/pricing info)
-     */
-    public function getFeesCharges($service_id) {
-        $stmt = $this->pdo->prepare("
-            SELECT * FROM service_fees_charges 
-            WHERE service_id = ? 
-            ORDER BY id ASC
-        ");
-        $stmt->execute([$service_id]);
-        return $stmt->fetchAll();
-    }
-    
-    /**
-     * Get service loan repayment options
-     */
-    public function getLoanRepayment($service_id) {
-        $stmt = $this->pdo->prepare("
-            SELECT * FROM service_loan_repayment 
-            WHERE service_id = ? 
-            ORDER BY id ASC
-        ");
-        $stmt->execute([$service_id]);
-        return $stmt->fetchAll();
-    }
-    
-    /**
-     * Get service banks (add-on services)
-     */
-    public function getServiceBanks($service_id) {
-        $stmt = $this->pdo->prepare("
-            SELECT * FROM service_banks 
-            WHERE service_id = ? 
-            ORDER BY id ASC
-        ");
-        $stmt->execute([$service_id]);
-        return $stmt->fetchAll();
-    }
-    
-    /**
-     * Get why choose us points
-     */
-    public function getWhyChooseUs($service_id) {
-        $stmt = $this->pdo->prepare("
-            SELECT * FROM service_why_choose_us 
-            WHERE service_id = ? 
-            ORDER BY id ASC
-        ");
-        $stmt->execute([$service_id]);
-        return $stmt->fetchAll();
-    }
-    
-    /**
-     * Get all service data at once
-     */
-    public function getAllServiceData($service_id) {
-        return [
-            'service' => $this->getServiceInfo($service_id),
-            'overview' => $this->getServiceOverview($service_id),
-            'documents' => $this->getServiceDocuments($service_id),
-            'features' => $this->getServiceFeatures($service_id),
-            'eligibility' => $this->getEligibilityCriteria($service_id),
-            'fees' => $this->getFeesCharges($service_id),
-            'repayment' => $this->getLoanRepayment($service_id),
-            'banks' => $this->getServiceBanks($service_id),
-            'why_choose' => $this->getWhyChooseUs($service_id)
-        ];
-    }
-}
-
-/**
- * Helper function to get icon class based on document name
- */
-function getDocumentIcon($doc_name) {
-    $icons = [
-        'Identity Proof' => 'fa-id-card',
-        'Address Proof' => 'fa-home',
-        'Income Proof' => 'fa-rupee-sign',
-        'Bank Statement' => 'fa-university',
-        'Photograph' => 'fa-camera',
-        'PAN Card' => 'fa-id-card',
-        'Aadhaar Card' => 'fa-id-card-alt',
-        'Business Proof' => 'fa-briefcase',
-        'ITR' => 'fa-file-invoice',
-        'Salary Slip' => 'fa-money-check',
-    ];
-    
-    foreach ($icons as $key => $icon) {
-        if (stripos($doc_name, $key) !== false) {
-            return $icon;
+    // Validate slug format (basic validation)
+    if(!preg_match('/^[a-z0-9\-]+$/', $slug)) {
+        $error = "Invalid service URL format.";
+    } else {
+        // Include database connection
+        if(!file_exists('includes/connection.php')) {
+            $error = "Database configuration not found.";
+        } else {
+            include('includes/connection.php');
+            
+            // Check if connection exists
+            if(!isset($conn)) {
+                $error = "Database connection is not properly configured.";
+            } else {
+                // Prepare SQL query with prepared statement to prevent SQL injection
+                $query = "SELECT `id`, `category_id`, `sub_category_id`, `service_name`, `title`, `slug`, `short_description`, `long_description`, `created_at`, `updated_at` 
+                          FROM `services` 
+                          WHERE `slug` = ? 
+                          AND `slug` IS NOT NULL 
+                          AND `slug` != '' 
+                          LIMIT 1";
+                
+                if($stmt = mysqli_prepare($conn, $query)) {
+                    // Bind parameters
+                    mysqli_stmt_bind_param($stmt, "s", $slug);
+                    
+                    // Execute query
+                    if(mysqli_stmt_execute($stmt)) {
+                        // Get result
+                        $result = mysqli_stmt_get_result($stmt);
+                        
+                        if(mysqli_num_rows($result) > 0) {
+                            // Fetch service data
+                            $service = mysqli_fetch_assoc($result);
+                            
+                            // Convert NULL values to empty strings for display
+                            $service = array_map(function($value) {
+                                return $value === null ? '' : $value;
+                            }, $service);
+                            
+                            // Optional: You can add additional processing here
+                            // For example, convert markdown to HTML, process images, etc.
+                        } else {
+                            $error = "The service you're looking for doesn't exist or has been moved.";
+                        }
+                    } else {
+                        $error = "Unable to fetch service details at the moment. Please try again later.";
+                    }
+                    
+                    // Close statement
+                    mysqli_stmt_close($stmt);
+                } else {
+                    $error = "Database query preparation failed.";
+                }
+                
+                // Close connection
+                mysqli_close($conn);
+            }
         }
     }
-    
-    return 'fa-file-alt'; // Default icon
+} else {
+    // No slug provided - this is okay, will show welcome message
+    $error = "No service selected. Please choose a service from our list.";
 }
 
-/**
- * Helper function to parse JSON keys and values from service_overview
- */
-function parseOverviewData($overview_item) {
-    $keys = json_decode($overview_item['keys'], true);
-    $values = json_decode($overview_item['values'], true);
-    
-    if ($keys && $values && count($keys) === count($values)) {
-        return array_combine($keys, $values);
-    }
-    
-    return [];
+// Optional: Log errors (for debugging)
+if($error && file_exists('error_log.txt')) {
+    $log_message = date('Y-m-d H:i:s') . " - Slug: " . ($_GET['slug'] ?? 'none') . " - Error: " . $error . "\n";
+    file_put_contents('error_log.txt', $log_message, FILE_APPEND);
 }
 ?>
