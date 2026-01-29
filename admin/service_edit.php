@@ -29,10 +29,12 @@ if ($selected_department === 0) {
     $selected_category = $service_data['category_id'];
     $selected_subcat   = $service_data['sub_category_id'];
     
+    // Fetch department ID from category to pre-fill dropdowns
     $cat_res = mysqli_query($conn, "SELECT department FROM service_categories WHERE id = $selected_category");
     $cat_row = mysqli_fetch_assoc($cat_res);
     $selected_department = $cat_row['department'] ?? 0;
 } else {
+    // User is changing filters manually
     $selected_category = (int)($_GET['category'] ?? 0);
     $selected_subcat   = (int)($_GET['sub_category'] ?? 0);
 }
@@ -51,6 +53,7 @@ if ($selected_category) {
 ?>
 
 <?php include 'header.php'; ?>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 <?php include 'topbar.php'; ?>
 <?php include 'sidebar.php'; ?>
 
@@ -109,7 +112,6 @@ if ($selected_category) {
         border: 1px solid #cbd5e1;
     }
 
-    /* Fixed Button Hover States */
     .btn-primary-pro {
         background-color: var(--slate-900) !important;
         color: #ffffff !important;
@@ -123,7 +125,6 @@ if ($selected_category) {
     .btn-primary-pro:hover {
         background-color: #334155 !important;
         color: #ffffff !important;
-        opacity: 1;
     }
 
     .btn-outline-pro {
@@ -148,7 +149,13 @@ if ($selected_category) {
 
             <?php if ($msg): ?>
                 <div class="alert alert-success border-0 shadow-sm mb-4 py-3">
-                    <i class="ri-checkbox-circle-line me-1"></i> <?= htmlspecialchars($msg) ?>
+                    <i class="fas fa-check-circle me-1"></i> <?= htmlspecialchars($msg) ?>
+                </div>
+            <?php endif; ?>
+            
+            <?php if ($error): ?>
+                <div class="alert alert-danger border-0 shadow-sm mb-4 py-3">
+                    <i class="fas fa-exclamation-circle me-1"></i> <?= htmlspecialchars($error) ?>
                 </div>
             <?php endif; ?>
 
@@ -176,7 +183,7 @@ if ($selected_category) {
                         ?>
                         <div class="p-3 border-top text-center">
                             <a href="services.php" class="btn btn-outline-pro btn-sm w-100">
-                                <i class="ri-arrow-left-line me-1"></i> Back to List
+                                <i class="fas fa-arrow-left me-1"></i> Back to List
                             </a>
                         </div>
                     </div>
@@ -242,9 +249,21 @@ if ($selected_category) {
                                     <input type="hidden" name="sub_category_id" value="<?= $selected_subcat ?: $service_data['sub_category_id'] ?>">
 
                                     <div class="mb-4">
-                                        <label class="form-label">Service Title</label>
-                                        <input type="text" name="title" class="form-control" value="<?= htmlspecialchars($service_data['title']) ?>" required>
+                                        <label class="form-label">Service Name</label>
+                                        <input type="text" name="service_name" class="form-control" value="<?= htmlspecialchars($service_data['service_name']) ?>" required>
                                     </div>
+
+                                    <div class="row">
+                                        <div class="col-md-6 mb-4">
+                                            <label class="form-label">Service Title (Display)</label>
+                                            <input type="text" id="service_title" name="title" class="form-control" value="<?= htmlspecialchars($service_data['title']) ?>" required onkeyup="generateSlug()">
+                                        </div>
+                                        <div class="col-md-6 mb-4">
+                                            <label class="form-label">URL Slug</label>
+                                            <input type="text" id="service_slug" name="slug" class="form-control" value="<?= htmlspecialchars($service_data['slug']) ?>" oninput="manualSlug()">
+                                        </div>
+                                    </div>
+
                                     <div class="mb-4">
                                         <label class="form-label">Short Summary</label>
                                         <textarea name="short_description" class="form-control" rows="2"><?= htmlspecialchars($service_data['short_description']) ?></textarea>
@@ -260,23 +279,25 @@ if ($selected_category) {
                             <?php 
                             // DYNAMIC TABS HANDLING (Tabs 2 to 9)
                             $genericConfigs = [
-                                'overview'    => ['title' => 'Service Overview', 't1' => 'Overview Title', 'table' => 'service_overview', 'handler' => 'update_overview'],
+                                'overview'    => ['title' => 'Service Overview', 'has_title'=>true, 'table' => 'service_overview', 'handler' => 'update_overview'],
                                 'features'    => ['title' => 'Service Features', 'table' => 'service_features', 'handler' => 'update_feature', 'k' => 'title', 'v' => 'description'],
                                 'eligibility' => ['title' => 'Eligibility Criteria', 'table' => 'service_eligibility_criteria', 'handler' => 'update_eligibility', 'k' => 'criteria_key', 'v' => 'criteria_value'],
                                 'documents'   => ['title' => 'Required Documents', 'table' => 'service_documents', 'handler' => 'update_document', 'k' => 'doc_name', 'v' => 'disclaimer'],
                                 'fees'        => ['title' => 'Fees & Charges', 'table' => 'service_fees_charges', 'handler' => 'update_fee', 'k' => 'fee_key', 'v' => 'fee_value', 'v_type' => 'input'],
                                 'repayment'   => ['title' => 'Loan Repayment', 'table' => 'service_loan_repayment', 'handler' => 'update_repayment', 'k' => 'title', 'v' => 'description'],
-                                'why'         => ['title' => 'Why Choose Us', 'table' => 'service_why_choose_us', 'handler' => 'update_why', 'k' => 'title', 'v' => 'description'],
+                                'why'         => ['title' => 'Why Choose Us', 'has_image'=>true, 'table' => 'service_why_choose_us', 'handler' => 'update_why', 'k' => 'title', 'v' => 'description'],
                                 'banks'       => ['title' => 'Associated Banks', 'table' => 'service_banks', 'handler' => 'update_bank', 'k' => 'bank_key', 'v' => 'bank_value', 'v_type' => 'input']
                             ];
 
                             if (array_key_exists($tab, $genericConfigs)) {
                                 $config = $genericConfigs[$tab];
+                                // Enable multipart if images are involved
+                                $encType = (isset($config['has_image']) && $config['has_image']) ? 'enctype="multipart/form-data"' : '';
                                 ?>
                                 <h3 class="fw-bold mb-1"><?= $config['title'] ?></h3>
                                 <p class="text-muted mb-5">Update the specific data points for this section.</p>
 
-                                <form method="POST" action="db/update/service_update_handler.php">
+                                <form method="POST" action="db/update/service_update_handler.php" <?= $encType ?>>
                                     <input type="hidden" name="type" value="<?= $config['handler'] ?>">
                                     <input type="hidden" name="service_id" value="<?= $service_id ?>">
 
@@ -295,7 +316,7 @@ if ($selected_category) {
                                                 <div class="row mb-3 gx-2 overview-row align-items-center">
                                                     <div class="col-md-5"><input type="text" name="keys[]" class="form-control" placeholder="Key" value="<?= htmlspecialchars($keys[$i] ?? '') ?>"></div>
                                                     <div class="col-md-6"><input type="text" name="values[]" class="form-control" placeholder="Value" value="<?= htmlspecialchars($vals[$i] ?? '') ?>"></div>
-                                                    <div class="col-md-1"><button type="button" class="btn btn-outline-danger border-0" onclick="removeRow(this)"><i class="ri-delete-bin-line"></i></button></div>
+                                                    <div class="col-md-1"><button type="button" class="btn btn-outline-danger border-0" onclick="removeRow(this)"><i class="fas fa-trash"></i></button></div>
                                                 </div>
                                             <?php } ?>
                                         </div>
@@ -306,21 +327,39 @@ if ($selected_category) {
                                         <div id="dynamic_container">
                                             <?php while($row = mysqli_fetch_assoc($res)) { ?>
                                                 <div class="row mb-3 gx-2 input-row align-items-center">
-                                                    <div class="col-md-4"><input type="text" name="<?= $config['k'] ?>[]" class="form-control" value="<?= htmlspecialchars($row[$config['k']]) ?>"></div>
-                                                    <div class="col-md-7">
+                                                    
+                                                    <div class="<?= isset($config['has_image']) ? 'col-md-3' : 'col-md-4' ?>">
+                                                        <input type="text" name="<?= $config['k'] ?>[]" class="form-control" value="<?= htmlspecialchars($row[$config['k']]) ?>">
+                                                    </div>
+
+                                                    <div class="<?= isset($config['has_image']) ? 'col-md-4' : 'col-md-7' ?>">
                                                         <?php if(isset($config['v_type']) && $config['v_type'] == 'input'): ?>
                                                             <input type="text" name="<?= $config['v'] ?>[]" class="form-control" value="<?= htmlspecialchars($row[$config['v']]) ?>">
                                                         <?php else: ?>
                                                             <textarea name="<?= $config['v'] ?>[]" class="form-control" rows="1"><?= htmlspecialchars($row[$config['v']]) ?></textarea>
                                                         <?php endif; ?>
                                                     </div>
-                                                    <div class="col-md-1 text-center"><button type="button" class="btn btn-outline-danger border-0" onclick="removeRow(this)"><i class="ri-delete-bin-line"></i></button></div>
+
+                                                    <?php if(isset($config['has_image']) && $config['has_image']): ?>
+                                                        <div class="col-md-4">
+                                                            <?php if(!empty($row['image'])): ?>
+                                                                <div class="mb-1">
+                                                                    <img src="<?= '../'.$row['image'] ?>" alt="Current" style="height:30px; border-radius:4px; margin-right:5px;">
+                                                                    <span class="text-muted small">Current</span>
+                                                                </div>
+                                                            <?php endif; ?>
+                                                            <input type="hidden" name="existing_image[]" value="<?= htmlspecialchars($row['image']) ?>">
+                                                            <input type="file" name="image[]" class="form-control">
+                                                        </div>
+                                                    <?php endif; ?>
+
+                                                    <div class="col-md-1 text-center"><button type="button" class="btn btn-outline-danger border-0" onclick="removeRow(this)"><i class="fas fa-trash"></i></button></div>
                                                 </div>
                                             <?php } ?>
                                         </div>
                                         <button type="button" class="btn btn-link text-primary text-decoration-none fw-bold p-0 mb-4" 
-                                                onclick="addGenericRow('dynamic_container', '<?= $config['k'] ?>[]', 'Field', '<?= $config['v'] ?>[]', 'Details', '<?= $config['v_type'] ?? 'textarea' ?>')">
-                                            + Add New Row
+                                                onclick="addGenericRow('dynamic_container', '<?= $config['k'] ?>[]', 'Field', '<?= $config['v'] ?>[]', 'Details', '<?= $config['v_type'] ?? 'textarea' ?>', <?= isset($config['has_image']) ? 'true' : 'false' ?>)">
+                                                + Add New Row
                                         </button>
                                     <?php endif; ?>
                                     <br><button class="btn btn-primary-pro px-5">Save Changes</button>
@@ -336,6 +375,25 @@ if ($selected_category) {
 </div>
 
 <script>
+// 1. Slug Logic
+function generateSlug() {
+    const title = document.getElementById('service_title').value;
+    const slug = convertToSlug(title);
+    document.getElementById('service_slug').value = slug;
+}
+
+function manualSlug() {
+    const input = document.getElementById('service_slug');
+    input.value = convertToSlug(input.value);
+}
+
+function convertToSlug(text) {
+    return text.toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+}
+
+// 2. Overview Rows
 function addRow() {
     const container = document.getElementById('overview_container');
     const div = document.createElement('div');
@@ -343,21 +401,38 @@ function addRow() {
     div.innerHTML = `
         <div class="col-md-5"><input type="text" name="keys[]" class="form-control" placeholder="Key" required></div>
         <div class="col-md-6"><input type="text" name="values[]" class="form-control" placeholder="Value" required></div>
-        <div class="col-md-1"><button type="button" class="btn btn-outline-danger border-0" onclick="removeRow(this)"><i class="ri-delete-bin-line"></i></button></div>
+        <div class="col-md-1"><button type="button" class="btn btn-outline-danger border-0" onclick="removeRow(this)"><i class="fas fa-trash"></i></button></div>
     `;
     container.appendChild(div);
 }
 
-function addGenericRow(containerId, name1, ph1, name2, ph2, type2) {
+// 3. Generic Rows
+function addGenericRow(containerId, name1, ph1, name2, ph2, type2, hasImage) {
     const container = document.getElementById(containerId);
     const div = document.createElement('div');
     div.className = 'row mb-3 gx-2 input-row align-items-center';
-    let field2 = (type2 === 'textarea') ? `<textarea name="${name2}" class="form-control" rows="1" placeholder="${ph2}"></textarea>` : `<input type="text" name="${name2}" class="form-control" placeholder="${ph2}">`;
-    div.innerHTML = `
-        <div class="col-md-4"><input type="text" name="${name1}" class="form-control" placeholder="${ph1}" required></div>
-        <div class="col-md-7">${field2}</div>
-        <div class="col-md-1"><button type="button" class="btn btn-outline-danger border-0" onclick="removeRow(this)"><i class="ri-delete-bin-line"></i></button></div>
-    `;
+    
+    let field2 = (type2 === 'textarea') 
+        ? `<textarea name="${name2}" class="form-control" rows="1" placeholder="${ph2}"></textarea>` 
+        : `<input type="text" name="${name2}" class="form-control" placeholder="${ph2}">`;
+
+    if (hasImage) {
+        div.innerHTML = `
+            <div class="col-md-3"><input type="text" name="${name1}" class="form-control" placeholder="${ph1}" required></div>
+            <div class="col-md-4">${field2}</div>
+            <div class="col-md-4">
+                <input type="hidden" name="existing_image[]" value="">
+                <input type="file" name="image[]" class="form-control">
+            </div>
+            <div class="col-md-1"><button type="button" class="btn btn-outline-danger border-0" onclick="removeRow(this)"><i class="fas fa-trash"></i></button></div>
+        `;
+    } else {
+        div.innerHTML = `
+            <div class="col-md-4"><input type="text" name="${name1}" class="form-control" placeholder="${ph1}" required></div>
+            <div class="col-md-7">${field2}</div>
+            <div class="col-md-1"><button type="button" class="btn btn-outline-danger border-0" onclick="removeRow(this)"><i class="fas fa-trash"></i></button></div>
+        `;
+    }
     container.appendChild(div);
 }
 

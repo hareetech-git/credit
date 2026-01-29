@@ -145,6 +145,18 @@ $overview   = mysqli_fetch_assoc($overview_q);
 
                             <div class="tab-pane fade show active" id="v-info">
                                 <h5 class="section-title">General Information</h5>
+                                
+                                <div class="row mb-4">
+                                    <div class="col-md-6">
+                                        <label class="info-label">Internal Name</label>
+                                        <div class="fw-bold text-dark"><?= htmlspecialchars($service['service_name']) ?></div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="info-label">URL Slug</label>
+                                        <div class="fw-bold text-primary">/<?= htmlspecialchars($service['slug']) ?></div>
+                                    </div>
+                                </div>
+
                                 <div class="mb-4">
                                     <label class="info-label">Short Description</label>
                                     <div class="data-box mt-1"><?= nl2br(htmlspecialchars($service['short_description'])) ?></div>
@@ -250,10 +262,15 @@ $overview   = mysqli_fetch_assoc($overview_q);
                                 <?php 
                                 $res = get_data($conn, 'service_why_choose_us', $id);
                                 while($row = mysqli_fetch_assoc($res)) { ?>
-                                    <div class="alert alert-light border-0 shadow-sm d-flex align-items-center mb-3">
-                                        <i class="ri-checkbox-circle-fill text-primary me-3 fs-20"></i>
+                                    <div class="alert alert-light border-0 shadow-sm d-flex align-items-start mb-3">
+                                        <?php if (!empty($row['image'])): ?>
+                                            <img src="<?= '../'.$row['image'] ?>" alt="icon" style="width: 50px; height: 50px; object-fit: cover; border-radius: 8px; margin-right: 15px;">
+                                        <?php else: ?>
+                                            <i class="ri-checkbox-circle-fill text-primary me-3 fs-20 mt-1"></i>
+                                        <?php endif; ?>
+                                        
                                         <div>
-                                            <strong class="text-dark"><?= htmlspecialchars($row['title']) ?></strong>
+                                            <strong class="text-dark d-block mb-1"><?= htmlspecialchars($row['title']) ?></strong>
                                             <div class="text-muted small"><?= htmlspecialchars($row['description']) ?></div>
                                         </div>
                                     </div>

@@ -35,18 +35,31 @@ function batch_insert($conn, $keys, $values, $sql_template) {
 switch ($type) {
 
     // ... [Cases 1-7 remain exactly the same as your previous code] ...
+   /* =======================================================
+       1. CREATE SERVICE -> GO TO OVERVIEW
+    ======================================================= */
     case 'create_service':
         $category_id     = (int) $_POST['category_id'];
         $sub_category_id = (int) $_POST['sub_category_id'];
+        
+        // NEW FIELD
+        $service_name    = clean($conn, $_POST['service_name']); 
+        
         $title           = clean($conn, $_POST['title']);
+        
+        // Slug Logic
+        $raw_slug    = $_POST['slug'] ?? '';
+        $slug_source = empty($raw_slug) ? $title : $raw_slug;
+        $slug        = strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '-', $slug_source)));
+
         $short_desc      = clean($conn, $_POST['short_description']);
         $long_desc       = clean($conn, $_POST['long_description']);
 
         if ($category_id > 0 && $title !== '') {
             $sql = "INSERT INTO services 
-                    (category_id, sub_category_id, title, short_description, long_description)
+                    (category_id, sub_category_id, service_name, title, slug, short_description, long_description)
                     VALUES 
-                    ($category_id, $sub_category_id, '$title', '$short_desc', '$long_desc')";
+                    ($category_id, $sub_category_id, '$service_name', '$title', '$slug', '$short_desc', '$long_desc')";
             
             if (mysqli_query($conn, $sql)) {
                 $new_id = mysqli_insert_id($conn);
@@ -56,7 +69,7 @@ switch ($type) {
         }
         header("Location: $base_url?error=creation_failed");
         break;
-
+        
     case 'save_overview':
         // FIX: Added Title handling
         $title      = clean($conn, $_POST['title']); 

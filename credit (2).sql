@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 29, 2026 at 08:21 AM
+-- Generation Time: Jan 29, 2026 at 10:06 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -137,8 +137,7 @@ CREATE TABLE `departments` (
 --
 
 INSERT INTO `departments` (`id`, `name`, `created_at`, `updated_at`, `created_by`) VALUES
-(1, 'Loans', '2026-01-29 06:45:38', '2026-01-29 06:45:38', 1),
-(2, 'Instant Loan', '2026-01-29 06:45:49', '2026-01-29 06:45:49', 1);
+(1, 'Loan Department', '2026-01-29 08:02:52', '2026-01-29 08:02:52', NULL);
 
 -- --------------------------------------------------------
 
@@ -150,7 +149,9 @@ CREATE TABLE `services` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `category_id` bigint(20) UNSIGNED NOT NULL,
   `sub_category_id` bigint(20) UNSIGNED NOT NULL,
+  `service_name` varchar(255) NOT NULL,
   `title` varchar(255) NOT NULL,
+  `slug` varchar(255) NOT NULL,
   `short_description` text DEFAULT NULL,
   `long_description` longtext DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT current_timestamp(),
@@ -161,8 +162,12 @@ CREATE TABLE `services` (
 -- Dumping data for table `services`
 --
 
-INSERT INTO `services` (`id`, `category_id`, `sub_category_id`, `title`, `short_description`, `long_description`, `created_at`, `updated_at`) VALUES
-(2, 2, 1, 'Looking for a secured business Loan?', 'Are you ready to take your business to greater heights? Apply for business loans online at low-interest rates through Udhar Capital. Do apply now!', 'For business owners looking to start or expand their enterprises, online business loans are critical. Udhar Capital financial services have undergone continuous innovation to satisfy the demands of entrepreneurs seeking capital. The purpose of the business loan is to businesses acquire the finance they need.The instant business loan may be utilised to cover all of your company’s needs, it’s the finest lending option for a startup. Apply business loans online for an attractive and affordable interest rate ensures you won’t have to cut back on expenses.', '2026-01-29 07:11:48', '2026-01-29 07:11:48');
+INSERT INTO `services` (`id`, `category_id`, `sub_category_id`, `service_name`, `title`, `slug`, `short_description`, `long_description`, `created_at`, `updated_at`) VALUES
+(1, 1, 3, 'Loan for CA', 'Loan for Chartered Accountant', 'loan-for-ca', 'Tailored loan for Chartered Accountants.', 'Special loan products designed for Chartered Accountants with flexible repayment options.', '2026-01-29 08:03:53', '2026-01-29 08:03:53'),
+(2, 1, 3, 'Loan for CS', 'Loan for Company Secretary', 'loan-for-cs', 'Business loan for Company Secretaries.', 'Customized financing solutions for Company Secretaries.', '2026-01-29 08:03:53', '2026-01-29 08:03:53'),
+(3, 1, 3, 'Loan for Doctor', 'Loan for Doctor', 'loan-for-doctor', 'Medical professionals loan.', 'Loans designed specifically for doctors to support clinic setup and expansion.', '2026-01-29 08:03:53', '2026-01-29 08:03:53'),
+(4, 1, 3, 'Loan for Architect', 'Loan for Architect', 'loan-for-architect', 'Loan for architecture professionals.', 'Professional loans for architects to fund projects and office expansion.', '2026-01-29 08:03:53', '2026-01-29 08:03:53'),
+(5, 1, 2, 'Secured Business Loan', 'Looking for a secured business Loan?', 'looking-for-a-secured-business-loan', 'Are you ready to take your business to greater heights? Apply for business loans online at low-interest rates through Udhar Capital. Do apply now!', 'For business owners looking to start or expand their enterprises, online business loans are critical. Udhar Capital financial services have undergone continuous innovation to satisfy the demands of entrepreneurs seeking capital. The purpose of the business loan is to businesses acquire the finance they need.The instant business loan may be utilised to cover all of your company’s needs, it’s the finest lending option for a startup. Apply business loans online for an attractive and affordable interest rate ensures you won’t have to cut back on expenses.', '2026-01-29 08:53:13', '2026-01-29 08:53:13');
 
 -- --------------------------------------------------------
 
@@ -187,15 +192,11 @@ CREATE TABLE `services_subcategories` (
 --
 
 INSERT INTO `services_subcategories` (`id`, `uuid`, `category_id`, `sub_category_name`, `sequence`, `status`, `live`, `created_at`, `updated_at`) VALUES
-(1, 'eb6f151e-fcde-11f0-a3c0-3863bba624fb', 2, 'Secured Business Loan', 1, 'active', 1, '2026-01-29 06:51:25', '2026-01-29 06:51:25'),
-(2, 'eb6f263d-fcde-11f0-a3c0-3863bba624fb', 2, 'Unsecured Business Loan', 2, 'active', 1, '2026-01-29 06:51:25', '2026-01-29 06:51:25'),
-(3, 'eb6f2733-fcde-11f0-a3c0-3863bba624fb', 2, 'Working Capital Loan', 3, 'active', 1, '2026-01-29 06:51:25', '2026-01-29 06:51:25'),
-(4, 'eb6f27a4-fcde-11f0-a3c0-3863bba624fb', 2, 'MSME Term Loan', 4, 'active', 1, '2026-01-29 06:51:25', '2026-01-29 06:51:25'),
-(5, '36ac71dc-fcdf-11f0-a3c0-3863bba624fb', 3, 'Loan for CA', 1, 'active', 1, '2026-01-29 06:53:31', '2026-01-29 06:53:31'),
-(6, '36ac891f-fcdf-11f0-a3c0-3863bba624fb', 3, 'Loan for CS', 2, 'active', 1, '2026-01-29 06:53:31', '2026-01-29 06:53:31'),
-(7, '36ac8a18-fcdf-11f0-a3c0-3863bba624fb', 3, 'Loan for Doctor', 3, 'active', 1, '2026-01-29 06:53:31', '2026-01-29 06:53:31'),
-(8, '36ac8a70-fcdf-11f0-a3c0-3863bba624fb', 3, 'Loan for Architect', 4, 'active', 1, '2026-01-29 06:53:31', '2026-01-29 06:53:31'),
-(9, '36ac8ac7-fcdf-11f0-a3c0-3863bba624fb', 3, 'Auto Loan', 5, 'active', 1, '2026-01-29 06:53:31', '2026-01-29 06:53:31');
+(1, 'fac11733-fce8-11f0-a3c0-3863bba624fb', 1, 'Personal Loan', 1, 'active', 1, '2026-01-29 08:03:25', '2026-01-29 08:03:25'),
+(2, 'fac12cd1-fce8-11f0-a3c0-3863bba624fb', 1, 'Business Loans', 2, 'active', 1, '2026-01-29 08:03:25', '2026-01-29 08:03:25'),
+(3, 'fac12de9-fce8-11f0-a3c0-3863bba624fb', 1, 'Professional Loan', 3, 'active', 1, '2026-01-29 08:03:25', '2026-01-29 08:03:25'),
+(4, 'fac12e7c-fce8-11f0-a3c0-3863bba624fb', 1, 'Home Loan', 4, 'active', 1, '2026-01-29 08:03:25', '2026-01-29 08:03:25'),
+(5, 'fac12ee3-fce8-11f0-a3c0-3863bba624fb', 1, 'Credit Card', 5, 'active', 1, '2026-01-29 08:03:25', '2026-01-29 08:03:25');
 
 -- --------------------------------------------------------
 
@@ -217,8 +218,9 @@ CREATE TABLE `service_banks` (
 --
 
 INSERT INTO `service_banks` (`id`, `service_id`, `bank_key`, `bank_value`, `created_at`, `updated_at`) VALUES
-(1, 2, 'Poonawalla', '18.00% p.a.', '2026-01-29 07:17:58', '2026-01-29 07:17:58'),
-(2, 2, 'Axis Bank', '14.95% - 19.20% p.a.', '2026-01-29 07:17:58', '2026-01-29 07:17:58');
+(1, 5, 'Poonawalla', '18.00% p.a.', '2026-01-29 09:00:34', '2026-01-29 09:00:34'),
+(2, 5, 'Axis Bank', '14.95% - 19.20% p.a.', '2026-01-29 09:00:34', '2026-01-29 09:00:34'),
+(3, 5, 'HDB Financial Services Ltd.', 'Up to 36% p.a.', '2026-01-29 09:00:34', '2026-01-29 09:00:34');
 
 -- --------------------------------------------------------
 
@@ -243,11 +245,8 @@ CREATE TABLE `service_categories` (
 --
 
 INSERT INTO `service_categories` (`id`, `uuid`, `department`, `category_name`, `sequence`, `active`, `live`, `created_at`, `updated_at`) VALUES
-(1, '9fd8af8a-fcde-11f0-a3c0-3863bba624fb', 1, 'Personal Loan', 1, 1, 1, '2026-01-29 06:49:18', '2026-01-29 06:49:18'),
-(2, '9fd8c018-fcde-11f0-a3c0-3863bba624fb', 1, 'Business Loan', 2, 1, 1, '2026-01-29 06:49:18', '2026-01-29 06:49:18'),
-(3, '9fd8c106-fcde-11f0-a3c0-3863bba624fb', 1, 'Professional Loan', 3, 1, 1, '2026-01-29 06:49:18', '2026-01-29 06:49:18'),
-(4, '9fd8c162-fcde-11f0-a3c0-3863bba624fb', 1, 'Home Loan', 4, 1, 1, '2026-01-29 06:49:18', '2026-01-29 06:49:18'),
-(5, '9fd8c1b1-fcde-11f0-a3c0-3863bba624fb', 1, 'Credit Card', 5, 1, 1, '2026-01-29 06:49:18', '2026-01-29 06:49:18');
+(1, 'f05e5254-fce8-11f0-a3c0-3863bba624fb', 1, 'Loan', 1, 1, 1, '2026-01-29 08:03:08', '2026-01-29 08:03:08'),
+(2, 'f05e6718-fce8-11f0-a3c0-3863bba624fb', 1, 'Instant Loan', 2, 1, 1, '2026-01-29 08:03:08', '2026-01-29 08:03:08');
 
 -- --------------------------------------------------------
 
@@ -269,9 +268,8 @@ CREATE TABLE `service_documents` (
 --
 
 INSERT INTO `service_documents` (`id`, `service_id`, `doc_name`, `disclaimer`, `created_at`, `updated_at`) VALUES
-(1, 2, 'Aadhar Card', '', '2026-01-29 07:15:02', '2026-01-29 07:15:02'),
-(2, 2, 'Business Proof', '', '2026-01-29 07:15:02', '2026-01-29 07:15:02'),
-(3, 2, 'Ownership Proof (Optional)', '', '2026-01-29 07:15:02', '2026-01-29 07:15:02');
+(1, 5, 'Aadhar Card', '', '2026-01-29 08:57:31', '2026-01-29 08:57:31'),
+(2, 5, 'fsdfsd', '', '2026-01-29 08:57:31', '2026-01-29 08:57:31');
 
 -- --------------------------------------------------------
 
@@ -293,8 +291,8 @@ CREATE TABLE `service_eligibility_criteria` (
 --
 
 INSERT INTO `service_eligibility_criteria` (`id`, `service_id`, `criteria_key`, `criteria_value`, `created_at`, `updated_at`) VALUES
-(1, 2, 'Age Requirement', 'Borrower age should be between 21 and 65 years.', '2026-01-29 07:14:43', '2026-01-29 07:14:43'),
-(2, 2, 'Business Vintage', 'Business should be minimum one year old', '2026-01-29 07:14:43', '2026-01-29 07:14:43');
+(1, 5, 'Age Requirement', 'Borrower age should be between 21 and 65 years.', '2026-01-29 08:57:24', '2026-01-29 08:57:24'),
+(2, 5, 'Business Vintage', 'Business should be minimum one year old', '2026-01-29 08:57:24', '2026-01-29 08:57:24');
 
 -- --------------------------------------------------------
 
@@ -316,11 +314,8 @@ CREATE TABLE `service_features` (
 --
 
 INSERT INTO `service_features` (`id`, `service_id`, `title`, `description`, `created_at`, `updated_at`) VALUES
-(1, 2, 'Fulfill your Financial Needs', 'Acquire a business loan at such low interest rates and without any collateral or security.', '2026-01-29 07:14:11', '2026-01-29 07:14:11'),
-(2, 2, 'Fast Disbursal of Loan', 'Obtain a business loan in few hours.', '2026-01-29 07:14:11', '2026-01-29 07:14:11'),
-(3, 2, 'Flexible Tenure', 'You can repay your loan over period of 18-48 months.', '2026-01-29 07:14:11', '2026-01-29 07:14:11'),
-(4, 2, 'Assignment of Financial Advisors', 'Udhar Capital will assign a financial advisor to a customer which makes the overall process more efficient.', '2026-01-29 07:14:11', '2026-01-29 07:14:11'),
-(5, 2, 'Stay Protected', 'Keep your savings intact by not using them for repayment. Enjoy tax benefits.', '2026-01-29 07:14:11', '2026-01-29 07:14:11');
+(1, 5, 'Fulfill your Financial Needs', 'Acquire a business loan at such low interest rates and without any collateral or security.', '2026-01-29 08:54:49', '2026-01-29 08:54:49'),
+(2, 5, 'Fast Disbursal of Loan', 'Obtain a business loan in few hours.', '2026-01-29 08:54:49', '2026-01-29 08:54:49');
 
 -- --------------------------------------------------------
 
@@ -342,8 +337,8 @@ CREATE TABLE `service_fees_charges` (
 --
 
 INSERT INTO `service_fees_charges` (`id`, `service_id`, `fee_key`, `fee_value`, `created_at`, `updated_at`) VALUES
-(1, 2, 'Loan Processing Fees', 'Loan processing fees should be Up to 2% of the loan amount', '2026-01-29 07:15:25', '2026-01-29 07:15:25'),
-(2, 2, 'Pre-Payment Charges', 'Depends on Lenders', '2026-01-29 07:15:25', '2026-01-29 07:15:25');
+(1, 5, 'Loan Processing Fees', 'Loan processing fees should be Up to 2% of the loan amount.', '2026-01-29 08:58:03', '2026-01-29 08:58:03'),
+(2, 5, 'R.O.I', 'Reducing 15% to 24%', '2026-01-29 08:58:03', '2026-01-29 08:58:03');
 
 -- --------------------------------------------------------
 
@@ -365,8 +360,8 @@ CREATE TABLE `service_loan_repayment` (
 --
 
 INSERT INTO `service_loan_repayment` (`id`, `service_id`, `title`, `description`, `created_at`, `updated_at`) VALUES
-(1, 2, 'EMI', 'On a specific date, the borrower makes an instalment payment to a lenders. The EMI amount remains constant throughout the loan terms.', '2026-01-29 07:15:56', '2026-01-29 07:15:56'),
-(2, 2, 'A Foreclosure', 'Foreclosure means a method of paying off the entire unpaid loan amount before the due date comes around. A personal loan typically has a lock-in term after which you can opt to foreclose the remaining debt and repay the total loan amount. However, we normally suggest you to foreclose your debt when you have some extra income.', '2026-01-29 07:15:56', '2026-01-29 07:15:56');
+(1, 5, 'EMI', 'On a specific date, the borrower makes an instalment payment to a lenders. The EMI amount remains constant throughout the loan terms.', '2026-01-29 08:58:38', '2026-01-29 08:58:38'),
+(2, 5, 'A Foreclosure', 'Foreclosure means a method of paying off the entire unpaid loan amount before the due date comes around. A personal loan typically has a lock-in term after which you can opt to foreclose the remaining debt and repay the total loan amount. However, we normally suggest you to foreclose your debt when you have some extra income.', '2026-01-29 08:58:38', '2026-01-29 08:58:38');
 
 -- --------------------------------------------------------
 
@@ -389,7 +384,7 @@ CREATE TABLE `service_overview` (
 --
 
 INSERT INTO `service_overview` (`id`, `service_id`, `title`, `keys`, `values`, `created_at`, `updated_at`) VALUES
-(1, 2, 'Obtaining a business loan from Udhar Capital is simple and straightforward with affordable interest rates and flexible repayment choices. It doesn’t matter if you’re a small business or an established institution, Udhar Capital Business Loan is accessible', '[\"Amount\",\"Loan Tenure\",\"Low- Interest Rates\",\"Eligibility Criteria\",\"Loan Disbursal\"]', '[\"Up to 1 Crore\",\"3 to 5 Years\",\"Starting from reducing 15%*p.a.\",\"21- 65 Years\",\"Loan Disbursal in 72 Hours.\"]', '2026-01-29 07:12:52', '2026-01-29 07:12:52');
+(1, 5, 'Obtaining a business loan from Udhar Capital is simple and straightforward with affordable interest rates and flexible repayment choices. It doesn’t matter if you’re a small business or an established institution, Udhar Capital Business Loan is accessible', '[\"Amount\",\"Loan Tenure\"]', '[\"Up to 1 Crore\",\"3 to 5 Years\"]', '2026-01-29 08:53:48', '2026-01-29 08:53:48');
 
 -- --------------------------------------------------------
 
@@ -412,8 +407,8 @@ CREATE TABLE `service_why_choose_us` (
 --
 
 INSERT INTO `service_why_choose_us` (`id`, `service_id`, `image`, `title`, `description`, `created_at`, `updated_at`) VALUES
-(1, 2, 'uploads/why_choose_us/why_1769671040_158.png', 'Competitive Interest Rates', 'To meet your financial objectives and budget, we offer low interest rates.', '2026-01-29 07:17:20', '2026-01-29 07:17:20'),
-(2, 2, 'uploads/why_choose_us/why_1769671040_958.jpg', 'Fast Approval Process', 'Using Udhar Capital, you can count on a simple and rapid approval process that gives you access to funds exactly when you need them.', '2026-01-29 07:17:20', '2026-01-29 07:17:20');
+(1, 5, 'uploads/why_choose_us/why_1769677182_752.png', 'Competitive Interest Rates', 'To meet your financial objectives and budget, we offer low interest rates.', '2026-01-29 08:59:42', '2026-01-29 08:59:42'),
+(2, 5, 'uploads/why_choose_us/why_1769677182_773.png', 'Fast Approval Process', 'Using Udhar Capital, you can count on a simple and rapid approval process that gives you access to funds exactly when you need them.', '2026-01-29 08:59:42', '2026-01-29 08:59:42');
 
 --
 -- Indexes for dumped tables
@@ -533,37 +528,37 @@ ALTER TABLE `customers`
 -- AUTO_INCREMENT for table `departments`
 --
 ALTER TABLE `departments`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `services`
 --
 ALTER TABLE `services`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `services_subcategories`
 --
 ALTER TABLE `services_subcategories`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `service_banks`
 --
 ALTER TABLE `service_banks`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `service_categories`
 --
 ALTER TABLE `service_categories`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `service_documents`
 --
 ALTER TABLE `service_documents`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `service_eligibility_criteria`
@@ -575,7 +570,7 @@ ALTER TABLE `service_eligibility_criteria`
 -- AUTO_INCREMENT for table `service_features`
 --
 ALTER TABLE `service_features`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `service_fees_charges`

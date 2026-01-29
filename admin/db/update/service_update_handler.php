@@ -10,7 +10,6 @@ $type       = $_POST['type'] ?? '';
 $service_id = (int)($_POST['service_id'] ?? 0);
 $base_url   = "../../service_edit.php"; 
 
-
 if ($service_id === 0) {
     header("Location: ../../services.php?error=invalid_id");
     exit;
@@ -44,28 +43,43 @@ function update_child_table($conn, $service_id, $table, $keys, $values, $sql_tem
 
 switch ($type) {
 
-    /* =======================================================
+
+ /* =======================================================
        1. UPDATE SERVICE INFO (Tab 1)
     ======================================================= */
     case 'update_service':
         $category_id     = (int) $_POST['category_id'];
         $sub_category_id = (int) $_POST['sub_category_id'];
+        
+        // 1. Capture Service Name
+        $service_name    = clean($conn, $_POST['service_name']);
+        
         $title           = clean($conn, $_POST['title']);
+
+        // 2. Slug Logic (Auto-generate if empty)
+        $raw_slug    = $_POST['slug'] ?? '';
+        $slug_source = empty($raw_slug) ? $title : $raw_slug;
+        $slug        = strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '-', $slug_source)));
+
         $short_desc      = clean($conn, $_POST['short_description']);
         $long_desc       = clean($conn, $_POST['long_description']);
 
+        // 3. Update Database
         $sql = "UPDATE services SET 
                 category_id = $category_id,
                 sub_category_id = $sub_category_id,
+                service_name = '$service_name',
                 title = '$title',
+                slug = '$slug',
                 short_description = '$short_desc',
                 long_description = '$long_desc',
                 updated_at = NOW()
                 WHERE id = $service_id";
         
         if (mysqli_query($conn, $sql)) {
-            header("Location: $base_url?service_id=$service_id&tab=info&msg=Info Updated");
+            header("Location: $base_url?service_id=$service_id&tab=info&msg=Info Updated Successfully");
         } else {
+            // Debugging: echo mysqli_error($conn); 
             header("Location: $base_url?service_id=$service_id&tab=info&error=Update Failed");
         }
         break;
@@ -146,11 +160,49 @@ switch ($type) {
         break;
 
     /* =======================================================
-       8. UPDATE WHY CHOOSE US (Tab 8)
+       8. UPDATE WHY CHOOSE US (Tab 8 - With Images)
     ======================================================= */
     case 'update_why':
-        $sql_template = "INSERT INTO service_why_choose_us (service_id, title, description) VALUES ($service_id, {KEY}, {VAL})";
-        update_child_table($conn, $service_id, 'service_why_choose_us', $_POST['title']??[], $_POST['description']??[], $sql_template);
+        $titles     = $_POST['title'] ?? [];
+        $descs      = $_POST['description'] ?? [];
+        $old_images = $_POST['existing_image'] ?? []; // Paths of existing images
+        $new_images = $_FILES['image'] ?? [];
+
+        $upload_dir = "../../../uploads/why_choose_us/";
+        if (!is_dir($upload_dir)) {
+            mkdir($upload_dir, 0777, true);
+        }
+
+        // 1. Wipe Old Data
+        mysqli_query($conn, "DELETE FROM service_why_choose_us WHERE service_id = $service_id");
+
+        // 2. Insert New Data
+        for ($i = 0; $i < count($titles); $i++) {
+            $title = clean($conn, $titles[$i]);
+            $desc  = clean($conn, $descs[$i] ?? '');
+            
+            // Logic: Default to old image path
+            $img_path = clean($conn, $old_images[$i] ?? '');
+
+            // Check if a NEW file was uploaded for this index
+            if (!empty($new_images['name'][$i])) {
+                $ext = pathinfo($new_images['name'][$i], PATHINFO_EXTENSION);
+                $file_name = "why_" . time() . "_" . rand(100,999) . "." . $ext;
+                $target = $upload_dir . $file_name;
+
+                if (move_uploaded_file($new_images['tmp_name'][$i], $target)) {
+                    $img_path = "uploads/why_choose_us/" . $file_name;
+                }
+            }
+
+            if ($title !== '') {
+                $sql = "INSERT INTO service_why_choose_us 
+                        (service_id, image, title, description) 
+                        VALUES 
+                        ($service_id, '$img_path', '$title', '$desc')";
+                mysqli_query($conn, $sql);
+            }
+        }
         header("Location: $base_url?service_id=$service_id&tab=why&msg=Reasons Updated");
         break;
 
