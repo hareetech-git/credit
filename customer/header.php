@@ -6,7 +6,7 @@ session_start();
 include 'db/config.php';
 
 // Redirect to login if user is not logged in
-if (!isset($_SESSION['login_user'])) {
+if (!isset($_SESSION['customer_id'])) {
     header('Location: index.php');
     exit();
 }

@@ -1,8 +1,12 @@
 <?php
 include 'db/config.php';
 
+// Handle Search Filter logic
+$search = isset($_GET['search']) ? mysqli_real_escape_string($conn, $_GET['search']) : '';
+$where_clause = $search ? "WHERE name LIKE '%$search%'" : "";
+
 $res = mysqli_query($conn,
-    "SELECT id, name, created_at FROM departments ORDER BY id DESC"
+    "SELECT id, name, created_at FROM departments $where_clause ORDER BY id DESC"
 );
 ?>
 
@@ -14,39 +18,52 @@ $res = mysqli_query($conn,
     :root {
         --slate-900: #0f172a;
         --slate-600: #475569;
+        --slate-400: #94a3b8;
         --slate-200: #e2e8f0;
+        --slate-50: #f8fafc;
     }
-    .content-page { background-color: #fcfcfd; }
     
+    .content-page { background-color: #fcfcfd; min-height: 100vh; }
+
+    /* Clickable Breadcrumbs */
+    .breadcrumb-item a {
+        color: var(--slate-600);
+        text-decoration: none;
+        transition: color 0.2s ease;
+    }
+    .breadcrumb-item a:hover {
+        color: var(--slate-900);
+        text-decoration: underline;
+    }
+    .breadcrumb-item.active {
+        color: var(--slate-900);
+        font-weight: 700;
+    }
+
+    /* Search & Filter Bar */
+    .filter-section {
+        background: #ffffff;
+        border: 1px solid var(--slate-200);
+        border-radius: 12px;
+        padding: 1.25rem;
+    }
+
+    .search-input-group .form-control {
+        border-radius: 8px;
+        border: 1px solid var(--slate-200);
+        padding: 0.6rem 1rem;
+    }
+
+    /* Modern Table Card */
     .card-modern {
         border: 1px solid var(--slate-200);
         border-radius: 12px;
         background: #ffffff;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
         overflow: hidden;
     }
 
-    /* Table Styling */
-    .table-modern thead th {
-        background: #f8fafc;
-        text-transform: uppercase;
-        font-size: 0.75rem;
-        font-weight: 700;
-        letter-spacing: 0.05em;
-        color: var(--slate-600);
-        padding: 16px 24px;
-        border: none;
-    }
-    
-    .table-modern tbody td {
-        padding: 16px 24px;
-        font-size: 0.9rem;
-        color: var(--slate-900);
-        border-bottom: 1px solid var(--slate-200);
-        vertical-align: middle;
-    }
-
-    /* Fixed Button Hover States */
+    /* Reuse your original button style strictly */
     .btn-submit-pro {
         background: var(--slate-900);
         color: #ffffff !important;
@@ -58,80 +75,86 @@ $res = mysqli_query($conn,
     }
     .btn-submit-pro:hover {
         background: #334155 !important;
-        color: #ffffff !important;
-    }
-
-    .btn-action-edit {
-        color: var(--slate-900);
-        border: 1px solid var(--slate-200);
-        font-weight: 600;
-        transition: all 0.2s;
-    }
-    .btn-action-edit:hover {
-        background: #f1f5f9 !important;
-        border-color: var(--slate-900);
-        color: var(--slate-900) !important;
-    }
-
-    .btn-action-delete {
-        color: #ef4444;
-        font-weight: 600;
-        transition: all 0.2s;
-    }
-    .btn-action-delete:hover {
-        text-decoration: underline;
-        color: #b91c1c !important;
     }
 </style>
 
 <div class="content-page">
     <div class="content">
-        <div class="container-fluid pt-5">
+        <div class="container-fluid">
 
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <div>
-                    <h2 class="fw-bold text-dark mb-1">Departments</h2>
-                    <p class="text-muted small mb-0">Manage high-level service divisions.</p>
+            <div class="">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-2">
+                        <li class="breadcrumb-item"><a href="dashboard.php"><i class="fas fa-home me-1"></i> Dashboard</a></li>
+                       
+                        <li class="breadcrumb-item active" aria-current="page">Departments</li>
+                    </ol>
+                </nav>
+                
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h2 class="fw-bold text-dark mb-0">Departments</h2>
+                        <p class="text-muted small">Manage your organization's primary service divisions.</p>
+                    </div>
+                    <a href="add-department.php" class="btn btn-submit-pro">
+                        <i class="fas fa-plus-circle me-1"></i> New Department
+                    </a>
                 </div>
-                <a href="add-department.php" class="btn btn-submit-pro">
-                    <i class="fas fa-plus-circle me-1"></i> New Department
-                </a>
+            </div>
+
+            <div class="filter-section mb-4">
+                <form method="GET" class="row g-3">
+                    <div class="col-md-5 col-lg-4">
+                        <div class="input-group search-input-group">
+                            <span class="input-group-text bg-white border-end-0 text-muted">
+                                <i class="fas fa-search"></i>
+                            </span>
+                            <input type="text" name="search" class="form-control border-start-0" 
+                                   placeholder="Search by name..." value="<?= htmlspecialchars($search) ?>">
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-dark w-100 rounded-2 fw-bold">Filter</button>
+                    </div>
+                    <?php if($search): ?>
+                    <div class="col-md-1">
+                        <a href="departments.php" class="btn btn-link text-muted mt-1 px-0">Clear</a>
+                    </div>
+                    <?php endif; ?>
+                </form>
             </div>
 
             <div class="card card-modern">
                 <div class="card-body p-0">
-
                     <div class="table-responsive">
                         <table class="table table-modern mb-0 align-middle">
                             <thead>
                                 <tr>
-                                    <th width="80">#</th>
+                                    <th width="80" class="ps-4">#</th>
                                     <th>Department Name</th>
-                                    <th>Created Date</th>
-                                    <th width="200" class="text-center">Action</th>
+                                    <th>Created On</th>
+                                    <th width="180" class="text-center pe-4">Options</th>
                                 </tr>
                             </thead>
                             <tbody>
-
                             <?php if(mysqli_num_rows($res) > 0): ?>
                                 <?php while ($row = mysqli_fetch_assoc($res)) { ?>
                                     <tr>
-                                        <td class="text-muted fw-bold">#<?= $row['id'] ?></td>
-                                        <td class="fw-semibold text-dark"><?= htmlspecialchars($row['name']) ?></td>
-                                        <td class="text-muted"><?= date('d M Y', strtotime($row['created_at'])) ?></td>
-                                        <td class="text-center">
-                                            <a href="add-department.php?id=<?= $row['id'] ?>"
-                                               class="btn btn-sm btn-action-edit me-2">
-                                               <i class="fas fa-edit me-1"></i> Edit
+                                        <td class="ps-4 text-muted small">#<?= $row['id'] ?></td>
+                                        <td class="fw-semibold"><?= htmlspecialchars($row['name']) ?></td>
+                                        <td>
+                                            <span class="text-muted small">
+                                                <i class="far fa-calendar-alt me-1"></i> <?= date('d M Y', strtotime($row['created_at'])) ?>
+                                            </span>
+                                        </td>
+                                        <td class="text-center pe-4">
+                                            <a href="add-department.php?id=<?= $row['id'] ?>" class="btn btn-sm btn-action-edit me-1">
+                                                <i class="fas fa-pen"></i>
                                             </a>
-
-                                            <form action="db/department-delete.php"
-                                                  method="POST"
-                                                  style="display:inline"
-                                                  onsubmit="return confirm('Delete this department?')">
+                                            <form action="db/department-delete.php" method="POST" style="display:inline" onsubmit="return confirm('Archive this record?')">
                                                 <input type="hidden" name="id" value="<?= $row['id'] ?>">
-                                                <button type="submit" class="btn btn-sm btn-action-delete border-0">
-                                                    <i class="fas fa-trash-alt me-1"></i> Delete
+                                                <button type="submit" class="btn btn-sm btn-action-delete border-0 bg-transparent">
+                                                    <i class="fas fa-trash-alt"></i>
                                                 </button>
                                             </form>
                                         </td>
@@ -139,14 +162,14 @@ $res = mysqli_query($conn,
                                 <?php } ?>
                             <?php else: ?>
                                 <tr>
-                                    <td colspan="4" class="text-center py-5 text-muted">No departments found.</td>
+                                    <td colspan="4" class="text-center py-5 text-muted">
+                                        No departments found matching your criteria.
+                                    </td>
                                 </tr>
                             <?php endif; ?>
-
                             </tbody>
                         </table>
                     </div>
-
                 </div>
             </div>
 

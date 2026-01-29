@@ -99,7 +99,7 @@ include 'pair_indie/get_categories.php';
 
 <div class="content-page">
     <div class="content">
-        <div class="container-fluid pt-5">
+        <div class="container-fluid ">
 
             <div class="row justify-content-center">
                 <div class="col-lg-10">

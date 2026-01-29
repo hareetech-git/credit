@@ -1,5 +1,4 @@
 <?php
-
 include 'db/config.php';
 
 $isEdit = false;
@@ -23,8 +22,25 @@ if (isset($_GET['id'])) {
         --slate-900: #0f172a;
         --slate-600: #475569;
         --slate-200: #e2e8f0;
+        --slate-50: #f8fafc;
     }
-    .content-page { background-color: #fcfcfd; }
+    
+    .content-page { background-color: #fcfcfd; min-height: 100vh; }
+
+    /* Clickable Breadcrumbs */
+    .breadcrumb-item a {
+        color: var(--slate-600);
+        text-decoration: none;
+        transition: color 0.2s ease;
+    }
+    .breadcrumb-item a:hover {
+        color: var(--slate-900);
+        text-decoration: underline;
+    }
+    .breadcrumb-item.active {
+        color: var(--slate-900);
+        font-weight: 700;
+    }
     
     .card-modern {
         border: 1px solid var(--slate-200);
@@ -51,10 +67,9 @@ if (isset($_GET['id'])) {
 
     .form-control:focus {
         border-color: var(--slate-900);
-        box-shadow: none;
+        box-shadow: 0 0 0 4px rgba(15, 23, 42, 0.05);
     }
 
-    /* Fixed Button Hover States */
     .btn-submit-pro {
         background: var(--slate-900);
         color: #ffffff !important;
@@ -67,7 +82,6 @@ if (isset($_GET['id'])) {
 
     .btn-submit-pro:hover {
         background: #334155 !important;
-        color: #ffffff !important;
     }
 
     .btn-cancel {
@@ -80,22 +94,37 @@ if (isset($_GET['id'])) {
     .btn-cancel:hover {
         color: var(--slate-900);
     }
+
+    .helper-box {
+        background-color: var(--slate-50);
+        border-radius: 8px;
+        padding: 12px;
+        border-left: 4px solid var(--slate-200);
+    }
 </style>
 
 <div class="content-page">
     <div class="content">
-        <div class="container-fluid pt-5">
+        <div class="container-fluid">
+            
+            <div class="">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-2">
+                        <li class="breadcrumb-item"><a href="dashboard.php"><i class="fas fa-home me-1"></i> Dashboard</a></li>
+                        <li class="breadcrumb-item"><a href="departments.php">Departments</a></li>
+                        <li class="breadcrumb-item active"><?= $isEdit ? 'Edit' : 'New' ?></li>
+                    </ol>
+                </nav>
+            </div>
 
             <div class="row justify-content-center">
-                <div class="col-lg-8">
+                <div class="col-lg-7">
 
-                    <div class="mb-4 text-center text-md-start">
+                    <div class="mb-4">
                         <h2 class="fw-bold text-dark mb-1">
                             <?= $isEdit ? 'Update Department' : 'New Department' ?>
                         </h2>
-                        <p class="text-muted small">
-                            Define a high-level division to organize your service categories.
-                        </p>
+                  
                     </div>
 
                     <div class="card card-modern">
@@ -115,26 +144,30 @@ if (isset($_GET['id'])) {
                                                placeholder="e.g. Personal Banking"
                                                value="<?= $isEdit ? htmlspecialchars($department['name']) : '' ?>"
                                                required>
-                                        <small class="text-muted mt-2 d-block">
-                                            This name is used for internal service organization and hierarchy.
-                                        </small>
+                                        
+                                  
                                     </div>
 
-                                    <div class="col-12 mt-2 pt-4 border-top d-flex align-items-center">
-                                        <button type="button" id="submit-btn" class="btn btn-submit-pro">
-                                            <i class="fas fa-check-circle me-2"></i>
-                                            <?= $isEdit ? 'Update Department' : 'Create Department' ?>
-                                        </button>
-                                        <a href="departments.php" class="btn-cancel ms-4">
-                                            Cancel
-                                        </a>
+                                    <div class="col-12 mt-2 pt-4 border-top d-flex align-items-center justify-content-between">
+                                        <div class="d-flex align-items-center">
+                                            <button type="button" id="submit-btn" class="btn btn-submit-pro">
+                                                <i class="fas fa-check-circle me-2"></i>
+                                                <?= $isEdit ? 'Update Changes' : 'Create Department' ?>
+                                            </button>
+                                            <a href="departments.php" class="btn-cancel ms-4">
+                                                Cancel
+                                            </a>
+                                        </div>
+                                        
+                                        <?php if($isEdit): ?>
+                                            <small class="text-muted italic">ID: #<?= $department['id'] ?></small>
+                                        <?php endif; ?>
                                     </div>
                                 </div>
                             </form>
 
                         </div>
                     </div>
-
                 </div>
             </div>
 
@@ -158,7 +191,6 @@ document.getElementById('submit-btn').addEventListener('click', function () {
         return;
     }
 
-    // Disable button and show loading state
     submitBtn.disabled = true;
     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Processing...';
 

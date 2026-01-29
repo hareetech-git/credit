@@ -1,12 +1,40 @@
 <?php
 include 'db/config.php';
 
+// --- FILTERS & SORTING LOGIC ---
+$search = isset($_GET['search']) ? mysqli_real_escape_string($conn, $_GET['search']) : '';
+
+// Sorting logic
+$sort_by    = $_GET['sort_by'] ?? 'sequence'; // Default sort by sequence
+$sort_order = $_GET['order'] ?? 'ASC';
+$next_order = ($sort_order === 'ASC') ? 'DESC' : 'ASC';
+
+// Helper function to build sort URLs while keeping current search
+function getSortUrl($column, $current_sort_by, $current_sort_order, $search_term) {
+    $order = ($column === $current_sort_by && $current_sort_order === 'ASC') ? 'DESC' : 'ASC';
+    return "?" . http_build_query(['search' => $search_term, 'sort_by' => $column, 'order' => $order]);
+}
+
+$where_clause = $search ? "WHERE c.category_name LIKE '%$search%'" : "";
+
+// Validate Sort Column to prevent SQL Injection
+$allowed_sorts = ['id', 'category_name', 'department_name', 'sequence'];
+$actual_sort = $sort_by;
+if ($sort_by == 'department_name') {
+    $actual_sort = "d.name"; // Sort by join table column
+} elseif (!in_array($sort_by, $allowed_sorts)) {
+    $actual_sort = "c.sequence";
+} else {
+    $actual_sort = "c." . $sort_by;
+}
+
 $query = "
 SELECT c.id, c.category_name, c.sequence, c.active,
        d.name AS department_name
 FROM service_categories c
 LEFT JOIN departments d ON d.id = c.department
-ORDER BY c.sequence ASC
+$where_clause
+ORDER BY $actual_sort $sort_order
 ";
 
 $result = mysqli_query($conn, $query);
@@ -21,9 +49,21 @@ $result = mysqli_query($conn, $query);
         --slate-900: #0f172a;
         --slate-600: #475569;
         --slate-200: #e2e8f0;
+        --slate-50: #f8fafc;
     }
-    .content-page { background-color: #fcfcfd; }
+    .content-page { background-color: #fcfcfd; min-height: 100vh; }
     
+    .breadcrumb-item a { color: var(--slate-600); text-decoration: none; }
+    .breadcrumb-item.active { color: var(--slate-900); font-weight: 700; }
+
+    .filter-card {
+        background: #fff;
+        border: 1px solid var(--slate-200);
+        border-radius: 12px;
+        padding: 1.25rem;
+        margin-bottom: 1.5rem;
+    }
+
     .card-modern {
         border: 1px solid var(--slate-200);
         border-radius: 12px;
@@ -32,148 +72,165 @@ $result = mysqli_query($conn, $query);
         overflow: hidden;
     }
 
-    /* Table Styling */
+    /* Table & Sorting */
     .table-modern thead th {
-        background: #f8fafc;
+        background: var(--slate-50);
         text-transform: uppercase;
         font-size: 0.75rem;
         font-weight: 700;
-        letter-spacing: 0.05em;
         color: var(--slate-600);
-        padding: 16px 24px;
-        border: none;
-    }
-    
-    .table-modern tbody td {
-        padding: 16px 24px;
-        font-size: 0.9rem;
-        color: var(--slate-900);
+        padding: 0; 
         border-bottom: 1px solid var(--slate-200);
-        vertical-align: middle;
     }
 
-    /* Badge Styling */
-    .badge-modern {
-        padding: 5px 10px;
-        border-radius: 6px;
-        font-weight: 600;
-        font-size: 0.75rem;
+    .table-modern thead th a {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px 24px;
+        color: inherit;
+        text-decoration: none;
+        width: 100%;
     }
 
-    /* Fixed Button Hover States */
+    .table-modern thead th a:hover { background: #f1f5f9; }
+    
+    .sort-icon { font-size: 0.7rem; opacity: 0.3; }
+    .active-sort { opacity: 1 !important; color: var(--slate-900); }
+
+    .badge-dept {
+        background: #f1f5f9;
+        color: var(--slate-600);
+        font-size: 0.7rem;
+        padding: 4px 8px;
+        border-radius: 4px;
+    }
+
     .btn-submit-pro {
         background: var(--slate-900);
         color: #ffffff !important;
         padding: 10px 20px;
         border-radius: 8px;
         font-weight: 600;
-        transition: all 0.2s;
         border: none;
-        text-decoration: none;
-    }
-    .btn-submit-pro:hover {
-        background: #334155 !important;
-        color: #ffffff !important;
-    }
-
-    .btn-action-edit {
-        color: var(--slate-900);
-        border: 1px solid var(--slate-200);
-        font-weight: 600;
-        transition: all 0.2s;
-        text-decoration: none;
-    }
-    .btn-action-edit:hover {
-        background: #f1f5f9 !important;
-        border-color: var(--slate-900);
-        color: var(--slate-900) !important;
-    }
-
-    .btn-action-delete {
-        color: #ef4444;
-        font-weight: 600;
-        transition: all 0.2s;
-        text-decoration: none;
-    }
-    .btn-action-delete:hover {
-        text-decoration: underline;
-        color: #b91c1c !important;
     }
 </style>
 
 <div class="content-page">
     <div class="content">
-        <div class="container-fluid pt-5">
-
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <div>
-                    <h2 class="fw-bold text-dark mb-1">Service Categories</h2>
-                    <p class="text-muted small mb-0">Organize and sequence your service groupings.</p>
+        <div class="container-fluid">
+            
+            <div class="">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-2">
+                        <li class="breadcrumb-item"><a href="dashboard.php">Dashboard</a></li>
+                        <li class="breadcrumb-item active">Service Categories</li>
+                    </ol>
+                </nav>
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h2 class="fw-bold text-dark mb-0">Service Categories</h2>
+                        <p class="text-muted small">Manage the order and visibility of your services.</p>
+                    </div>
+                    <a href="category_add.php" class="btn btn-submit-pro">
+                        <i class="fas fa-plus-circle me-1"></i> New Category
+                    </a>
                 </div>
-                <a href="category_add.php" class="btn btn-submit-pro">
-                    <i class="fas fa-plus-circle me-1"></i> New Category
-                </a>
+            </div>
+
+            <div class="filter-card">
+                <form method="GET" class="row g-3 align-items-center">
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <span class="input-group-text bg-transparent border-end-0"><i class="fas fa-search text-muted"></i></span>
+                            <input type="text" name="search" class="form-control border-start-0" 
+                                   placeholder="Search categories..." value="<?= htmlspecialchars($search) ?>">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <button type="submit" class="btn btn-dark w-100 fw-bold">Apply Filter</button>
+                    </div>
+                    <?php if($search || $sort_by != 'sequence'): ?>
+                    <div class="col-md-2">
+                        <a href="categories.php" class="btn btn-link text-muted px-0 text-decoration-none">Reset All</a>
+                    </div>
+                    <?php endif; ?>
+                </form>
             </div>
 
             <div class="card card-modern">
                 <div class="card-body p-0">
-
                     <div class="table-responsive">
                         <table class="table table-modern mb-0 align-middle">
                             <thead>
                                 <tr>
-                                    <th width="80">#</th>
-                                    <th>Category Name</th>
-                                    <th>Department</th>
-                                    <th width="100">Sequence</th>
-                                    <th width="120">Status</th>
-                                    <th width="180" class="text-center">Action</th>
+                                    <th width="100">
+                                        <a href="<?= getSortUrl('id', $sort_by, $sort_order, $search) ?>">
+                                            # <i class="fas <?= $sort_by == 'id' ? ($sort_order == 'ASC' ? 'fa-sort-up active-sort' : 'fa-sort-down active-sort') : 'fa-sort sort-icon' ?>"></i>
+                                        </a>
+                                    </th>
+                                    <th>
+                                        <a href="<?= getSortUrl('category_name', $sort_by, $sort_order, $search) ?>">
+                                            Category Name <i class="fas <?= $sort_by == 'category_name' ? ($sort_order == 'ASC' ? 'fa-sort-up active-sort' : 'fa-sort-down active-sort') : 'fa-sort sort-icon' ?>"></i>
+                                        </a>
+                                    </th>
+                                    <th>
+                                        <a href="<?= getSortUrl('department_name', $sort_by, $sort_order, $search) ?>">
+                                            Department <i class="fas <?= $sort_by == 'department_name' ? ($sort_order == 'ASC' ? 'fa-sort-up active-sort' : 'fa-sort-down active-sort') : 'fa-sort sort-icon' ?>"></i>
+                                        </a>
+                                    </th>
+                                    <th width="140">
+                                        <a href="<?= getSortUrl('sequence', $sort_by, $sort_order, $search) ?>">
+                                            Sequence <i class="fas <?= $sort_by == 'sequence' ? ($sort_order == 'ASC' ? 'fa-sort-up active-sort' : 'fa-sort-down active-sort') : 'fa-sort sort-icon' ?>"></i>
+                                        </a>
+                                    </th>
+                                    <th width="120" class="ps-4">Status</th>
+                                    <th width="180" class="text-end pe-4">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
-
                             <?php if (mysqli_num_rows($result) > 0): ?>
                                 <?php while ($row = mysqli_fetch_assoc($result)): ?>
                                     <tr>
-                                        <td class="text-muted fw-bold">#<?= $row['id'] ?></td>
+                                        <td class="ps-4 text-muted fw-bold">#<?= $row['id'] ?></td>
                                         <td class="fw-semibold text-dark"><?= htmlspecialchars($row['category_name']) ?></td>
                                         <td>
-                                            <span class="text-muted small text-uppercase fw-bold"><?= htmlspecialchars($row['department_name'] ?? 'Unassigned') ?></span>
+                                            <span class="badge-dept text-uppercase fw-bold">
+                                                <?= htmlspecialchars($row['department_name'] ?? 'Unassigned') ?>
+                                            </span>
                                         </td>
-                                        <td>
-                                            <span class="badge bg-light text-dark border"><?= $row['sequence'] ?></span>
+                                        <td class="ps-4">
+                                            <span class="badge bg-light text-dark border px-3"><?= $row['sequence'] ?></span>
                                         </td>
                                         <td>
                                             <?php if($row['active']): ?>
-                                                <span class="badge badge-modern bg-soft-success text-success" style="background-color: #ecfdf5;">Active</span>
+                                                <span class="badge rounded-pill bg-success-subtle text-success px-3" style="background-color: #ecfdf5; border: 1px solid #10b98133;">Active</span>
                                             <?php else: ?>
-                                                <span class="badge badge-modern bg-soft-secondary text-muted" style="background-color: #f1f5f9;">Inactive</span>
+                                                <span class="badge rounded-pill bg-secondary-subtle text-muted px-3" style="background-color: #f8fafc; border: 1px solid #e2e8f0;">Inactive</span>
                                             <?php endif; ?>
                                         </td>
-                                        <td class="text-center">
-                                            <a href="category_edit.php?id=<?= $row['id'] ?>"
-                                               class="btn btn-sm btn-action-edit me-2">
-                                               <i class="fas fa-edit me-1"></i> Edit
+                                        <td class="text-end pe-4">
+                                            <a href="category_edit.php?id=<?= $row['id'] ?>" class="btn btn-sm btn-light border me-2">
+                                                <i class="fas fa-edit text-dark"></i>
                                             </a>
-
-                                            <a href="db/delete/category_delete.php?id=<?= $row['id'] ?>"
-                                               onclick="return confirm('Permanently delete this category?')"
-                                               class="btn btn-sm btn-action-delete">
-                                               <i class="fas fa-trash-alt me-1"></i> Delete
+                                            <a href="db/delete/category_delete.php?id=<?= $row['id'] ?>" 
+                                               onclick="return confirm('Delete this category?')" 
+                                               class="btn btn-sm btn-outline-danger">
+                                                <i class="fas fa-trash-alt"></i>
                                             </a>
                                         </td>
                                     </tr>
                                 <?php endwhile; ?>
                             <?php else: ?>
                                 <tr>
-                                    <td colspan="6" class="text-center py-5 text-muted">No categories found. Click "New Category" to begin.</td>
+                                    <td colspan="6" class="text-center py-5 text-muted">
+                                        No categories found matching your request.
+                                    </td>
                                 </tr>
                             <?php endif; ?>
-
                             </tbody>
                         </table>
                     </div>
-
                 </div>
             </div>
 

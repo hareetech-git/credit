@@ -1,7 +1,9 @@
 <?php
 if (session_status() === PHP_SESSION_NONE) {
-    // session_start();
+    session_start();
 }
+$isCustomerLoggedIn = isset($_SESSION['customer_id']);
+$customerName = $_SESSION['customer_name'] ?? '';
 
 include 'includes/connection.php'; 
 
@@ -157,10 +159,44 @@ while ($row = mysqli_fetch_assoc($menu_res)) {
             <li class="nav-item-custom"><a href="contact.php" class="nav-link-custom">Contact Us</a></li>
         </ul>
 
-        <div class="nav-buttons-custom">
-            <a href="login.php" class="btn-login-custom">Login Now</a>
-            <a href="apply-loan.php" class="btn-apply-custom" onclick="scrollToForm()">Apply Now</a>
+   <div class="nav-buttons-custom">
+
+    <?php if ($isCustomerLoggedIn): ?>
+        <!-- Logged-in customer -->
+        <div class="dropdown">
+            <a href="#" class="btn-login-custom dropdown-toggle" data-bs-toggle="dropdown">
+                <i class="fas fa-user-circle me-1"></i>
+                <?= htmlspecialchars($customerName) ?>
+            </a>
+
+            <ul class="dropdown-menu dropdown-menu-end">
+                <li>
+                    <a class="dropdown-item" href="customer/dashboard.php">
+                        <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item" href="customer/profile.php">
+                        <i class="fas fa-user me-2"></i>My Profile
+                    </a>
+                </li>
+                <li><hr class="dropdown-divider"></li>
+                <li>
+                    <a class="dropdown-item text-danger" href="customer/db/auth-logout.php">
+                        <i class="fas fa-sign-out-alt me-2"></i>Logout
+                    </a>
+                </li>
+            </ul>
         </div>
+
+    <?php else: ?>
+        <!-- Guest -->
+        <a href="login.php" class="btn-apply-custom">Login Now</a>
+        
+    <?php endif; ?>
+
+</div>
+        
 
         <div class="mobile-toggle-custom" id="mobileToggle">
             <span></span><span></span><span></span>

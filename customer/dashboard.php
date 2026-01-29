@@ -1,11 +1,12 @@
 <?php
 include 'db/config.php';
-session_start();
 
-$categoryCount = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) total FROM categories"))['total'];
-$serviceCount = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) total FROM services"))['total'];
-$sliderCount = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) total FROM slider_images"))['total'];
-$adminName = $_SESSION['admin_name'] ?? 'Admin';
+
+
+$categoryCount = 12;
+$serviceCount  = 8;
+$sliderCount   = 5;
+$adminName = $_SESSION['customer_name'] ?? 'Admin';
 ?>
 
 <?php include 'header.php'; ?>

@@ -101,8 +101,8 @@
 
                             <form action="db/login.php" method="POST">
                                 <div class="mb-4">
-                                    <label for="username" class="form-label">Username</label>
-                                    <input class="form-control" type="text" name="email" id="username" 
+                                    <label for="login" class="form-label">Username</label>
+                                    <input class="form-control" type="text" name="login" id="login" 
                                            required placeholder="Enter your credentials">
                                 </div>
 

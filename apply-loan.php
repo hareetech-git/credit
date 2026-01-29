@@ -593,7 +593,7 @@
             <div class="application-form-container">
                 <form id="loanApplicationForm" method="POST" action="#">
                     <!-- Step 1: Personal Information -->
-                    <div class="form-section active" id="step1">
+                    <div class="form-section active" id="step2">
                         <div class="section-header">
                             <h3>Personal Information</h3>
                             <p>Enter your personal details and identification information</p>
@@ -691,7 +691,7 @@
                     </div>
                     
                     <!-- Step 2: Income Details -->
-                    <div class="form-section" id="step2">
+                    <div class="form-section" id="step1">
                         <div class="section-header">
                             <h3>Income & Employment Details</h3>
                             <p>Provide information about your employment and income sources</p>

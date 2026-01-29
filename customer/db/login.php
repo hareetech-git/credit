@@ -4,40 +4,48 @@ session_start();
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
-    $login = trim($_POST['email']);   // can be email OR username
-    $password = $_POST['password'];   // raw password
+    $login    = trim($_POST['login']);   // email OR phone
+    $password = $_POST['password'];
 
-    // Escape only the identifier
     $login = mysqli_real_escape_string($conn, $login);
 
-    // Fetch admin using email OR username
-    $sql = "SELECT id, name, email, username, password 
-            FROM admin 
-            WHERE email = '$login' OR username = '$login'
+    // Fetch customer using email OR phone
+    $sql = "SELECT id, full_name, email, phone, password, status
+            FROM customers
+            WHERE email = '$login' OR phone = '$login'
             LIMIT 1";
 
     $result = mysqli_query($conn, $sql);
 
     if ($result && mysqli_num_rows($result) === 1) {
 
-        $admin = mysqli_fetch_assoc($result);
+        $customer = mysqli_fetch_assoc($result);
 
-        // 🔐 Verify hashed password
-        if (password_verify($password, $admin['password'])) {
+        // Check account status
+        if ($customer['status'] !== 'active') {
+            header("Location: ../login.php?err=Account blocked");
+            exit;
+        }
 
-            // Store important session data
-          $_SESSION['login_user'] = $admin['username'];
+        // Verify password
+        if (password_verify($password, $customer['password'])) {
+
+            // ✅ Store customer session
+            $_SESSION['customer_id']    = $customer['id'];
+            $_SESSION['customer_name']  = $customer['full_name'];
+            $_SESSION['customer_email'] = $customer['email'];
+            $_SESSION['customer_phone'] = $customer['phone'];
 
             header("Location: ../dashboard.php");
             exit;
 
         } else {
-            header("Location: ../index.php?err=Wrong password");
+            header("Location: ../login.php?err=Wrong password");
             exit;
         }
 
     } else {
-        header("Location: ../index.php?err=Invalid email or username");
+        header("Location: ../login.php?err=Invalid email or phone");
         exit;
     }
 }

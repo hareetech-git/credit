@@ -85,7 +85,7 @@ $departments = mysqli_query($conn, "SELECT id, name FROM departments ORDER BY na
 
 <div class="content-page">
     <div class="content">
-        <div class="container-fluid pt-5">
+        <div class="container-fluid ">
 
             <div class="row justify-content-center">
                 <div class="col-lg-10">
