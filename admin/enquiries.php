@@ -135,7 +135,7 @@ $result = mysqli_query($conn, $query);
                         </div>
                         <div class="col-md-4 d-flex gap-2">
                             <button class="btn btn-sm btn-dark w-100"><i class="fas fa-filter me-1"></i> Apply Filter</button>
-                            <a href="enquiry_list.php" class="btn btn-sm btn-outline-secondary w-50">Reset</a>
+                            <a href="enquiries.php" class="btn btn-sm btn-outline-secondary w-50">Reset</a>
                         </div>
                     </form>
                 </div>
