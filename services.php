@@ -1,10 +1,5 @@
 <?php
-// services.php
-// ==========================================
-// FRONTEND UI ONLY - NO DATABASE LOGIC
-// ==========================================
 
-// Include backend function
 require_once 'insert/service_detail.php';
 
 // Get slug from URL
@@ -32,8 +27,8 @@ include 'includes/header.php';
 
 <style>
     :root {
-        --service-primary: #130c3b; 
-        --service-accent: #00a08e; 
+        --service-primary: #130c3b;
+        --service-accent: #00a08e;
         --service-bg: #f9fafb;
         --service-text: #4b5563;
         --service-border: #e5e7eb;
@@ -46,22 +41,37 @@ include 'includes/header.php';
         transform: translateY(30px);
     }
 
-    .delay-100 { animation-delay: 0.1s; }
-    .delay-200 { animation-delay: 0.2s; }
-    .delay-300 { animation-delay: 0.3s; }
+    .delay-100 {
+        animation-delay: 0.1s;
+    }
+
+    .delay-200 {
+        animation-delay: 0.2s;
+    }
+
+    .delay-300 {
+        animation-delay: 0.3s;
+    }
 
     @keyframes fadeInUp {
-        from { opacity: 0; transform: translateY(30px); }
-        to { opacity: 1; transform: translateY(0); }
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
 
     /* === HERO SECTION === */
     .service-hero-section {
         padding: 80px 0;
-        
+
         background: linear-gradient(135deg, #f0fdfa 0%, #fff 100%);
     }
-    
+
     .service-hero-title {
         font-size: 3rem;
         font-weight: 800;
@@ -82,6 +92,7 @@ include 'includes/header.php';
         transition: all 0.3s ease;
         display: inline-block;
     }
+
     .service-btn-custom:hover {
         background: var(--service-primary);
         color: white;
@@ -89,9 +100,17 @@ include 'includes/header.php';
     }
 
     /* === SECTIONS COMMON === */
-    .section-padding { padding: 80px 0; }
-    .bg-light { background-color: #f9fafb; }
-    .bg-white { background-color: #ffffff; }
+    .section-padding {
+        padding: 80px 0;
+    }
+
+    .bg-light {
+        background-color: #f9fafb;
+    }
+
+    .bg-white {
+        background-color: #ffffff;
+    }
 
     .section-title {
         color: var(--service-primary);
@@ -101,7 +120,7 @@ include 'includes/header.php';
         position: relative;
         display: inline-block;
     }
-    
+
     .section-title::after {
         content: '';
         display: block;
@@ -121,7 +140,7 @@ include 'includes/header.php';
 
     /* === OVERVIEW (TABLE) === */
     .overview-text {
-        font-size: 1.1rem;
+        font-size: 1.6rem;
         line-height: 1.8;
         color: var(--service-text);
         margin-bottom: 40px;
@@ -135,7 +154,7 @@ include 'includes/header.php';
         border: 1px solid var(--service-border);
         border-radius: 12px;
         overflow: hidden;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
     }
 
     .overview-table td {
@@ -144,7 +163,9 @@ include 'includes/header.php';
         font-size: 1rem;
     }
 
-    .overview-table tr:last-child td { border-bottom: none; }
+    .overview-table tr:last-child td {
+        border-bottom: none;
+    }
 
     .overview-key {
         font-weight: 700;
@@ -159,7 +180,7 @@ include 'includes/header.php';
         background: white;
         padding: 30px;
         border-radius: 15px;
-        box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
         transition: transform 0.3s;
         display: flex;
         align-items: flex-start;
@@ -192,10 +213,14 @@ include 'includes/header.php';
         padding: 35px 25px;
         background: white;
         border-radius: 16px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
         transition: all 0.3s;
     }
-    .wc-card:hover { transform: translateY(-10px); }
+
+    .wc-card:hover {
+        transform: translateY(-10px);
+    }
+
     .wc-icon-lg {
         font-size: 3rem;
         color: var(--service-accent);
@@ -209,11 +234,14 @@ include 'includes/header.php';
         border: 1px solid var(--service-border);
         border-radius: 10px;
         overflow: hidden;
+        font-size: 1.2rem;
     }
+
     .custom-table td {
         padding: 18px 25px;
         border-bottom: 1px solid #f1f1f1;
     }
+
     .custom-table td:first-child {
         font-weight: 600;
         color: var(--service-primary);
@@ -229,26 +257,76 @@ include 'includes/header.php';
         border: 1px solid #eee;
         transition: 0.3s;
     }
+
     .repayment-card:hover {
         border-color: var(--service-accent);
-        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
     }
 
     /* Responsive */
     @media (max-width: 768px) {
-        .service-hero-title { font-size: 2.2rem; }
-        .overview-key { width: 40%; }
+        .service-hero-title {
+            font-size: 2.2rem;
+        }
+
+        .overview-key {
+            width: 40%;
+        }
     }
+    /* === DOCUMENT SECTION === */
+.doc-item {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: all 0.3s ease;
+    height: 100%;
+}
+
+.doc-item:hover {
+    border-color: var(--service-accent);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+    transform: translateY(-3px);
+}
+
+.doc-icon {
+    width: 36px;
+    height: 36px;
+    background: rgba(0, 160, 142, 0.1);
+    color: var(--service-accent);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    flex-shrink: 0;
+}
+
+.doc-text {
+    font-weight: 600;
+    color: var(--service-primary);
+    font-size: 1.1rem;
+}
+
+/* Document image */
+.document-img {
+    max-height: 380px;
+    filter: drop-shadow(0 15px 25px rgba(0, 0, 0, 0.1));
+}
+
 </style>
 
 <main>
-    <?php if(isset($error) && !empty($error) && $service === null): ?>
+    <?php if (isset($error) && !empty($error) && $service === null): ?>
         <div class="container py-5 mt-5 text-center fade-in-up">
             <h2 class="text-danger">Oops!</h2>
             <p class="text-muted"><?php echo htmlspecialchars($error); ?></p>
             <a href="index.php" class="btn btn-primary rounded-pill">Back to Home</a>
         </div>
-    <?php elseif($service): ?>
+    <?php elseif ($service): ?>
 
         <section class="service-hero-section fade-in-up">
             <div class="container">
@@ -257,17 +335,24 @@ include 'includes/header.php';
                         <span class="badge bg-light text-primary mb-3 px-3 py-2 border">Financial Services</span>
                         <h1 class="service-hero-title"><?php echo htmlspecialchars($service['title']); ?></h1>
                         <div class="mb-4 text-muted fs-5">
-                            <?php if(!empty($service['short_description'])): ?>
+                            <?php if (!empty($service['short_description'])): ?>
                                 <p><?php echo htmlspecialchars($service['short_description']); ?></p>
                             <?php else: ?>
                                 <p>Apply for financial services online at low rates through Udhar Capital.</p>
                             <?php endif; ?>
                         </div>
-                        <a href="#applyForm" class="service-btn-custom">Apply Now <i class="fas fa-arrow-right ms-2"></i></a>
+                        <a href="#applyForm" class="service-btn-custom">Apply Now <i
+                                class="fas fa-arrow-right ms-2"></i></a>
                     </div>
                     <div class="col-lg-6 text-center mt-5 mt-lg-0">
-<img src="includes/assets/service detail.png"
-     alt="Eligibility Criteria"
+                       <?php
+$heroImg = !empty($service['hero_image'])
+    ? htmlspecialchars($service['hero_image'])
+    : 'includes/assets/service detail.png';
+?>
+
+<img src="<?= $heroImg ?>"
+     alt="<?= htmlspecialchars($service['title']) ?>"
      class="img-fluid"
      style="max-height: 500px; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.1));">
 
@@ -281,10 +366,10 @@ include 'includes/header.php';
                 <div class="text-center mb-5 fade-in-up">
                     <h2 class="section-title">Overview</h2>
                 </div>
-                
+
                 <div class="row justify-content-center fade-in-up delay-100">
                     <div class="col-lg-10">
-                        <?php if($overview && !empty($overview['intro'])): ?>
+                        <?php if ($overview && !empty($overview['intro'])): ?>
                             <div class="overview-text">
                                 <?php echo nl2br(htmlspecialchars($overview['intro'])); ?>
                             </div>
@@ -292,15 +377,15 @@ include 'includes/header.php';
 
                         <table class="overview-table">
                             <tbody>
-                                <?php 
+                                <?php
                                 $ov_data = ($overview && !empty($overview['data'])) ? $overview['data'] : [
                                     'Amount' => 'Up to 1 Crore',
                                     'Loan Tenure' => '3 to 5 Years',
                                     'Interest Rates' => 'Starting from 10.5% p.a.',
                                     'Processing Time' => '72 Hours'
                                 ];
-                                foreach($ov_data as $key => $val) {
-                                    echo "<tr><td class='overview-key'>".htmlspecialchars($key)."</td><td>".htmlspecialchars($val)."</td></tr>";
+                                foreach ($ov_data as $key => $val) {
+                                    echo "<tr><td class='overview-key'>" . htmlspecialchars($key) . "</td><td>" . htmlspecialchars($val) . "</td></tr>";
                                 }
                                 ?>
                             </tbody>
@@ -317,9 +402,9 @@ include 'includes/header.php';
                         <div class="bg-white p-5 rounded-4 border shadow-sm">
                             <h3 class="fw-bold mb-4" style="color: var(--service-primary);">Detailed Information</h3>
                             <div class="fs-5 text-secondary" style="line-height: 1.8;">
-                                <?php 
-                                if(!empty($service['long_description'])) {
-                                    echo nl2br(htmlspecialchars($service['long_description'])); 
+                                <?php
+                                if (!empty($service['long_description'])) {
+                                    echo nl2br(htmlspecialchars($service['long_description']));
                                 } else {
                                     echo "Contact us for more detailed information about this service.";
                                 }
@@ -339,15 +424,15 @@ include 'includes/header.php';
                 </div>
 
                 <div class="row g-4">
-                    <?php 
+                    <?php
                     $feat_data = (count($features) > 0) ? $features : [
                         ['title' => 'Low Interest Rates', 'description' => 'Acquire a loan at competitive rates.'],
                         ['title' => 'Fast Disbursal', 'description' => 'Funds in your account within 24 hours.'],
                         ['title' => 'Flexible Tenure', 'description' => 'Repayment options from 12 to 60 months.'],
                         ['title' => 'Minimal Documentation', 'description' => '100% paperless process.']
                     ];
-                    
-                    foreach($feat_data as $index => $feat) {
+
+                    foreach ($feat_data as $index => $feat) {
                         $delay = ($index % 4) * 100; // Staggered animation
                         ?>
                         <div class="col-md-6 fade-in-up" style="animation-delay: <?php echo $delay; ?>ms;">
@@ -366,26 +451,59 @@ include 'includes/header.php';
             </div>
         </section>
 
-        <section class="section-padding bg-light">
+       
+
+        <section class="section-padding bg-white">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-lg-7 fade-in-up">
+                        <div class="mb-4">
+                            <h2 class="section-title">Eligibility Criteria</h2>
+                            <p class="section-subtitle mb-0">Check if you qualify:</p>
+                        </div>
+                        <table class="custom-table">
+                            <tbody>
+                                <?php
+                                $elig_data = (count($eligibility) > 0) ? $eligibility : [
+                                    ['criteria_key' => 'Age', 'criteria_value' => '21 - 65 years'],
+                                    ['criteria_key' => 'Income', 'criteria_value' => 'Min ₹25k/month']
+                                ];
+                                foreach ($elig_data as $row) {
+                                    echo "<tr><td>" . htmlspecialchars($row['criteria_key']) . "</td><td>" . htmlspecialchars($row['criteria_value']) . "</td></tr>";
+                                }
+                                ?>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-lg-5 text-center mt-5 mt-lg-0 fade-in-up delay-200">
+                        <img src="https://cdni.iconscout.com/illustration/premium/thumb/business-loan-illustration-download-in-svg-png-gif-file-formats--finance-money-investment-bank-pack-people-illustrations-4609389.png?f=webp"
+                            alt="Illustration" class="img-fluid delay-200"
+                            style="max-height: 400px; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.1));">
+
+                    </div>
+                </div>
+            </div>
+        </section>
+ <section class="section-padding bg-light">
             <div class="container">
                 <div class="text-center mb-5 fade-in-up">
                     <h2 class="section-title">Why Choose Udhar Capital?</h2>
                 </div>
 
                 <div class="row g-4 justify-content-center">
-                    <?php 
+                    <?php
                     $wc_data = (count($why_choose) > 0) ? $why_choose : [
                         ['image' => '', 'title' => 'Quick Approval', 'description' => 'Instant approval system.'],
                         ['image' => '', 'title' => 'Transparency', 'description' => 'No hidden charges.'],
                         ['image' => '', 'title' => 'Secure', 'description' => '256-bit encryption.']
                     ];
 
-                    foreach($wc_data as $index => $wc) {
+                    foreach ($wc_data as $index => $wc) {
                         ?>
-                        <div class="col-md-4 fade-in-up delay-<?php echo ($index+1)*100; ?>">
+                        <div class="col-md-4 fade-in-up delay-<?php echo ($index + 1) * 100; ?>">
                             <div class="wc-card h-100">
                                 <div class="mb-3">
-                                    <?php if(!empty($wc['image'])): ?>
+                                    <?php if (!empty($wc['image'])): ?>
                                         <img src="<?php echo htmlspecialchars($wc['image']); ?>" style="width: 60px;">
                                     <?php else: ?>
                                         <i class="fas fa-award wc-icon-lg"></i>
@@ -401,63 +519,61 @@ include 'includes/header.php';
                 </div>
             </div>
         </section>
+<section class="section-padding bg-light">
+    <div class="container">
+        <div class="row align-items-center g-5">
 
-        <section class="section-padding bg-white">
-            <div class="container">
-                <div class="row align-items-center">
-                    <div class="col-lg-7 fade-in-up">
-                        <div class="mb-4">
-                            <h2 class="section-title">Eligibility Criteria</h2>
-                            <p class="section-subtitle mb-0">Check if you qualify:</p>
-                        </div>
-                        <table class="custom-table">
-                            <tbody>
-                                <?php 
-                                $elig_data = (count($eligibility) > 0) ? $eligibility : [
-                                    ['criteria_key' => 'Age', 'criteria_value' => '21 - 65 years'],
-                                    ['criteria_key' => 'Income', 'criteria_value' => 'Min ₹25k/month']
-                                ];
-                                foreach($elig_data as $row) {
-                                    echo "<tr><td>".htmlspecialchars($row['criteria_key'])."</td><td>".htmlspecialchars($row['criteria_value'])."</td></tr>";
-                                }
-                                ?>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="col-lg-5 text-center mt-5 mt-lg-0 fade-in-up delay-200">
-                        <img src="https://cdni.iconscout.com/illustration/premium/thumb/business-loan-illustration-download-in-svg-png-gif-file-formats--finance-money-investment-bank-pack-people-illustrations-4609389.png?f=webp" 
-                             alt="Illustration" class="img-fluid delay-200" style="max-height: 400px; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.1));">
+            <!-- LEFT : DOCUMENT LIST -->
+            <div class="col-lg-6 fade-in-up">
+                <h2 class="section-title mb-4">
+                    Documents Required
+                </h2>
 
-                    </div>
-                </div>
-            </div>
-        </section>
+                <p class="text-muted mb-4">
+                    Keep these documents ready to ensure a smooth and fast loan approval process.
+                </p>
 
-        <section class="section-padding bg-light">
-            <div class="container">
-                <div class="mb-5 fade-in-up">
-                    <h2 class="section-title">Documents Required</h2>
-                </div>
                 <div class="row g-3">
-                    <?php 
+                    <?php
                     $doc_list = (count($documents) > 0) ? $documents : [
-                        ['doc_name' => 'Aadhar Card'], ['doc_name' => 'PAN Card'], 
-                        ['doc_name' => 'Bank Statement'], ['doc_name' => 'Address Proof']
+                        ['doc_name' => 'Aadhaar Card'],
+                        ['doc_name' => 'PAN Card'],
+                        ['doc_name' => 'Photograph'],
+                        ['doc_name' => 'Business Proof'],
+                        ['doc_name' => 'Ownership Proof (Optional)'],
                     ];
-                    foreach($doc_list as $doc) {
-                        ?>
-                        <div class="col-md-6 fade-in-up">
-                            <div class="bg-white p-3 rounded shadow-sm d-flex align-items-center">
-                                <i class="fas fa-file-alt text-primary me-3 fs-4"></i>
-                                <span class="fw-bold"><?php echo htmlspecialchars($doc['doc_name']); ?></span>
+
+                    foreach ($doc_list as $doc):
+                    ?>
+                        <div class="col-sm-6">
+                            <div class="doc-item">
+                                <span class="doc-icon">
+                                    <i class="fas fa-file-alt"></i>
+                                </span>
+                                <span class="doc-text">
+                                    <?= htmlspecialchars($doc['doc_name']) ?>
+                                </span>
                             </div>
                         </div>
-                        <?php
-                    }
-                    ?>
+                    <?php endforeach; ?>
                 </div>
+
+                <small class="text-muted d-block mt-4">
+                    <i class="fas fa-info-circle me-1"></i>
+                    Documents must be valid and authorised.
+                </small>
             </div>
-        </section>
+
+            <!-- RIGHT : IMAGE -->
+            <div class="col-lg-6 text-center fade-in-up delay-200">
+                <img src="includes/assets/document.jpg"
+                     alt="Documents Required"
+                     class="img-fluid document-img">
+            </div>
+
+        </div>
+    </div>
+</section>
 
         <section class="section-padding bg-white">
             <div class="container">
@@ -468,10 +584,10 @@ include 'includes/header.php';
                     <div class="col-lg-8">
                         <table class="custom-table">
                             <tbody>
-                                <?php 
+                                <?php
                                 $fees_data = (count($fees) > 0) ? $fees : [['fee_key' => 'Processing Fee', 'fee_value' => '1% - 2%']];
-                                foreach($fees_data as $row) {
-                                    echo "<tr><td>".htmlspecialchars($row['fee_key'])."</td><td>".htmlspecialchars($row['fee_value'])."</td></tr>";
+                                foreach ($fees_data as $row) {
+                                    echo "<tr><td>" . htmlspecialchars($row['fee_key']) . "</td><td>" . htmlspecialchars($row['fee_value']) . "</td></tr>";
                                 }
                                 ?>
                             </tbody>
@@ -488,16 +604,47 @@ include 'includes/header.php';
                 </div>
                 <div class="row justify-content-center fade-in-up">
                     <div class="col-lg-8">
-                        <table class="custom-table bg-white">
-                            <tbody>
-                                <?php 
-                                $bank_data = (count($banks) > 0) ? $banks : [['bank_key' => 'HDFC Bank', 'bank_value' => 'Partner']];
-                                foreach($bank_data as $row) {
-                                    echo "<tr><td>".htmlspecialchars($row['bank_key'])."</td><td>".htmlspecialchars($row['bank_value'])."</td></tr>";
-                                }
-                                ?>
-                            </tbody>
-                        </table>
+                      <table class="table table-bordered table-hover align-middle bg-white">
+    <thead class="table-dark">
+
+    </thead>
+    <tbody>
+        <?php
+        $bank_data = (count($banks) > 0) 
+            ? $banks 
+            : [['bank_key' => 'HDFC Bank', 'bank_value' => 'Partner', 'bank_image' => '']];
+
+        foreach ($bank_data as $row) {
+            ?>
+            <tr>
+                <!-- LOGO -->
+                <td class="text-center">
+                    <?php if (!empty($row['bank_image'])): ?>
+                        <img src="<?= htmlspecialchars($row['bank_image']) ?>"
+                             alt="<?= htmlspecialchars($row['bank_key']) ?>"
+                             class="img-fluid"
+                             style="max-height:70px;">
+                    <?php else: ?>
+                        <span class="text-muted small">No Logo</span>
+                    <?php endif; ?>
+                </td>
+
+                <!-- BANK NAME -->
+                <td class="fw-semibold">
+                    <?= htmlspecialchars($row['bank_key']) ?>
+                </td>
+
+                <!-- CONTENT -->
+                <td class="text-muted">
+                    <?= htmlspecialchars($row['bank_value']) ?>
+                </td>
+            </tr>
+            <?php
+        }
+        ?>
+    </tbody>
+</table>
+
                     </div>
                 </div>
             </div>
@@ -509,11 +656,11 @@ include 'includes/header.php';
                     <h2 class="section-title">Different Forms of Loan Repayments</h2>
                 </div>
                 <div class="row g-4">
-                    <?php 
+                    <?php
                     $repay_data = (count($repayments) > 0) ? $repayments : [
                         ['title' => 'Standard EMI', 'description' => 'Fixed monthly payments.']
                     ];
-                    foreach($repay_data as $repay) {
+                    foreach ($repay_data as $repay) {
                         ?>
                         <div class="col-md-4 fade-in-up">
                             <div class="repayment-card h-100">
@@ -533,7 +680,7 @@ include 'includes/header.php';
 </main>
 
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
+    document.addEventListener("DOMContentLoaded", function () {
         const observerOptions = { threshold: 0.1 };
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {

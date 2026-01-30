@@ -87,6 +87,40 @@
             </div>
         </div>
     </footer>
+<!-- Sticky Loan Marquee -->
+<div class="loan-marquee-fixed">
+    <marquee behavior="scroll" direction="left" scrollamount="5">
+        ⚠ Beware of fraud! UDHAR CAPITAL se loan lena hai easy & fast —
+        ✔ Low interest
+        ✔ Minimum documents
+        ✔ Quick approval
+        ✔ Secure & trusted platform —
+        Sirf official website se hi apply karein
+    </marquee>
+</div>
+<style>
+    .loan-marquee-fixed {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background: var(--primary-color);
+        color: #fff;
+        padding: 8px 0;
+        font-size: 14px;
+        font-weight: 500;
+        z-index: 9999;
+    }
+
+    .loan-marquee-fixed marquee {
+        white-space: nowrap;
+    }
+
+    /* content footer ke niche chhup na jaye */
+    body {
+        padding-bottom: 40px;
+    }
+</style>
 
     <!-- Footer Specific Styles using Root Variables -->
     <style>
