@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 30, 2026 at 11:17 AM
+-- Generation Time: Jan 30, 2026 at 12:43 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -68,7 +68,7 @@ CREATE TABLE `customers` (
 --
 
 INSERT INTO `customers` (`id`, `full_name`, `email`, `phone`, `password`, `aadhaar_number`, `status`, `created_at`, `updated_at`) VALUES
-(1, 'Sanyam Srivastava', 'srivastavasanyam8052@gmail.com', '9984278970', '$2y$10$Vi3kwMBdcDqMKJMjbjklVut4qdYRkR0h8n.44nF2N..5h8GvuKPvC', NULL, 'active', '2026-01-29 12:27:10', '2026-01-29 12:27:10'),
+(1, 'Sanyam Srivastava', 'srivastavasanyam8052@gmail.com', '9984278970', '$2y$10$Vi3kwMBdcDqMKJMjbjklVut4qdYRkR0h8n.44nF2N..5h8GvuKPvC', '656512344321', 'active', '2026-01-29 12:27:10', '2026-01-30 10:29:03'),
 (2, 'Sanyamsdsfdsa Srivastava', 'srivafdgfdgfdgstavasanyam8052@gmail.com', '8984278970', '$2y$10$73OybQocLn6ovNVxrPp7JOBxvb77VBUuZ.7JgQBs8erjW65iZFZlK', '998737892939', 'active', '2026-01-30 06:03:18', '2026-01-30 07:48:53');
 
 -- --------------------------------------------------------
@@ -95,6 +95,14 @@ CREATE TABLE `customer_profiles` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `customer_profiles`
+--
+
+INSERT INTO `customer_profiles` (`id`, `customer_id`, `pan_number`, `birth_date`, `state`, `city`, `pin_code`, `employee_type`, `company_name`, `monthly_income`, `reference1_name`, `reference1_phone`, `reference2_name`, `reference2_phone`, `created_at`, `updated_at`) VALUES
+(10, 1, 'ABCDE1232G', '2006-09-11', 'uttar pradesh', 'lmp', '262701', 'business', 'Hareetech Development Pvt Ltd', 200000.00, 'nhnh', '8787878787', 'kjkjk', '9984278787', '2026-01-30 10:29:03', '2026-01-30 10:29:57'),
+(13, 2, 'ABCDE1234F', '2026-01-21', 'Uttar Pradesh', 'Lakhimpur', '261506', 'business', 'sac', 4.00, 'xzczx', '9984278970', 'cxzc', '9984278970', '2026-01-30 10:41:31', '2026-01-30 10:42:07');
 
 -- --------------------------------------------------------
 
@@ -156,8 +164,16 @@ CREATE TABLE `loan_applications` (
   `tenure_years` int(11) NOT NULL,
   `emi_amount` decimal(15,2) NOT NULL,
   `status` enum('pending','approved','rejected','disbursed') DEFAULT 'pending',
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `rejection_note` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `loan_applications`
+--
+
+INSERT INTO `loan_applications` (`id`, `customer_id`, `service_id`, `requested_amount`, `tenure_years`, `emi_amount`, `status`, `created_at`, `rejection_note`) VALUES
+(1, 2, 5, 90000.00, 1, 0.00, 'pending', '2026-01-30 10:49:22', NULL);
 
 -- --------------------------------------------------------
 
@@ -170,7 +186,9 @@ CREATE TABLE `loan_application_docs` (
   `loan_application_id` bigint(20) UNSIGNED NOT NULL,
   `doc_name` varchar(255) NOT NULL,
   `doc_path` varchar(255) NOT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `status` enum('pending','verified','rejected') DEFAULT 'pending',
+  `rejection_reason` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -188,6 +206,7 @@ CREATE TABLE `services` (
   `slug` varchar(255) NOT NULL,
   `short_description` text DEFAULT NULL,
   `long_description` longtext DEFAULT NULL,
+  `hero_image` varchar(255) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -196,13 +215,13 @@ CREATE TABLE `services` (
 -- Dumping data for table `services`
 --
 
-INSERT INTO `services` (`id`, `category_id`, `sub_category_id`, `service_name`, `title`, `slug`, `short_description`, `long_description`, `created_at`, `updated_at`) VALUES
-(1, 1, 3, 'Loan for CA', 'Loan for Chartered Accountant', 'loan-for-ca', 'Tailored loan for Chartered Accountants.', 'Special loan products designed for Chartered Accountants with flexible repayment options.', '2026-01-29 08:03:53', '2026-01-29 08:03:53'),
-(2, 1, 3, 'Loan for CS', 'Loan for Company Secretary', 'loan-for-cs', 'Business loan for Company Secretaries.', 'Customized financing solutions for Company Secretaries.', '2026-01-29 08:03:53', '2026-01-29 08:03:53'),
-(3, 1, 3, 'Loan for Doctor', 'Loan for Doctor', 'loan-for-doctor', 'Medical professionals loan.', 'Loans designed specifically for doctors to support clinic setup and expansion.', '2026-01-29 08:03:53', '2026-01-29 08:03:53'),
-(4, 1, 3, 'Loan for Architect dsdfd', 'Loan for Architect', 'loan-for-architect', 'Loan for architecture professionals.', 'Professional loans for architects to fund projects and office expansion.', '2026-01-29 08:03:53', '2026-01-29 10:32:53'),
-(5, 1, 2, 'Secured Business Loan', 'Looking for a secured business Loan?', 'looking-for-a-secured-business-loan', 'Are you ready to take your business to greater heights? Apply for business loans online at low-interest rates through Udhar Capital. Do apply now!', 'For business owners looking to start or expand their enterprises, online business loans are critical. Udhar Capital financial services have undergone continuous innovation to satisfy the demands of entrepreneurs seeking capital. The purpose of the business loan is to businesses acquire the finance they need.The instant business loan may be utilised to cover all of your company’s needs, it’s the finest lending option for a startup. Apply business loans online for an attractive and affordable interest rate ensures you won’t have to cut back on expenses.', '2026-01-29 08:53:13', '2026-01-29 08:53:13'),
-(6, 1, 1, 'Personal Loan', 'APPLY FOR PERSONAL LOAN', 'apply-for-personal-loan', 'Collateral-free personal loan with lowest interest rate is just a few clicks away from you. Apply Personal Loan online and fulfill your dreams without worrying about money', 'The term personal loan has emerged as a boon for individuals seeking quick and hassle free access to funds. Personal loan is a financial tool that offers unparalleled flexibility and convenience to borrowers. Unlike traditional loans, a personal loan is unsecured, meaning you don’t have to provide any collateral to secure it.\r\n\r\nWith Udhar Capital Personal Loan you can say goodbye to lengthy approval processes and mountains of paperwork. Our application process ensures that you can get the funds you need when you need them, without the unnecessary delays. We are committed to providing you with the best financial solutions.', '2026-01-29 12:09:21', '2026-01-29 12:09:21');
+INSERT INTO `services` (`id`, `category_id`, `sub_category_id`, `service_name`, `title`, `slug`, `short_description`, `long_description`, `hero_image`, `created_at`, `updated_at`) VALUES
+(1, 1, 3, 'Loan for CA', 'Loan for Chartered Accountant', 'loan-for-ca', 'Tailored loan for Chartered Accountants.', 'Special loan products designed for Chartered Accountants with flexible repayment options.', NULL, '2026-01-29 08:03:53', '2026-01-29 08:03:53'),
+(2, 1, 3, 'Loan for CS', 'Loan for Company Secretary', 'loan-for-cs', 'Business loan for Company Secretaries.', 'Customized financing solutions for Company Secretaries.', NULL, '2026-01-29 08:03:53', '2026-01-29 08:03:53'),
+(3, 1, 3, 'Loan for Doctor', 'Loan for Doctor', 'loan-for-doctor', 'Medical professionals loan.', 'Loans designed specifically for doctors to support clinic setup and expansion.', NULL, '2026-01-29 08:03:53', '2026-01-29 08:03:53'),
+(4, 1, 3, 'Loan for Architect dsdfd', 'Loan for Architect', 'loan-for-architect', 'Loan for architecture professionals.', 'Professional loans for architects to fund projects and office expansion.', NULL, '2026-01-29 08:03:53', '2026-01-29 10:32:53'),
+(5, 1, 2, 'Secured Business Loan', 'Looking for a secured business Loan?', 'looking-for-a-secured-business-loan', 'Are you ready to take your business to greater heights? Apply for business loans online at low-interest rates through Udhar Capital. Do apply now!', 'For business owners looking to start or expand their enterprises, online business loans are critical. Udhar Capital financial services have undergone continuous innovation to satisfy the demands of entrepreneurs seeking capital. The purpose of the business loan is to businesses acquire the finance they need.The instant business loan may be utilised to cover all of your company’s needs, it’s the finest lending option for a startup. Apply business loans online for an attractive and affordable interest rate ensures you won’t have to cut back on expenses.', 'uploads/services/service_1769768621_534.jpg', '2026-01-29 08:53:13', '2026-01-30 10:23:41'),
+(6, 1, 1, 'Personal Loan', 'APPLY FOR PERSONAL LOAN', 'apply-for-personal-loan', 'Collateral-free personal loan with lowest interest rate is just a few clicks away from you. Apply Personal Loan online and fulfill your dreams without worrying about money', 'The term personal loan has emerged as a boon for individuals seeking quick and hassle free access to funds. Personal loan is a financial tool that offers unparalleled flexibility and convenience to borrowers. Unlike traditional loans, a personal loan is unsecured, meaning you don’t have to provide any collateral to secure it.\r\n\r\nWith Udhar Capital Personal Loan you can say goodbye to lengthy approval processes and mountains of paperwork. Our application process ensures that you can get the funds you need when you need them, without the unnecessary delays. We are committed to providing you with the best financial solutions.', 'uploads/services/service_1769770355_584.jfif', '2026-01-29 12:09:21', '2026-01-30 10:52:35');
 
 -- --------------------------------------------------------
 
@@ -244,6 +263,7 @@ CREATE TABLE `service_banks` (
   `service_id` bigint(20) UNSIGNED NOT NULL,
   `bank_key` varchar(255) NOT NULL,
   `bank_value` text NOT NULL,
+  `bank_image` varchar(255) NOT NULL,
   `created_at` timestamp NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -252,10 +272,10 @@ CREATE TABLE `service_banks` (
 -- Dumping data for table `service_banks`
 --
 
-INSERT INTO `service_banks` (`id`, `service_id`, `bank_key`, `bank_value`, `created_at`, `updated_at`) VALUES
-(1, 5, 'Poonawalla', '18.00% p.a.', '2026-01-29 09:00:34', '2026-01-29 09:00:34'),
-(2, 5, 'Axis Bank', '14.95% - 19.20% p.a.', '2026-01-29 09:00:34', '2026-01-29 09:00:34'),
-(3, 5, 'HDB Financial Services Ltd.', 'Up to 36% p.a.', '2026-01-29 09:00:34', '2026-01-29 09:00:34');
+INSERT INTO `service_banks` (`id`, `service_id`, `bank_key`, `bank_value`, `bank_image`, `created_at`, `updated_at`) VALUES
+(1, 5, 'Poonawalla', '18.00% p.a.', '', '2026-01-29 09:00:34', '2026-01-29 09:00:34'),
+(2, 5, 'Axis Bank', '14.95% - 19.20% p.a.', '', '2026-01-29 09:00:34', '2026-01-29 09:00:34'),
+(3, 5, 'HDB Financial Services Ltd.', 'Up to 36% p.a.', '', '2026-01-29 09:00:34', '2026-01-29 09:00:34');
 
 -- --------------------------------------------------------
 
@@ -586,7 +606,7 @@ ALTER TABLE `customers`
 -- AUTO_INCREMENT for table `customer_profiles`
 --
 ALTER TABLE `customer_profiles`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT for table `departments`
@@ -604,7 +624,7 @@ ALTER TABLE `enquiries`
 -- AUTO_INCREMENT for table `loan_applications`
 --
 ALTER TABLE `loan_applications`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `loan_application_docs`
