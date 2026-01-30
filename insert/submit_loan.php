@@ -14,21 +14,40 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $loan_id = mysqli_insert_id($conn);
 
     // 2. Handle Document Uploads
-    if (isset($_FILES['docs'])) {
-        $upload_dir = '../uploads/loans/';
-        if (!is_dir($upload_dir)) mkdir($upload_dir, 0777, true);
+// 2. Handle Document Uploads
+if (!empty($_FILES['loan_docs']['name'])) {
 
-        foreach ($_FILES['docs']['name'] as $doc_name => $filename) {
-            $tmp_name = $_FILES['docs']['tmp_name'][$doc_name];
-            $ext = pathinfo($filename, PATHINFO_EXTENSION);
-            $new_name = "loan_" . $loan_id . "_" . time() . "_" . str_replace(' ', '_', $doc_name) . "." . $ext;
-            
-            if (move_uploaded_file($tmp_name, $upload_dir . $new_name)) {
-                $path = 'uploads/loans/' . $new_name;
-                mysqli_query($conn, "INSERT INTO loan_application_docs (loan_application_id, doc_name, doc_path) VALUES ($loan_id, '$doc_name', '$path')");
-            }
+    $upload_dir = '../uploads/loans/';
+    if (!is_dir($upload_dir)) {
+        mkdir($upload_dir, 0777, true);
+    }
+
+    foreach ($_FILES['loan_docs']['name'] as $doc_key => $filename) {
+
+        if ($_FILES['loan_docs']['error'][$doc_key] !== 0) {
+            continue;
+        }
+
+        $tmp_name = $_FILES['loan_docs']['tmp_name'][$doc_key];
+        $ext = pathinfo($filename, PATHINFO_EXTENSION);
+
+        $safe_doc_name = str_replace('_', ' ', $doc_key);
+        $new_name = "loan_{$loan_id}_" . time() . "_{$doc_key}." . $ext;
+
+        if (move_uploaded_file($tmp_name, $upload_dir . $new_name)) {
+
+            $path = "uploads/loans/" . $new_name;
+
+            mysqli_query($conn, "
+                INSERT INTO loan_application_docs 
+                (loan_application_id, doc_name, doc_path, status) 
+                VALUES 
+                ($loan_id, '$safe_doc_name', '$path', 'pending')
+            ");
         }
     }
+}
+
 
     header("Location: ../customer/dashboard.php?msg=Application submitted successfully&type=toast");
 }
