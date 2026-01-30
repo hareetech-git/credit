@@ -63,18 +63,44 @@ switch ($type) {
 
         $short_desc      = clean($conn, $_POST['short_description']);
         $long_desc       = clean($conn, $_POST['long_description']);
+// HERO IMAGE LOGIC
+$hero_image = clean($conn, $_POST['existing_hero_image'] ?? '');
+
+if (!empty($_FILES['hero_image']['name'])) {
+
+    $upload_dir = "../../../uploads/services/";
+    if (!is_dir($upload_dir)) {
+        mkdir($upload_dir, 0777, true);
+    }
+
+    $ext = pathinfo($_FILES['hero_image']['name'], PATHINFO_EXTENSION);
+    $file_name = "service_" . time() . "_" . rand(100,999) . "." . $ext;
+    $target = $upload_dir . $file_name;
+
+    if (move_uploaded_file($_FILES['hero_image']['tmp_name'], $target)) {
+
+        // OPTIONAL: delete old image
+        if (!empty($hero_image) && file_exists("../../../".$hero_image)) {
+            unlink("../../../".$hero_image);
+        }
+
+        $hero_image = "uploads/services/" . $file_name;
+    }
+}
 
         // 3. Update Database
         $sql = "UPDATE services SET 
-                category_id = $category_id,
-                sub_category_id = $sub_category_id,
-                service_name = '$service_name',
-                title = '$title',
-                slug = '$slug',
-                short_description = '$short_desc',
-                long_description = '$long_desc',
-                updated_at = NOW()
-                WHERE id = $service_id";
+    category_id = $category_id,
+    sub_category_id = $sub_category_id,
+    service_name = '$service_name',
+    title = '$title',
+    slug = '$slug',
+    short_description = '$short_desc',
+    long_description = '$long_desc',
+    hero_image = '$hero_image',
+    updated_at = NOW()
+WHERE id = $service_id
+    ";
         
         if (mysqli_query($conn, $sql)) {
             header("Location: $base_url?service_id=$service_id&tab=info&msg=Info Updated Successfully");
@@ -209,11 +235,50 @@ switch ($type) {
     /* =======================================================
        9. UPDATE BANKS (Tab 9)
     ======================================================= */
-    case 'update_bank':
-        $sql_template = "INSERT INTO service_banks (service_id, bank_key, bank_value) VALUES ($service_id, {KEY}, {VAL})";
-        update_child_table($conn, $service_id, 'service_banks', $_POST['bank_key']??[], $_POST['bank_value']??[], $sql_template);
-        header("Location: $base_url?service_id=$service_id&tab=banks&msg=Banks Updated");
-        break;
+   case 'update_bank':
+
+    $keys   = $_POST['bank_key'] ?? [];
+    $vals   = $_POST['bank_value'] ?? [];
+    $oldImg = $_POST['existing_image'] ?? [];
+    $files  = $_FILES['image'] ?? [];
+
+    $upload_dir = "../../assets/banks/";
+    if (!is_dir($upload_dir)) {
+        mkdir($upload_dir, 0777, true);
+    }
+
+    // delete old rows
+    mysqli_query($conn, "DELETE FROM service_banks WHERE service_id = $service_id");
+
+    for ($i = 0; $i < count($keys); $i++) {
+
+        $bank_key   = clean($conn, $keys[$i]);
+        $bank_value = clean($conn, $vals[$i] ?? '');
+        $img_path   = $oldImg[$i] ?? '';
+
+        // new image uploaded?
+        if (!empty($files['name'][$i])) {
+            $ext = pathinfo($files['name'][$i], PATHINFO_EXTENSION);
+            $file = "bank_" . time() . "_" . rand(100,999) . "." . $ext;
+
+            if (move_uploaded_file($files['tmp_name'][$i], $upload_dir.$file)) {
+                $img_path = "admin/assets/banks/" . $file;
+            }
+        }
+
+        if ($bank_key !== '') {
+            mysqli_query($conn, "
+                INSERT INTO service_banks 
+                (service_id, bank_key, bank_value, bank_image)
+                VALUES 
+                ($service_id, '$bank_key', '$bank_value', '$img_path')
+            ");
+        }
+    }
+
+    header("Location: $base_url?service_id=$service_id&tab=banks&msg=Banks Updated Successfully");
+    exit;
+
 
     default:
         header("Location: $base_url?error=unknown_type");

@@ -40,7 +40,7 @@ function getServiceData($slug) {
     }
 
     // 1. Fetch Service Details
-    $query = "SELECT `id`, `category_id`, `sub_category_id`, `service_name`, `title`, `slug`, `short_description`, `long_description`, `created_at`, `updated_at` 
+    $query = "SELECT `id`, `category_id`, `sub_category_id`, `service_name`, `title`, `slug`, `short_description`, `long_description`,`hero_image`,  `created_at`, `updated_at` 
               FROM `services` 
               WHERE `slug` = ? AND `slug` IS NOT NULL AND `slug` != '' LIMIT 1";
     
@@ -143,7 +143,10 @@ function getServiceData($slug) {
                 }
 
                 // 8. Fetch Banks
-                $bank_query = "SELECT `bank_key`, `bank_value` FROM `service_banks` WHERE `service_id` = ?";
+            $bank_query = "SELECT `bank_key`, `bank_value`, `bank_image` 
+               FROM `service_banks` 
+               WHERE `service_id` = ?";
+
                 if($bank_stmt = mysqli_prepare($conn, $bank_query)) {
                     mysqli_stmt_bind_param($bank_stmt, "i", $service_id);
                     if(mysqli_stmt_execute($bank_stmt)) {

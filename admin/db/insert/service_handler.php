@@ -54,12 +54,31 @@ switch ($type) {
 
         $short_desc      = clean($conn, $_POST['short_description']);
         $long_desc       = clean($conn, $_POST['long_description']);
+        // HERO IMAGE UPLOAD
+$hero_image = '';
+
+if (!empty($_FILES['hero_image']['name'])) {
+    $upload_dir = "../../../uploads/services/";
+    if (!is_dir($upload_dir)) {
+        mkdir($upload_dir, 0777, true);
+    }
+
+    $ext = pathinfo($_FILES['hero_image']['name'], PATHINFO_EXTENSION);
+    $file_name = "service_" . time() . "_" . rand(100,999) . "." . $ext;
+    $target = $upload_dir . $file_name;
+
+    if (move_uploaded_file($_FILES['hero_image']['tmp_name'], $target)) {
+        $hero_image = "uploads/services/" . $file_name; // DB path
+    }
+}
+
 
         if ($category_id > 0 && $title !== '') {
             $sql = "INSERT INTO services 
-                    (category_id, sub_category_id, service_name, title, slug, short_description, long_description)
+(category_id, sub_category_id, service_name, title, slug, short_description, long_description, hero_image)
+
                     VALUES 
-                    ($category_id, $sub_category_id, '$service_name', '$title', '$slug', '$short_desc', '$long_desc')";
+                    ($category_id, $sub_category_id, '$service_name', '$title', '$slug', '$short_desc', '$long_desc', '$hero_image')";
             
             if (mysqli_query($conn, $sql)) {
                 $new_id = mysqli_insert_id($conn);
@@ -183,13 +202,47 @@ switch ($type) {
     /* =======================================================
        9. ADD BANKS
     ======================================================= */
-    case 'add_bank':
-        $keys = $_POST['bank_key'] ?? [];
-        $vals = $_POST['bank_value'] ?? [];
-        $sql  = "INSERT INTO service_banks (service_id, bank_key, bank_value) VALUES ($service_id, {KEY}, {VAL})";
-        batch_insert($conn, $keys, $vals, $sql);
-        header("Location: ../../services.php?msg=Service Created Successfully");
-        exit;
+   case 'add_bank':
+
+    $keys   = $_POST['bank_key'] ?? [];
+    $vals   = $_POST['bank_value'] ?? [];
+    $images = $_FILES['image'] ?? [];
+
+    // ✅ STORE INSIDE admin/assets/
+    $upload_dir = "../../assets/banks/";
+    if (!is_dir($upload_dir)) {
+        mkdir($upload_dir, 0777, true);
+    }
+
+    for ($i = 0; $i < count($keys); $i++) {
+
+        $bank_key   = clean($conn, $keys[$i]);
+        $bank_value = clean($conn, $vals[$i] ?? '');
+        $img_path   = '';
+
+        if (!empty($images['name'][$i])) {
+            $ext = pathinfo($images['name'][$i], PATHINFO_EXTENSION);
+            $file_name = "bank_" . time() . "_" . rand(100,999) . "." . $ext;
+            $target = $upload_dir . $file_name;
+
+            if (move_uploaded_file($images['tmp_name'][$i], $target)) {
+                // ✅ Path saved in DB
+                $img_path = "admin/assets/banks/" . $file_name;
+            }
+        }
+
+        if ($bank_key !== '') {
+            $sql = "INSERT INTO service_banks 
+                    (service_id, bank_key, bank_value, bank_image)
+                    VALUES 
+                    ($service_id, '$bank_key', '$bank_value', '$img_path')";
+            mysqli_query($conn, $sql);
+        }
+    }
+
+    header("Location: ../../services.php?msg=Service Created Successfully");
+    exit;
+
 
     default:
         header("Location: $base_url?error=unknown_type");

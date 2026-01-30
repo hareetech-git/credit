@@ -211,7 +211,8 @@ if ($selected_category) {
 
                                 <?php if ($selected_subcat) { ?>
                                     <div class="pt-4 border-top">
-                                        <form method="POST" action="db/insert/service_handler.php">
+                                      <form method="POST" action="db/insert/service_handler.php" enctype="multipart/form-data">
+
                                             <input type="hidden" name="type" value="create_service">
                                             <input type="hidden" name="category_id" value="<?= $selected_category ?>">
                                             <input type="hidden" name="sub_category_id" value="<?= $selected_subcat ?>">
@@ -248,6 +249,17 @@ if ($selected_category) {
                                                 <textarea name="long_description" class="form-control" rows="5"
                                                     placeholder="Detailed information..."></textarea>
                                             </div>
+                                            <div class="mb-4">
+    <label class="form-label">
+        Service Hero Image
+        <small class="text-muted">(Right side image on service page)</small>
+    </label>
+    <input type="file" name="hero_image" class="form-control" accept="image/*">
+    <small class="text-muted" style="font-size:0.75rem;">
+        JPG / PNG recommended (max 2MB)
+    </small>
+</div>
+
                                             <button class="btn btn-primary-custom px-5">Save & Next</button>
                                         </form>
                                     </div>
@@ -263,7 +275,7 @@ if ($selected_category) {
                                 'fees' => ['title' => 'Fees & Charges', 'h1' => 'Fee Name', 'k' => 'fee_key[]', 'v' => 'fee_value[]', 'kp' => 'Type', 'vp' => 'Amount/%', 'type' => 'add_fee', 'mode' => 'input'],
                                 'repayment' => ['title' => 'Repayment Details', 'h1' => 'Option', 'k' => 'title[]', 'v' => 'description[]', 'kp' => 'Title', 'vp' => 'Description', 'type' => 'add_repayment'],
                                 'why' => ['title' => 'Why Choose Us', 'has_image' => true, 'h1' => 'Reason', 'k' => 'title[]', 'v' => 'description[]', 'kp' => 'Benefit', 'vp' => 'Details', 'type' => 'add_why'],
-                                'banks' => ['title' => 'Partner Banks', 'h1' => 'Bank Name', 'k' => 'bank_key[]', 'v' => 'bank_value[]', 'kp' => 'Bank', 'vp' => 'Offers', 'type' => 'add_bank', 'mode' => 'input']
+                                'banks' => ['title' => 'Partner Banks', 'h1' => 'Bank Name', 'k' => 'bank_key[]', 'v' => 'bank_value[]', 'kp' => 'Bank', 'vp' => 'Offers', 'type' => 'add_bank', 'mode' => 'input','has_image' => true]
                             ];
 
                             if (array_key_exists($tab, $genericTabs) && $service_id) {
