@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 29, 2026 at 10:06 AM
+-- Generation Time: Jan 30, 2026 at 11:17 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -52,71 +52,49 @@ INSERT INTO `admin` (`id`, `uuid`, `name`, `email`, `password`, `role`, `created
 --
 
 CREATE TABLE `customers` (
-  `id` int(11) NOT NULL,
-  `user_id` bigint(20) UNSIGNED DEFAULT NULL,
-  `uuid` char(36) NOT NULL,
-  `service_id` int(11) DEFAULT NULL,
-  `category` varchar(255) DEFAULT NULL,
-  `display_name` varchar(255) DEFAULT NULL,
-  `customer_number` varchar(100) DEFAULT NULL,
-  `customer_sub_type` varchar(100) DEFAULT NULL,
-  `place_of_contact` varchar(255) DEFAULT NULL,
-  `currency_code` varchar(10) DEFAULT NULL,
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `full_name` varchar(255) NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `phone` varchar(20) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `aadhaar_number` varchar(20) DEFAULT NULL,
+  `status` enum('active','blocked') DEFAULT 'active',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `customers`
+--
+
+INSERT INTO `customers` (`id`, `full_name`, `email`, `phone`, `password`, `aadhaar_number`, `status`, `created_at`, `updated_at`) VALUES
+(1, 'Sanyam Srivastava', 'srivastavasanyam8052@gmail.com', '9984278970', '$2y$10$Vi3kwMBdcDqMKJMjbjklVut4qdYRkR0h8n.44nF2N..5h8GvuKPvC', NULL, 'active', '2026-01-29 12:27:10', '2026-01-29 12:27:10'),
+(2, 'Sanyamsdsfdsa Srivastava', 'srivafdgfdgfdgstavasanyam8052@gmail.com', '8984278970', '$2y$10$73OybQocLn6ovNVxrPp7JOBxvb77VBUuZ.7JgQBs8erjW65iZFZlK', '998737892939', 'active', '2026-01-30 06:03:18', '2026-01-30 07:48:53');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `customer_profiles`
+--
+
+CREATE TABLE `customer_profiles` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `customer_id` bigint(20) UNSIGNED NOT NULL,
+  `pan_number` varchar(20) DEFAULT NULL,
+  `birth_date` date DEFAULT NULL,
+  `state` varchar(100) DEFAULT NULL,
+  `city` varchar(100) DEFAULT NULL,
+  `pin_code` varchar(10) DEFAULT NULL,
+  `employee_type` enum('salaried','self_employed','business','professional') DEFAULT NULL,
   `company_name` varchar(255) DEFAULT NULL,
-  `salutation` varchar(50) DEFAULT NULL,
-  `first_name` varchar(100) DEFAULT NULL,
-  `middle_name` varchar(255) DEFAULT NULL,
-  `last_name` varchar(100) DEFAULT NULL,
-  `email_id` varchar(255) DEFAULT NULL,
-  `password` varchar(255) DEFAULT NULL,
-  `phone` varchar(50) DEFAULT NULL,
-  `mobile_phone` varchar(50) DEFAULT NULL,
-  `facebook` varchar(255) DEFAULT NULL,
-  `twitter` varchar(255) DEFAULT NULL,
-  `department` varchar(100) DEFAULT NULL,
-  `designation` varchar(100) DEFAULT NULL,
-  `credit_limit` decimal(15,2) DEFAULT NULL,
-  `payment_terms` varchar(100) DEFAULT NULL,
-  `payment_terms_label` varchar(255) DEFAULT NULL,
-  `notes` text DEFAULT NULL,
-  `website` varchar(255) DEFAULT NULL,
-  `gst_treatment` varchar(100) DEFAULT NULL,
-  `gstin` varchar(100) DEFAULT NULL,
-  `pan_number` varchar(100) DEFAULT NULL,
-  `billing_attention` varchar(255) DEFAULT NULL,
-  `billing_address` text DEFAULT NULL,
-  `billing_street2` varchar(255) DEFAULT NULL,
-  `billing_city` varchar(100) DEFAULT NULL,
-  `billing_state` varchar(100) DEFAULT NULL,
-  `billing_country` varchar(100) DEFAULT NULL,
-  `billing_code` varchar(20) DEFAULT NULL,
-  `billing_fax` varchar(50) DEFAULT NULL,
-  `billing_phone` varchar(50) DEFAULT NULL,
-  `shipping_attention` varchar(255) DEFAULT NULL,
-  `shipping_address` text DEFAULT NULL,
-  `shipping_street2` varchar(255) DEFAULT NULL,
-  `shipping_city` varchar(100) DEFAULT NULL,
-  `shipping_state` varchar(100) DEFAULT NULL,
-  `shipping_country` varchar(100) DEFAULT NULL,
-  `shipping_code` varchar(20) DEFAULT NULL,
-  `shipping_fax` varchar(50) DEFAULT NULL,
-  `shipping_phone` varchar(50) DEFAULT NULL,
-  `portal_status` varchar(50) DEFAULT NULL,
-  `skype_identity` varchar(100) DEFAULT NULL,
-  `owner_name` varchar(100) DEFAULT NULL,
-  `opening_balance` decimal(15,2) DEFAULT NULL,
-  `opening_balance_exchange_rate` decimal(10,4) DEFAULT NULL,
-  `status` varchar(50) DEFAULT NULL,
-  `rise_invoice` tinyint(1) NOT NULL DEFAULT 1,
-  `active_dashboard` tinyint(1) NOT NULL DEFAULT 0,
-  `bank_account_payment` varchar(255) DEFAULT NULL,
-  `tds_name` varchar(100) DEFAULT NULL,
-  `tds_section_code` varchar(20) DEFAULT NULL,
-  `tds_percentage` decimal(5,2) DEFAULT NULL,
-  `created_at` timestamp NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  `created_by` bigint(20) UNSIGNED DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `monthly_income` decimal(12,2) DEFAULT NULL,
+  `reference1_name` varchar(255) DEFAULT NULL,
+  `reference1_phone` varchar(20) DEFAULT NULL,
+  `reference2_name` varchar(255) DEFAULT NULL,
+  `reference2_phone` varchar(20) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -138,6 +116,62 @@ CREATE TABLE `departments` (
 
 INSERT INTO `departments` (`id`, `name`, `created_at`, `updated_at`, `created_by`) VALUES
 (1, 'Loan Department', '2026-01-29 08:02:52', '2026-01-29 08:02:52', NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `enquiries`
+--
+
+CREATE TABLE `enquiries` (
+  `id` int(11) NOT NULL,
+  `full_name` varchar(255) NOT NULL,
+  `phone` varchar(15) NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `loan_type_id` int(11) NOT NULL,
+  `loan_type_name` varchar(255) NOT NULL,
+  `query_message` text NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `enquiries`
+--
+
+INSERT INTO `enquiries` (`id`, `full_name`, `phone`, `email`, `loan_type_id`, `loan_type_name`, `query_message`, `created_at`) VALUES
+(1, 'sanyam', '9984278970', 'srivastavasanyam8052@gmail.com', 3, 'Working Capital Loan', 'need help for loan', '2026-01-29 07:43:05'),
+(2, 'Sanyam Srivastava', '9984278970', 'abhi100sh@gmail.com', 2, 'Business Loans', 'dfsdf', '2026-01-29 09:22:45');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `loan_applications`
+--
+
+CREATE TABLE `loan_applications` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `customer_id` bigint(20) UNSIGNED NOT NULL,
+  `service_id` bigint(20) UNSIGNED NOT NULL,
+  `requested_amount` decimal(15,2) NOT NULL,
+  `tenure_years` int(11) NOT NULL,
+  `emi_amount` decimal(15,2) NOT NULL,
+  `status` enum('pending','approved','rejected','disbursed') DEFAULT 'pending',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `loan_application_docs`
+--
+
+CREATE TABLE `loan_application_docs` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `loan_application_id` bigint(20) UNSIGNED NOT NULL,
+  `doc_name` varchar(255) NOT NULL,
+  `doc_path` varchar(255) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -166,8 +200,9 @@ INSERT INTO `services` (`id`, `category_id`, `sub_category_id`, `service_name`, 
 (1, 1, 3, 'Loan for CA', 'Loan for Chartered Accountant', 'loan-for-ca', 'Tailored loan for Chartered Accountants.', 'Special loan products designed for Chartered Accountants with flexible repayment options.', '2026-01-29 08:03:53', '2026-01-29 08:03:53'),
 (2, 1, 3, 'Loan for CS', 'Loan for Company Secretary', 'loan-for-cs', 'Business loan for Company Secretaries.', 'Customized financing solutions for Company Secretaries.', '2026-01-29 08:03:53', '2026-01-29 08:03:53'),
 (3, 1, 3, 'Loan for Doctor', 'Loan for Doctor', 'loan-for-doctor', 'Medical professionals loan.', 'Loans designed specifically for doctors to support clinic setup and expansion.', '2026-01-29 08:03:53', '2026-01-29 08:03:53'),
-(4, 1, 3, 'Loan for Architect', 'Loan for Architect', 'loan-for-architect', 'Loan for architecture professionals.', 'Professional loans for architects to fund projects and office expansion.', '2026-01-29 08:03:53', '2026-01-29 08:03:53'),
-(5, 1, 2, 'Secured Business Loan', 'Looking for a secured business Loan?', 'looking-for-a-secured-business-loan', 'Are you ready to take your business to greater heights? Apply for business loans online at low-interest rates through Udhar Capital. Do apply now!', 'For business owners looking to start or expand their enterprises, online business loans are critical. Udhar Capital financial services have undergone continuous innovation to satisfy the demands of entrepreneurs seeking capital. The purpose of the business loan is to businesses acquire the finance they need.The instant business loan may be utilised to cover all of your company’s needs, it’s the finest lending option for a startup. Apply business loans online for an attractive and affordable interest rate ensures you won’t have to cut back on expenses.', '2026-01-29 08:53:13', '2026-01-29 08:53:13');
+(4, 1, 3, 'Loan for Architect dsdfd', 'Loan for Architect', 'loan-for-architect', 'Loan for architecture professionals.', 'Professional loans for architects to fund projects and office expansion.', '2026-01-29 08:03:53', '2026-01-29 10:32:53'),
+(5, 1, 2, 'Secured Business Loan', 'Looking for a secured business Loan?', 'looking-for-a-secured-business-loan', 'Are you ready to take your business to greater heights? Apply for business loans online at low-interest rates through Udhar Capital. Do apply now!', 'For business owners looking to start or expand their enterprises, online business loans are critical. Udhar Capital financial services have undergone continuous innovation to satisfy the demands of entrepreneurs seeking capital. The purpose of the business loan is to businesses acquire the finance they need.The instant business loan may be utilised to cover all of your company’s needs, it’s the finest lending option for a startup. Apply business loans online for an attractive and affordable interest rate ensures you won’t have to cut back on expenses.', '2026-01-29 08:53:13', '2026-01-29 08:53:13'),
+(6, 1, 1, 'Personal Loan', 'APPLY FOR PERSONAL LOAN', 'apply-for-personal-loan', 'Collateral-free personal loan with lowest interest rate is just a few clicks away from you. Apply Personal Loan online and fulfill your dreams without worrying about money', 'The term personal loan has emerged as a boon for individuals seeking quick and hassle free access to funds. Personal loan is a financial tool that offers unparalleled flexibility and convenience to borrowers. Unlike traditional loans, a personal loan is unsecured, meaning you don’t have to provide any collateral to secure it.\r\n\r\nWith Udhar Capital Personal Loan you can say goodbye to lengthy approval processes and mountains of paperwork. Our application process ensures that you can get the funds you need when you need them, without the unnecessary delays. We are committed to providing you with the best financial solutions.', '2026-01-29 12:09:21', '2026-01-29 12:09:21');
 
 -- --------------------------------------------------------
 
@@ -427,15 +462,38 @@ ALTER TABLE `admin`
 --
 ALTER TABLE `customers`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `uuid` (`uuid`),
-  ADD UNIQUE KEY `unique_email` (`email_id`),
-  ADD KEY `idx_user_id` (`user_id`),
-  ADD KEY `idx_service_id` (`service_id`);
+  ADD UNIQUE KEY `email` (`email`),
+  ADD UNIQUE KEY `phone` (`phone`);
+
+--
+-- Indexes for table `customer_profiles`
+--
+ALTER TABLE `customer_profiles`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `customer_id` (`customer_id`);
 
 --
 -- Indexes for table `departments`
 --
 ALTER TABLE `departments`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `enquiries`
+--
+ALTER TABLE `enquiries`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `loan_applications`
+--
+ALTER TABLE `loan_applications`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `loan_application_docs`
+--
+ALTER TABLE `loan_application_docs`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -522,7 +580,13 @@ ALTER TABLE `admin`
 -- AUTO_INCREMENT for table `customers`
 --
 ALTER TABLE `customers`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `customer_profiles`
+--
+ALTER TABLE `customer_profiles`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `departments`
@@ -531,10 +595,28 @@ ALTER TABLE `departments`
   MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
+-- AUTO_INCREMENT for table `enquiries`
+--
+ALTER TABLE `enquiries`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `loan_applications`
+--
+ALTER TABLE `loan_applications`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `loan_application_docs`
+--
+ALTER TABLE `loan_application_docs`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `services`
 --
 ALTER TABLE `services`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `services_subcategories`
@@ -552,7 +634,7 @@ ALTER TABLE `service_banks`
 -- AUTO_INCREMENT for table `service_categories`
 --
 ALTER TABLE `service_categories`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `service_documents`
