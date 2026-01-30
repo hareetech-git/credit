@@ -1,7 +1,10 @@
 <?php
+
 include 'db/config.php';
+include 'header.php';
+ include 'topbar.php';
 
-
+include 'sidebar.php';
 
 $categoryCount = 12;
 $serviceCount  = 8;
@@ -9,9 +12,8 @@ $sliderCount   = 5;
 $adminName = $_SESSION['customer_name'] ?? 'Admin';
 ?>
 
-<?php include 'header.php'; ?>
-<?php include 'topbar.php'; ?>
-<?php include 'sidebar.php'; ?>
+
+
 
 <style>
     :root {

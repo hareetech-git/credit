@@ -139,17 +139,37 @@ require_once 'includes/header.php';
             min-height: 450px;
         }
     }
+
+
+    /* Hide footer on mobile */
+@media (max-width: 767px) {
+    footer {
+        display: none !important;
+    }
+}
+
 </style>
 <div style="height:30px;"></div>
 <section class="d-flex align-items-center justify-content-center" style="min-height: calc(100vh - 85px);">
+    <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1100;">
+    <div id="statusToast" class="toast align-items-center border-0 text-white" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body p-3">
+                <i id="toastIcon" class="fas me-2"></i>
+                <span id="toastMessage"></span>
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+</div>
     <div class="login-container">
         <h2>Welcome Back</h2>
         <p>Login to manage your account</p>
 
-        <form action="login_process.php" method="POST">
+        <form action="customer/db/login.php" method="POST">
             <div class="form-group">
                 <label>Email Address</label>
-                <input type="email" name="email" placeholder="Enter your email" required>
+                <input type="email" name="login" placeholder="Enter your email" required>
             </div>
 
             <div class="form-group">
@@ -186,6 +206,92 @@ function togglePassword() {
         toggleBtn.innerText = "Show";
     }
 }
+
+// Updated Toast logic to handle encoded URLs and trigger correctly
+document.addEventListener('DOMContentLoaded', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const msg = urlParams.get('msg');
+    const err = urlParams.get('err');
+
+    if (msg || err) {
+        const toastEl = document.getElementById('statusToast');
+        const toastMsg = document.getElementById('toastMessage');
+        const toastIcon = document.getElementById('toastIcon');
+        
+        // Remove old classes
+        toastEl.classList.remove('bg-success', 'bg-danger');
+        toastIcon.classList.remove('fa-check-circle', 'fa-exclamation-circle');
+
+        if (msg) {
+            toastEl.classList.add('bg-success');
+            toastIcon.classList.add('fa-check-circle');
+            toastMsg.innerText = decodeURIComponent(msg); // Fixes %20 spaces
+        } else {
+            toastEl.classList.add('bg-danger');
+            toastIcon.classList.add('fa-exclamation-circle');
+            toastMsg.innerText = decodeURIComponent(err); // Fixes %20 spaces
+        }
+        
+        const toast = new bootstrap.Toast(toastEl, { delay: 5000 });
+        toast.show();
+        
+        // Clean URL to prevent re-showing on refresh
+        window.history.replaceState({}, document.title, window.location.pathname);
+    }
+});
 </script>
 
-<?php include 'includes/footer.php' ?>
+</main>
+
+<footer class="border-top" style="background-color:#EEEEEE; border-color:#e2e8f0 !important;">
+    <div class="container py-5">
+        <div class="row text-center">
+            <div class="col-12 mb-4">
+                <h2 class="fw-bold mb-0" style="color: var(--primary-color); font-size: 2rem; letter-spacing: -0.5px;">
+                    UDHAR CAPITAL
+                </h2>
+            </div>
+        </div>
+        <hr class="my-4" style="border-color: #e2e8f0;">
+        <div class="row align-items-center">
+            <div class="col-lg-4 text-lg-start text-center mb-3 mb-lg-0">
+                <span class="me-3 fw-semibold" style="color: #334155;">Download App</span>
+                <a href="#" class="d-inline-block">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" 
+                         alt="Get it on Google Play" 
+                         style="height: 40px;">
+                </a>
+            </div>
+            <div class="col-lg-4 text-center mb-3 mb-lg-0">
+                <div class="d-flex justify-content-center gap-3">
+                    <a href="#" class="text-dark" style="font-size: 1.5rem;"><i class="fab fa-facebook"></i></a>
+                    <span style="color: #cbd5e1;">|</span>
+                    <a href="#" class="text-dark" style="font-size: 1.5rem;"><i class="fab fa-youtube"></i></a>
+                    <span style="color: #cbd5e1;">|</span>
+                    <a href="#" class="text-dark" style="font-size: 1.5rem;"><i class="fab fa-twitter"></i></a>
+                    <span style="color: #cbd5e1;">|</span>
+                    <a href="#" class="text-dark" style="font-size: 1.5rem;"><i class="fab fa-linkedin"></i></a>
+                    <span style="color: #cbd5e1;">|</span>
+                    <a href="#" class="text-dark" style="font-size: 1.5rem;"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+            <div class="col-lg-4 text-lg-end text-center">
+                <a href="#" class="text-dark text-decoration-none fw-semibold me-3">Media</a>
+                <span style="color: #cbd5e1;">|</span>
+                <a href="#" class="text-dark text-decoration-none fw-semibold ms-3">FAQs</a>
+            </div>
+        </div>
+        <hr class="my-4" style="border-color: #e2e8f0;">
+        <div class="row">
+            <div class="col-12 text-center">
+                <p class="text-muted small mb-0">
+                    Copyright © <?php echo date('Y'); ?> Udhar Capital India. All rights reserved.
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

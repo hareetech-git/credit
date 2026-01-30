@@ -55,7 +55,7 @@
                 <a class="nav-link dropdown-toggle arrow-none nav-user" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false">
                     
                     <span class="d-lg-block d-none">
-                        <h5 class="my-0 fw-normal">Admin<i class="ri-arrow-down-s-line fs-22 d-none d-sm-inline-block align-middle"></i></h5>
+                        <h5 class="my-0 fw-normal"> <?php echo   $_SESSION['customer_name'] ?? 'Customer' ?><i class="ri-arrow-down-s-line fs-22 d-none d-sm-inline-block align-middle"></i></h5>
                     </span>
                 </a>
                 <div class="dropdown-menu dropdown-menu-end dropdown-menu-animated profile-dropdown">

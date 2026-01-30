@@ -264,7 +264,7 @@ while ($row = mysqli_fetch_assoc($menu_res)) {
         <a href="apply-loan.php" class="btn-apply-custom" onclick="scrollToForm()">Apply Now</a>
     </div>
 </div>
-
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     const megaCategoryItems = document.querySelectorAll('.mega-category-item');
     
@@ -308,4 +308,3 @@ while ($row = mysqli_fetch_assoc($menu_res)) {
         toggleMenu(); 
     }
 </script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

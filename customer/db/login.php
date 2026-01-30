@@ -9,7 +9,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     $login = mysqli_real_escape_string($conn, $login);
 
-    // Fetch customer using email OR phone
+
     $sql = "SELECT id, full_name, email, phone, password, status
             FROM customers
             WHERE email = '$login' OR phone = '$login'
@@ -36,7 +36,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $_SESSION['customer_email'] = $customer['email'];
             $_SESSION['customer_phone'] = $customer['phone'];
 
-            header("Location: ../dashboard.php");
+            header("Location: ../profile.php");
             exit;
 
         } else {

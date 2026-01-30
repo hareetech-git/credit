@@ -25,9 +25,9 @@ $banks = $data['banks'];
 $repayments = $data['repayments'];
 $error = $data['error'];
 $pageTitle = $data['pageTitle'];
-
+session_start();
 // Now include header
-require_once 'includes/header.php';
+include 'includes/header.php';
 ?>
 
 <style>

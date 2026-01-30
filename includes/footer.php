@@ -101,58 +101,6 @@
     </style>
 
     <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <script>
-        // Mobile Menu Toggle
-        const mobileToggle = document.getElementById('mobileToggle');
-        const mobileOverlay = document.getElementById('mobileOverlay');
-        const mobileMenu = document.getElementById('mobileMenu');
-        
-        if (mobileToggle) {
-            // Toggle mobile menu
-            mobileToggle.addEventListener('click', function() {
-                this.classList.toggle('active');
-                if (mobileMenu) mobileMenu.classList.toggle('active');
-                if (mobileOverlay) mobileOverlay.classList.toggle('active');
-            });
-            
-            // Close menu when clicking overlay
-            if (mobileOverlay) {
-                mobileOverlay.addEventListener('click', function() {
-                    mobileToggle.classList.remove('active');
-                    if (mobileMenu) mobileMenu.classList.remove('active');
-                    this.classList.remove('active');
-                });
-            }
-        }
-        
-        // Mobile dropdown toggles
-        const mobileLoanToggle = document.getElementById('mobileLoanToggle');
-        const mobileDropdown = document.getElementById('mobileDropdown');
-        
-        if (mobileLoanToggle && mobileDropdown) {
-            mobileLoanToggle.addEventListener('click', function(e) {
-                e.preventDefault();
-                const icon = this.querySelector('i');
-                mobileDropdown.classList.toggle('active');
-                if (icon) {
-                    icon.style.transform = mobileDropdown.classList.contains('active') ? 'rotate(180deg)' : 'rotate(0)';
-                }
-            });
-        }
 
-        // Scroll to form function
-        function scrollToForm() {
-            const form = document.getElementById('loanForm');
-            if (form) {
-                form.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }
-            // Close mobile menu if open
-            if (mobileToggle) mobileToggle.classList.remove('active');
-            if (mobileMenu) mobileMenu.classList.remove('active');
-            if (mobileOverlay) mobileOverlay.classList.remove('active');
-        }
-    </script>
 </body>
 </html>
