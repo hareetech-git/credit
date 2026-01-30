@@ -79,6 +79,7 @@ $customer_active = in_array($current_page, ['add-customer.php', 'customers.php']
 $cat_active      = in_array($current_page, ['category_add.php', 'category.php']);
 $subcat_active   = in_array($current_page, ['subcategory_add.php', 'subcategory.php']);
 $service_active  = in_array($current_page, ['service_add.php', 'services.php', 'plan-work.php']);
+
 ?>
 
 <div class="leftside-menu">
@@ -163,12 +164,12 @@ $service_active  = in_array($current_page, ['service_add.php', 'services.php', '
                     <li><a href="plan-work.php" class="side-nav-link"><i class="fas fa-file-alt"></i> Plan Work Formate</a></li>
                 </ul>
             </li>
-<li class="side-nav-item <?= ($current_page == 'enquiries.php') ? 'active' : '' ?>">
-    <a href="enquiries.php" class="side-nav-link">
-        <i class="ri-question-answer-line"></i>
-        <span>User Enquiries</span>
-    </a>
-</li>
+ <li class="side-nav-item <?= ($current_page == 'enquiries.php') ? 'active' : '' ?>">
+                <a href="enquiries.php" class="side-nav-link">
+                    <i class="ri-question-answer-line"></i>
+                    <span>Enquiry</span>
+                </a>
+            </li>
 
             <li class="side-nav-item">
                 <a href="logout.php" class="side-nav-link text-danger">
