@@ -566,7 +566,7 @@ unset($_SESSION['success_message']);
                 </div>
                 
                 <div class="hero-buttons d-flex flex-row gap-3">
-                    <a href="#loanForm" class="btn btn-primary btn-lg rounded-pill px-5">
+                    <a href="apply-loan.php" class="btn btn-primary btn-lg rounded-pill px-5">
                         <i class="fas fa-file-contract me-2"></i> Apply For Loan
                     </a>
                     

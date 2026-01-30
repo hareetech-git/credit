@@ -84,7 +84,7 @@ include 'includes/header.php';
             <div class="row justify-content-center">
                 <div class="col-lg-10 fade-in-up">
                     <div class="application-box">
-                        <form action="db/submit_loan.php" method="POST" enctype="multipart/form-data">
+                        <form action="insert/submit_loan.php" method="POST" enctype="multipart/form-data">
                             
                             <div class="row g-4">
                                 <div class="col-12">

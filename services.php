@@ -6,7 +6,7 @@ require_once 'insert/service_detail.php';
 $slug = isset($_GET['slug']) ? trim($_GET['slug']) : '';
 
 // Get data from backend
-$data = getServiceData($slug);
+$data = getServiceData(slug: $slug);
 
 // Extract variables for easy use
 $service = $data['service'];
@@ -341,7 +341,7 @@ include 'includes/header.php';
                                 <p>Apply for financial services online at low rates through Udhar Capital.</p>
                             <?php endif; ?>
                         </div>
-                        <a href="#applyForm" class="service-btn-custom">Apply Now <i
+                        <a href="apply-loan.php?slug=<?php echo $slug?>" class="service-btn-custom">Apply Now <i
                                 class="fas fa-arrow-right ms-2"></i></a>
                     </div>
                     <div class="col-lg-6 text-center mt-5 mt-lg-0">
