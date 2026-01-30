@@ -242,7 +242,10 @@ if ($selected_category) {
                                     </div>
                                 </div>
 
-                                <form method="POST" action="db/update/service_update_handler.php">
+                               <form method="POST"
+      action="db/update/service_update_handler.php"
+      enctype="multipart/form-data">
+
                                     <input type="hidden" name="type" value="update_service">
                                     <input type="hidden" name="service_id" value="<?= $service_id ?>">
                                     <input type="hidden" name="category_id" value="<?= $selected_category ?: $service_data['category_id'] ?>">
@@ -272,6 +275,30 @@ if ($selected_category) {
                                         <label class="form-label">Full Description</label>
                                         <textarea name="long_description" class="form-control" rows="5"><?= htmlspecialchars($service_data['long_description']) ?></textarea>
                                     </div>
+                                    <div class="mb-4">
+    <label class="form-label">
+        Service Hero Image
+        <small class="text-muted">(Right side image on service page)</small>
+    </label>
+
+    <?php if (!empty($service_data['hero_image'])): ?>
+        <div class="mb-2">
+            <img src="../<?= htmlspecialchars($service_data['hero_image']) ?>"
+                 style="max-height:80px; border-radius:6px;">
+            <span class="text-muted small ms-2">Current</span>
+        </div>
+    <?php endif; ?>
+
+    <input type="hidden" name="existing_hero_image"
+           value="<?= htmlspecialchars($service_data['hero_image']) ?>">
+
+    <input type="file" name="hero_image" class="form-control" accept="image/*">
+
+    <small class="text-muted" style="font-size:0.75rem;">
+        Upload only if you want to replace the current image
+    </small>
+</div>
+
                                     <button class="btn btn-primary-pro px-5">Update Core Info</button>
                                 </form>
                             <?php } ?>
@@ -286,7 +313,7 @@ if ($selected_category) {
                                 'fees'        => ['title' => 'Fees & Charges', 'table' => 'service_fees_charges', 'handler' => 'update_fee', 'k' => 'fee_key', 'v' => 'fee_value', 'v_type' => 'input'],
                                 'repayment'   => ['title' => 'Loan Repayment', 'table' => 'service_loan_repayment', 'handler' => 'update_repayment', 'k' => 'title', 'v' => 'description'],
                                 'why'         => ['title' => 'Why Choose Us', 'has_image'=>true, 'table' => 'service_why_choose_us', 'handler' => 'update_why', 'k' => 'title', 'v' => 'description'],
-                                'banks'       => ['title' => 'Associated Banks', 'table' => 'service_banks', 'handler' => 'update_bank', 'k' => 'bank_key', 'v' => 'bank_value', 'v_type' => 'input']
+                                'banks'       => ['title' => 'Associated Banks', 'table' => 'service_banks', 'handler' => 'update_bank', 'k' => 'bank_key', 'v' => 'bank_value', 'v_type' => 'input', 'has_image' => true ]
                             ];
 
                             if (array_key_exists($tab, $genericConfigs)) {
@@ -342,14 +369,34 @@ if ($selected_category) {
 
                                                     <?php if(isset($config['has_image']) && $config['has_image']): ?>
                                                         <div class="col-md-4">
-                                                            <?php if(!empty($row['image'])): ?>
-                                                                <div class="mb-1">
-                                                                    <img src="<?= '../'.$row['image'] ?>" alt="Current" style="height:30px; border-radius:4px; margin-right:5px;">
-                                                                    <span class="text-muted small">Current</span>
-                                                                </div>
-                                                            <?php endif; ?>
-                                                            <input type="hidden" name="existing_image[]" value="<?= htmlspecialchars($row['image']) ?>">
-                                                            <input type="file" name="image[]" class="form-control">
+                                                           <?php if ($tab === 'why'): ?>
+    <!-- WHY CHOOSE US (unchanged) -->
+    <?php if(!empty($row['image'])): ?>
+        <div class="mb-1">
+            <img src="<?= '../'.$row['image'] ?>"
+                 style="height:30px; border-radius:4px;">
+            <span class="text-muted small">Current</span>
+        </div>
+    <?php endif; ?>
+
+    <input type="hidden" name="existing_image[]" value="<?= htmlspecialchars($row['image']) ?>">
+    <input type="file" name="image[]" class="form-control">
+
+<?php elseif ($tab === 'banks'): ?>
+    <!-- ✅ BANK IMAGE (NEW LOGIC) -->
+    <?php if(!empty($row['bank_image'])): ?>
+        <div class="mb-1">
+            <img src="<?= '../'.$row['bank_image'] ?>"
+                 style="height:30px; border-radius:4px;">
+            <span class="text-muted small">Current</span>
+        </div>
+    <?php endif; ?>
+
+    <input type="hidden" name="existing_image[]" value="<?= htmlspecialchars($row['bank_image']) ?>">
+    <input type="file" name="image[]" class="form-control">
+
+<?php endif; ?>
+
                                                         </div>
                                                     <?php endif; ?>
 
