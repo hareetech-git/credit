@@ -321,10 +321,7 @@
             white-space: nowrap;
         }
 
-        /* Content footer ke niche chhup na jaye */
-        body {
-            padding-bottom: 50px;
-        }
+
 
         /* Responsive Design */
         @media (max-width: 768px) {
