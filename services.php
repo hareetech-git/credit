@@ -399,9 +399,10 @@ $heroImg = !empty($service['hero_image'])
             <div class="container">
                 <div class="row justify-content-center">
                     <div class="col-lg-10 fade-in-up">
-                        <div class="bg-white p-5 rounded-4 border shadow-sm">
-                            <h3 class="fw-bold mb-4" style="color: var(--service-primary);">Detailed Information</h3>
-                            <div class="fs-5 text-secondary" style="line-height: 1.8;">
+                        <div class=" p-5 rounded-4 border shadow-sm" style="background-color: #1a1241;">
+                            <h3 class="fw-bold mb-4" style="color: white;text-align:center;">Detailed Information</h3>
+                          <div class="fs-5" style="line-height: 1.8; color: #e5e7eb;">
+
                                 <?php
                                 if (!empty($service['long_description'])) {
                                     echo nl2br(htmlspecialchars($service['long_description']));
