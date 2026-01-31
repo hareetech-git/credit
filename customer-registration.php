@@ -217,7 +217,11 @@ include 'includes/connection.php';
                     <label class="form-label">Set Account Password</label>
                     <input type="password" name="password" class="form-control" placeholder="Choose a strong password" required>
                 </div>
-
+<small>
+By continuing, you agree to our 
+<a href="privacy-policy.php">Privacy Policy</a> &
+<a href="terms.php">Terms</a>
+</small>
                 <button type="submit" class="submit-btn">
                     Check Eligibility Now <i class="ri-arrow-right-line"></i>
                 </button>
