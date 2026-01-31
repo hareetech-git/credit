@@ -570,7 +570,7 @@ unset($_SESSION['success_message']);
                         <i class="fas fa-file-contract me-2"></i> Apply For Loan
                     </a>
                     
-                    <a href="tel:+919569408620" class="btn btn-outline-light btn-lg rounded-pill px-5">
+                    <a href="#" class="btn btn-outline-light btn-lg rounded-pill px-5">
                         <i class="fas fa-handshake me-2"></i> Become a DSA Partner
                     </a>
                 </div>
@@ -779,18 +779,19 @@ unset($_SESSION['success_message']);
             <!-- Card 4 -->
             <div class="col-lg-3 col-md-6">
                 <div class="why-choose-card bg-white rounded-3 p-4 h-100 shadow-sm position-relative overflow-hidden">
-                    <div class="why-choose-border position-absolute top-0 start=0 bottom-0"
+                    <div class="why-choose-border position-absolute top-0 start-0 bottom-0"
                           style="width: 4px; background-color: var(--primary-color);"></div>
                     <div class="text-center mb-3">
                         <div class="why-choose-icon bg-danger bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center"
                               style="width: 60px; height: 60px;">
-                            <i class="fas fa-shield-alt fs-3"style="color: #2a0a77;"></i>
+                            <i class="fas fa-money-bill-wave fs-3"style="color: #2a0a77;"></i>
                         </div>
                     </div>
                     <h5 class="fw-bold mb-2 text-center">No Collaterals or Hidden Charges</h5>
-                    <p class="text-muted text-center mb-0 small">Collateral-free loan process with no hidden charges</p>
+                    <p class="text-muted text-center mb-0 small">Transparent loans with no collateral required</p>
                 </div>
             </div>
+
         </div>
     </div>
 </section>

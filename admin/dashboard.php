@@ -2,10 +2,29 @@
 include 'db/config.php';
 
 
+/* ------------------------------
+   Reusable count function
+--------------------------------*/
+function getCount($conn, $table, $where = '') {
+    $sql = "SELECT COUNT(*) AS total FROM $table";
+    if (!empty($where)) {
+        $sql .= " WHERE $where";
+    }
+    $result = mysqli_query($conn, $sql);
+    $row = mysqli_fetch_assoc($result);
+    return $row['total'] ?? 0;
+}
 
-$categoryCount = 12;
-$serviceCount  = 8;
-$sliderCount   = 5;
+/* ------------------------------
+   Dynamic Counts
+--------------------------------*/
+$categoryCount    = getCount($conn, 'service_categories');
+$subCategoryCount = getCount($conn, 'services_subcategories');
+$serviceCount     = getCount($conn, 'services'); // add WHERE if needed
+
+$enquiryCount     = getCount($conn, 'enquiries');
+$customerCount = getCount($conn,'customers' );
+$departmentCount = getCount ($conn,'departments');
 $adminName = $_SESSION['admin_name'] ?? 'Admin';
 ?>
 
@@ -22,111 +41,84 @@ $adminName = $_SESSION['admin_name'] ?? 'Admin';
     }
 
     .content-page { background-color: #fcfcfd; }
-    
-    /* Elegant Greeting */
+
     .greeting-header {
         padding: 40px 0;
         border-bottom: 1px solid var(--slate-200);
         margin-bottom: 40px;
     }
+
     .greeting-header h1 {
         font-size: 1.75rem;
         font-weight: 700;
         color: var(--slate-900);
-        letter-spacing: -0.02em;
-    }
-    .greeting-header p {
-        color: var(--slate-600);
-        font-size: 1rem;
     }
 
-    /* Premium Card Design */
+    .greeting-header p {
+        color: var(--slate-600);
+    }
+
     .stat-card-link {
-        text-decoration: none !important;
+        text-decoration: none;
         display: block;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        transition: all 0.3s;
     }
 
     .stat-card {
-        background: #ffffff;
+        background: #fff;
         border: 1px solid var(--slate-200);
         border-radius: 16px;
         padding: 24px;
-        position: relative;
-        overflow: hidden;
         height: 100%;
     }
 
-    /* Subtle hover: Deep border and soft shadow */
     .stat-card-link:hover .stat-card {
         border-color: var(--slate-900);
-        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05);
+        box-shadow: 0 20px 25px -5px rgba(0,0,0,0.05);
     }
 
-    .stat-card .label {
+    .label {
         font-size: 0.75rem;
         text-transform: uppercase;
         font-weight: 700;
         letter-spacing: 0.1em;
         color: var(--slate-600);
-        margin-bottom: 8px;
-        display: block;
     }
 
-    .stat-card .value {
+    .value {
         font-size: 2.25rem;
         font-weight: 800;
         color: var(--slate-900);
-        display: block;
     }
 
-    .stat-card .footer-link {
+    .footer-link {
         margin-top: 16px;
         font-size: 0.85rem;
         font-weight: 600;
         color: var(--blue-600);
-        display: flex;
-        align-items: center;
     }
 
-    .stat-card .footer-link i {
-        margin-left: 4px;
-        transition: transform 0.2s;
-    }
-
-    .stat-card-link:hover .footer-link i {
-        transform: translateX(4px);
-    }
-
-    /* Quick Action Buttons */
     .action-btn {
         background: var(--slate-900);
-        color: white;
+        color: #fff;
         padding: 12px 24px;
         border-radius: 10px;
         font-weight: 600;
-        border: none;
-        transition: opacity 0.2s;
         text-decoration: none;
-        display: inline-block;
     }
-    
+
     .action-btn-outline {
-        background: transparent;
         border: 1px solid var(--slate-200);
-        color: var(--slate-900);
         padding: 12px 24px;
         border-radius: 10px;
         font-weight: 600;
+        color: var(--slate-900);
         text-decoration: none;
-        display: inline-block;
-        transition: all 0.2s;
     }
 
     .action-btn-outline:hover {
         background: var(--slate-900);
-        color: white;
-        border-color: var(--slate-900);
+        color: #fff;
     }
 </style>
 
@@ -135,48 +127,68 @@ $adminName = $_SESSION['admin_name'] ?? 'Admin';
         <div class="container-fluid">
 
             <div class="greeting-header">
-                <div class="row align-items-center">
-                    <div class="col">
-                        <h1>Welcome, <?= htmlspecialchars($adminName) ?></h1>
-                        <p class="mb-0">System performance and management overview.</p>
-                    </div>
-                </div>
+                <h1>Welcome, <?= htmlspecialchars($adminName) ?></h1>
+                <p>System performance and management overview.</p>
             </div>
 
             <div class="row">
-                
+
                 <div class="col-md-4 mb-4">
-                    <a href="manage-categories.php" class="stat-card-link">
+                    <a href="category.php" class="stat-card-link">
                         <div class="stat-card">
                             <span class="label">Total Categories</span>
                             <span class="value"><?= $categoryCount ?></span>
-                            <div class="footer-link">
-                                View all categories <i class="ri-arrow-right-line"></i>
-                            </div>
+                            <div class="footer-link">View all categories →</div>
                         </div>
                     </a>
                 </div>
 
                 <div class="col-md-4 mb-4">
-                    <a href="manage-services.php" class="stat-card-link">
+                    <a href="subcategory.php" class="stat-card-link">
                         <div class="stat-card">
-                            <span class="label">Services Active</span>
+                            <span class="label">Sub Categories</span>
+                            <span class="value"><?= $subCategoryCount ?></span>
+                            <div class="footer-link">View subcategories →</div>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="col-md-4 mb-4">
+                    <a href="services.php" class="stat-card-link">
+                        <div class="stat-card">
+                            <span class="label">Total Services</span>
                             <span class="value"><?= $serviceCount ?></span>
-                            <div class="footer-link">
-                                Manage services <i class="ri-arrow-right-line"></i>
-                            </div>
+                            <div class="footer-link">Manage services →</div>
+                        </div>
+                    </a>
+                </div>
+
+               <div class="col-md-4 mb-4">
+                    <a href="subcategory.php" class="stat-card-link">
+                        <div class="stat-card">
+                            <span class="label">Sub Categories</span>
+                            <span class="value"><?= $subCategoryCount ?></span>
+                            <div class="footer-link">View subcategories →</div>
+                        </div>
+                    </a>
+                </div>
+              
+              <div class="col-md-4 mb-4">
+                    <a href="departments.php" class="stat-card-link">
+                        <div class="stat-card">
+                            <span class="label">Total Department</span>
+                            <span class="value"><?= $departmentCount ?></span>
+                            <div class="footer-link">Manage Departments →</div>
                         </div>
                     </a>
                 </div>
 
                 <div class="col-md-4 mb-4">
-                    <a href="slider-images.php" class="stat-card-link">
+                    <a href="enquiries.php" class="stat-card-link">
                         <div class="stat-card">
-                            <span class="label">Media Assets</span>
-                            <span class="value"><?= $sliderCount ?></span>
-                            <div class="footer-link">
-                                Update slider <i class="ri-arrow-right-line"></i>
-                            </div>
+                            <span class="label">Total Enquiries</span>
+                            <span class="value"><?= $enquiryCount ?></span>
+                            <div class="footer-link">View enquiries →</div>
                         </div>
                     </a>
                 </div>
@@ -188,12 +200,8 @@ $adminName = $_SESSION['admin_name'] ?? 'Admin';
                     <div class="p-4 bg-white rounded-4 border">
                         <h5 class="fw-bold mb-4">Control Panel</h5>
                         <div class="d-flex gap-3">
-                            <a href="add-category.php" class="action-btn">
-                                Add Category
-                            </a>
-                            <a href="add-service.php" class="action-btn-outline">
-                                New Service Entry
-                            </a>
+                            <a href="add-category.php" class="action-btn">Add Category</a>
+                            <a href="add-service.php" class="action-btn-outline">New Service Entry</a>
                         </div>
                     </div>
                 </div>

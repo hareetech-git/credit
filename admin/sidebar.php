@@ -1,10 +1,10 @@
 <?php
 $current_page = basename($_SERVER['PHP_SELF']);
 
-// 1. Department Active Logic
+
 $dept_active = in_array($current_page, ['add-department.php', 'departments.php']);
 
-// 2. Customer Active Logic (Includes Add, List, Edit, and View pages)
+
 $customer_active = in_array($current_page, [
     'add-customer.php', 
     'customers.php', 
@@ -223,7 +223,7 @@ $service_active  = in_array($current_page, ['service_add.php', 'services.php', '
             </li>
 
             <li class="side-nav-item">
-                <a href="logout.php" class="side-nav-link text-danger">
+                <a href="db/auth-logout.php" class="side-nav-link text-danger">
                     <i class="ri-logout-box-line"></i>
                     <span>Logout</span>
                 </a>

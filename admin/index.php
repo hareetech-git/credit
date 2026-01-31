@@ -70,14 +70,10 @@
             border-radius: 10px;
             font-weight: 600;
             font-size: 0.95rem;
-            transition: opacity 0.2s;
+    
         }
 
-        .btn-login:hover {
-            opacity: 0.9;
-            color: white;
-        }
-
+        
         .side-image {
             object-fit: contain;
             width: 100%;
@@ -112,7 +108,7 @@
                                            required placeholder="••••••••">
                                 </div>
 
-                                <button class="btn btn-login w-100 mb-3" type="submit">
+                                <button class=" btn-login w-100 mb-3" type="submit">
                                     Sign In
                                 </button>
                                 

@@ -1,9 +1,9 @@
 <style>
     :root {
-        --nav-bg: #000000; /* Pure Black Sidebar */
-        --nav-text: #94a3b8; /* Muted slate for inactive */
-        --nav-active: #ffffff; /* Pure white for active */
-        --nav-hover-bg: #171717; /* Very subtle grey on hover */
+        --nav-bg: #000000; 
+        --nav-text: #94a3b8; 
+        --nav-active: #ffffff; 
+        --nav-hover-bg: #171717; 
     }
 
     .leftside-menu {
@@ -13,7 +13,7 @@
     }
 
     .side-nav-title {
-        color: #4b5563 !important; /* Dimmer grey for titles */
+        color: #4b5563 !important; 
         font-size: 0.65rem !important;
         text-transform: uppercase !important;
         letter-spacing: 0.15em !important;
@@ -35,7 +35,7 @@
     .side-nav-link i {
         font-size: 1.2rem !important;
         margin-right: 14px !important;
-        color: #3f3f46 !important; /* Darker grey icons to blend in */
+        color: #3f3f46 !important; 
         transition: color 0.3s ease;
     }
 
@@ -51,7 +51,7 @@
     .side-nav-item.active .side-nav-link {
         color: var(--nav-active) !important;
         background: var(--nav-hover-bg);
-        border-right: 3px solid #ffffff; /* White indicator */
+        border-right: 3px solid #ffffff;
     }
 
     .side-nav-item.active i {
