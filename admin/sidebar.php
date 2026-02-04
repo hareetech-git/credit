@@ -1,28 +1,32 @@
 <?php
 $current_page = basename($_SERVER['PHP_SELF']);
 
-
+// 1. Existing Active Logic
 $dept_active = in_array($current_page, ['add-department.php', 'departments.php']);
 
-
 $customer_active = in_array($current_page, [
-    'add-customer.php', 
+    'customer_add.php', 
     'customers.php', 
     'customer_edit.php', 
     'customer_view.php'
 ]);
 
-// 3. Loan Active Logic (Includes List, Details, and Rejected pages)
 $loan_active = in_array($current_page, [
     'loan_applications.php', 
     'loan_view.php', 
     'rejected_loans.php'
 ]);
 
-// 4. Category & Service Active Logic
 $cat_active      = in_array($current_page, ['category_add.php', 'category.php']);
 $subcat_active   = in_array($current_page, ['subcategory_add.php', 'subcategory.php']);
 $service_active  = in_array($current_page, ['service_add.php', 'services.php', 'service_edit.php', 'service_details.php', 'plan-work.php']);
+
+// 2. NEW: Staff & Permissions Active Logic
+$staff_active = in_array($current_page, [
+    'staff_add.php', 
+    'staff_list.php', 
+    'manage_permissions.php'
+]);
 ?>
 
 <style>
@@ -40,7 +44,7 @@ $service_active  = in_array($current_page, ['service_add.php', 'services.php', '
         height: 100%;
         box-shadow: 4px 0 10px rgba(0,0,0,0.1);
         z-index: 1000;
-        overflow-y: auto; /* Allow scrolling if menu is long */
+        overflow-y: auto;
     }
 
     .side-nav-link {
@@ -59,7 +63,6 @@ $service_active  = in_array($current_page, ['service_add.php', 'services.php', '
         color: #64748b;
     }
 
-    /* Submenu Arrow logic */
     .has-arrow::after {
         content: "\ea4e"; 
         font-family: 'remixicon';
@@ -71,7 +74,6 @@ $service_active  = in_array($current_page, ['service_add.php', 'services.php', '
         transform: rotate(180deg);
     }
 
-    /* Submenu Container */
     .side-nav-second-level {
         list-style: none;
         padding: 0;
@@ -79,12 +81,10 @@ $service_active  = in_array($current_page, ['service_add.php', 'services.php', '
         background: rgba(255, 255, 255, 0.03);
     }
 
-    /* Show submenu if parent is active */
     .side-nav-item.active .side-nav-second-level {
         display: block;
     }
 
-    /* Sub-item Styling with indentation */
     .side-nav-second-level .side-nav-link {
         padding: 10px 20px 10px 45px !important; 
         font-size: 0.825rem !important;
@@ -128,6 +128,20 @@ $service_active  = in_array($current_page, ['service_add.php', 'services.php', '
                 </a>
             </li>
 
+            <li class="side-nav-item <?= $staff_active ? 'active' : '' ?>">
+                <a href="javascript:void(0);" class="side-nav-link has-arrow">
+                    <i class="ri-user-settings-line"></i>
+                    <span>Staff Control</span>
+                </a>
+                <ul class="side-nav-second-level">
+                    <li><a href="staff_add.php" class="side-nav-link"><i class="fas fa-plus"></i> Add Staff</a></li>
+                    <li><a href="staff_list.php" class="side-nav-link"><i class="fas fa-users-cog"></i> View Staff</a></li>
+                    <li><a href="manage_permissions.php" class="side-nav-link"><i class="fas fa-user-shield"></i> Manage Access</a></li>
+                </ul>
+            </li>
+
+            <li class="side-nav-title">CRM & Finance</li>
+
             <li class="side-nav-item <?= $dept_active ? 'active' : '' ?>">
                 <a href="javascript:void(0);" class="side-nav-link has-arrow">
                     <i class="ri-building-line"></i>
@@ -139,24 +153,14 @@ $service_active  = in_array($current_page, ['service_add.php', 'services.php', '
                 </ul>
             </li>
 
-            <li class="side-nav-title">CRM & Finance</li>
-
             <li class="side-nav-item <?= $customer_active ? 'active' : '' ?>">
                 <a href="javascript:void(0);" class="side-nav-link has-arrow">
                     <i class="ri-user-star-line"></i>
                     <span>Manage Customer</span>
                 </a>
                 <ul class="side-nav-second-level">
-                    <li>
-                        <a href="customer_add.php" class="side-nav-link">
-                            <i class="fas fa-user-plus"></i> Add Customer
-                        </a>
-                    </li>
-                    <li>
-                        <a href="customers.php" class="side-nav-link">
-                            <i class="fas fa-users"></i> View Customers
-                        </a>
-                    </li>
+                    <li><a href="customer_add.php" class="side-nav-link"><i class="fas fa-user-plus"></i> Add Customer</a></li>
+                    <li><a href="customers.php" class="side-nav-link"><i class="fas fa-users"></i> View Customers</a></li>
                 </ul>
             </li>
 
@@ -166,16 +170,8 @@ $service_active  = in_array($current_page, ['service_add.php', 'services.php', '
                     <span>Loan Management</span>
                 </a>
                 <ul class="side-nav-second-level">
-                    <li>
-                        <a href="loan_applications.php" class="side-nav-link">
-                            <i class="fas fa-file-invoice-dollar"></i> All Applications
-                        </a>
-                    </li>
-                    <li>
-                        <a href="loan_applications.php?status=rejected" class="side-nav-link">
-                            <i class="fas fa-ban"></i> Rejected Applications
-                        </a>
-                    </li>
+                    <li><a href="loan_applications.php" class="side-nav-link"><i class="fas fa-file-invoice-dollar"></i> All Applications</a></li>
+                    <li><a href="loan_applications.php?status=rejected" class="side-nav-link"><i class="fas fa-ban"></i> Rejected Apps</a></li>
                 </ul>
             </li>
 
@@ -231,4 +227,3 @@ $service_active  = in_array($current_page, ['service_add.php', 'services.php', '
         </ul>
     </div>
 </div>
-

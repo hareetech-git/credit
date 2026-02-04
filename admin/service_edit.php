@@ -63,8 +63,13 @@ if ($selected_category) {
         --slate-600: #475569;
         --slate-200: #e2e8f0;
         --primary-accent: #2563eb;
+        --danger-red: #e11d48;
     }
-
+.input-error-aadhaar {
+    border-color: var(--danger-red) !important;
+    background-color: #fff1f2 !important;
+    box-shadow: 0 0 0 0.25rem rgba(225, 29, 72, 0.1);
+}
     .content-page { background-color: #fcfcfd; }
     
     .tab-navigation {
@@ -309,7 +314,7 @@ if ($selected_category) {
                                 'overview'    => ['title' => 'Service Overview', 'has_title'=>true, 'table' => 'service_overview', 'handler' => 'update_overview'],
                                 'features'    => ['title' => 'Service Features', 'table' => 'service_features', 'handler' => 'update_feature', 'k' => 'title', 'v' => 'description'],
                                 'eligibility' => ['title' => 'Eligibility Criteria', 'table' => 'service_eligibility_criteria', 'handler' => 'update_eligibility', 'k' => 'criteria_key', 'v' => 'criteria_value'],
-                                'documents'   => ['title' => 'Required Documents', 'table' => 'service_documents', 'handler' => 'update_document', 'k' => 'doc_name', 'v' => 'disclaimer'],
+                                'documents'   => ['title' => 'Required Documents', 'table' => 'service_documents', 'handler' => 'update_document', 'k' => 'doc_name', 'v' => 'disclaimer' ,'legal_notice' => 'Notice: As per applicable regulations, Aadhaar numbers must not be collected on this platform. Please use other Identity Proof instead.'],
                                 'fees'        => ['title' => 'Fees & Charges', 'table' => 'service_fees_charges', 'handler' => 'update_fee', 'k' => 'fee_key', 'v' => 'fee_value', 'v_type' => 'input'],
                                 'repayment'   => ['title' => 'Loan Repayment', 'table' => 'service_loan_repayment', 'handler' => 'update_repayment', 'k' => 'title', 'v' => 'description'],
                                 'why'         => ['title' => 'Why Choose Us', 'has_image'=>true, 'table' => 'service_why_choose_us', 'handler' => 'update_why', 'k' => 'title', 'v' => 'description'],
@@ -323,7 +328,12 @@ if ($selected_category) {
                                 ?>
                                 <h3 class="fw-bold mb-1"><?= $config['title'] ?></h3>
                                 <p class="text-muted mb-5">Update the specific data points for this section.</p>
-
+<?php if (isset($config['legal_notice'])): ?>
+    <div class="alert alert-warning border-0 mb-4" style="background: #fff9db; border-left: 4px solid #fab005 !important;">
+        <small class="fw-bold text-dark"><i class="fas fa-balance-scale me-2"></i> COMPLIANCE:</small>
+        <p class="mb-0 text-muted" style="font-size: 0.85rem;"><?= $config['legal_notice'] ?></p>
+    </div>
+<?php endif; ?>
                                 <form method="POST" action="db/update/service_update_handler.php" <?= $encType ?>>
                                     <input type="hidden" name="type" value="<?= $config['handler'] ?>">
                                     <input type="hidden" name="service_id" value="<?= $service_id ?>">
@@ -487,6 +497,24 @@ function removeRow(btn) {
     const row = btn.closest('.overview-row') || btn.closest('.input-row');
     if (row) row.remove();
 }
+
+// Function to check for "Aadhaar" variations
+function validateAadhaar(input) {
+    const pattern = /a+d+h+a+r/i; 
+    if (pattern.test(input.value)) {
+        input.classList.add('input-error-aadhaar');
+    } else {
+        input.classList.remove('input-error-aadhaar');
+    }
+}
+
+// Global listener for typing
+document.addEventListener('input', function (e) {
+    // This matches the field name used in the 'documents' tab
+    if (e.target && e.target.name === 'doc_name[]') {
+        validateAadhaar(e.target);
+    }
+});
 </script>
 
 <?php include 'footer.php'; ?>

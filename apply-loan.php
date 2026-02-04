@@ -1,191 +1,372 @@
 <?php
-// apply-loan.php
 include 'includes/connection.php';
 require_once 'insert/service_detail.php'; 
 session_start();
 
-// --- 1. AUTH & PROFILE GATE ---
-if (!isset($_SESSION['customer_id'])) {
-    header("Location: login.php?err=Please login to apply&type=toast");
-    exit;
+$is_logged_in = isset($_SESSION['customer_id']);
+$cid = $is_logged_in ? $_SESSION['customer_id'] : null;
+
+// --- REDIRECT LOGIC ---
+$current_slug = isset($_GET['slug']) ? "slug=" . urlencode($_GET['slug']) : "";
+$return_path = "apply-loan.php" . ($current_slug ? "?" . $current_slug : "");
+
+// Detect if the user just wants to register
+$is_register_only = isset($_GET['mode']) && $_GET['mode'] === 'register';
+
+$pData = [];
+if ($is_logged_in) {
+    $res = mysqli_query($conn, "SELECT c.*, cp.* FROM customers c LEFT JOIN customer_profiles cp ON c.id = cp.customer_id WHERE c.id = $cid");
+    $pData = mysqli_fetch_assoc($res);
 }
 
-$customer_id = $_SESSION['customer_id'];
-
-// Check 100% completion (Aadhaar, PAN, References, etc.)
-$checkQuery = "SELECT c.aadhaar_number, cp.* FROM customers c 
-               LEFT JOIN customer_profiles cp ON c.id = cp.customer_id 
-               WHERE c.id = $customer_id";
-$checkRes = mysqli_query($conn, $checkQuery);
-$pData = mysqli_fetch_assoc($checkRes);
-
-$pFields = ['aadhaar_number','pan_number','birth_date','state','city','pin_code','employee_type','monthly_income','reference1_name','reference1_phone'];
-$filled = 0;
-foreach ($pFields as $f) { if (!empty($pData[$f])) $filled++; }
-$percentage = round(($filled / count($pFields)) * 100);
-
-if ($percentage < 100) {
-    header("Location: customer/profile.php?err=Complete profile 100% to apply&type=toast");
-    exit;
-}
-
-// --- 2. GET SERVICE DATA (Slug Logic) ---
 $slug = isset($_GET['slug']) ? trim($_GET['slug']) : '';
-$selected_service = null;
-
+$pre_selected_id = null;
 if (!empty($slug)) {
-    $data = getServiceData($slug);
-    $selected_service = $data['service'];
+    $slugRes = mysqli_query($conn, "SELECT id FROM services WHERE slug = '" . mysqli_real_escape_string($conn, $slug) . "' LIMIT 1");
+    if($sRow = mysqli_fetch_assoc($slugRes)) { $pre_selected_id = $sRow['id']; }
 }
-
-// Always fetch all services for the dropdown fallback
-$all_services = mysqli_query($conn, "SELECT id, service_name, slug FROM services ORDER BY service_name ASC");
 
 include 'includes/header.php';
 ?>
 
 <style>
-    :root {
-        --service-primary: #130c3b; 
-        --service-accent: #00a08e; 
-        --service-bg: #f9fafb;
-        --service-text: #4b5563;
-        --service-border: #e5e7eb;
-    }
-
-    .fade-in-up { animation: fadeInUp 0.8s ease-out forwards; opacity: 0; transform: translateY(30px); }
-    @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-
-    .service-hero-section { padding: 60px 0; background: linear-gradient(135deg, #f0fdfa 0%, #fff 100%); }
-    .application-box { background: white; padding: 40px; border-radius: 20px; border: 1px solid var(--service-border); box-shadow: 0 20px 40px rgba(0,0,0,0.05); }
-    .form-label { font-weight: 700; text-transform: uppercase; font-size: 0.75rem; color: var(--service-primary); margin-bottom: 8px; display: block; }
-    .form-control, .form-select { border-radius: 10px; padding: 12px; border: 1px solid var(--service-border); background: #f8fafc; }
+    :root { --udhhar-navy: #0b081b; --udhhar-teal: #00d4aa; --udhhar-border: #eef2f6; }
+    body { background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); font-family: 'Plus Jakarta Sans', sans-serif; }
     
-    .doc-upload-item { border: 2px dashed var(--service-border); padding: 20px; border-radius: 15px; text-align: center; margin-bottom: 20px; transition: 0.3s; }
-    .doc-upload-item:hover { border-color: var(--service-accent); background: #f0fdfa; }
+    .wireframe-stepper { display: flex; justify-content: space-between; margin-bottom: 50px; position: relative; max-width: 600px; margin: 0 auto; }
+    .progress-track { position: absolute; top: 20px; left: 0; width: 100%; height: 4px; background: #d1d5db; z-index: 0; }
+    .progress-fill { position: absolute; top: 20px; left: 0; width: 0%; height: 4px; background: var(--udhhar-teal); z-index: 1; transition: 0.5s ease; }
+    .step-item { position: relative; z-index: 2; text-align: center; width: 60px; }
+    .step-blob { width: 44px; height: 44px; background: white; border: 3px solid #d1d5db; border-radius: 14px; margin: 0 auto 8px; display: flex; align-items: center; justify-content: center; font-weight: 800; transition: 0.4s; }
+    
+    .step-item.active .step-blob { border-color: var(--udhhar-teal); color: var(--udhhar-teal); transform: scale(1.1); box-shadow: 0 10px 20px rgba(0, 212, 170, 0.2); }
+    .step-item.completed .step-blob { background: var(--udhhar-teal); border-color: var(--udhhar-teal); color: white; }
 
-    .service-btn-custom { padding: 16px 45px; font-weight: 600; border-radius: 50px; background: var(--service-accent); color: white; border: none; transition: 0.3s; cursor: pointer; }
-    .service-btn-custom:hover { background: var(--service-primary); transform: translateY(-3px); }
+    .apply-glass-card { background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(15px); border-radius: 30px; border: 1px solid white; box-shadow: 0 30px 60px rgba(11, 8, 27, 0.1); }
+    .form-label { font-weight: 700; font-size: 0.75rem; text-transform: uppercase; color: var(--udhhar-navy); margin-bottom: 8px; display: block; }
+    .form-control, .form-select { border-radius: 12px; padding: 12px; border: 2px solid var(--udhhar-border); background: #fbfcfd; font-size: 0.9rem; }
+    .form-control:focus { border-color: var(--udhhar-teal); box-shadow: none; background: white; }
+    .section-title { font-weight: 800; color: var(--udhhar-navy); border-left: 4px solid var(--udhhar-teal); padding-left: 15px; margin-bottom: 25px; }
+    .consent-wrapper { background: #f8fafc; border-radius: 20px; border: 1px solid var(--udhhar-border); }
+    .login-banner { background: white; border-radius: 50px; padding: 10px 25px; display: inline-block; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; border: 1px solid var(--udhhar-border); }
 </style>
 
-<main>
-    <section class="service-hero-section fade-in-up">
-        <div class="container text-center">
-            <span class="badge bg-light text-primary mb-3 px-3 py-2 border">Secure Loan Application</span>
-            <h1 class="fw-bold" style="color: var(--service-primary); font-size: 2.5rem;">
-                <?= $selected_service ? 'Apply for ' . htmlspecialchars($selected_service['service_name']) : 'Start Your Application' ?>
-            </h1>
-            <p class="text-muted mx-auto" style="max-width: 600px;">Fast-track your funding by providing the details below. Our team reviews applications in real-time.</p>
-        </div>
-    </section>
-
-    <section class="section-padding bg-light" style="padding: 60px 0;">
-        <div class="container">
-            <div class="row justify-content-center">
-                <div class="col-lg-10 fade-in-up">
-                    <div class="application-box">
-                        <form action="insert/submit_loan.php" method="POST" enctype="multipart/form-data">
-                            
-                            <div class="row g-4">
-                                <div class="col-12">
-                                    <label class="form-label">Type of Loan Service</label>
-                                    <?php if ($selected_service): ?>
-                                        <input type="text" class="form-control" value="<?= htmlspecialchars($selected_service['service_name']) ?>" readonly>
-                                        <input type="hidden" name="service_id" id="service_id" value="<?= $selected_service['id'] ?>">
-                                    <?php else: ?>
-                                        <select name="service_id" id="service_id" class="form-select" required onchange="loadRequiredDocs(this.value)">
-                                            <option value="">-- Choose a Loan Product --</option>
-                                            <?php while($s = mysqli_fetch_assoc($all_services)): ?>
-                                                <option value="<?= $s['id'] ?>"><?= $s['service_name'] ?></option>
-                                            <?php endwhile; ?>
-                                        </select>
-                                    <?php endif; ?>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <label class="form-label">Required Loan Amount (₹)</label>
-                                    <input type="number" name="requested_amount" class="form-control" placeholder="e.g. 500000" required>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label">Tenure Preference</label>
-                                    <select name="tenure_years" class="form-select" required>
-                                        <?php for($i=1; $i<=15; $i++) echo "<option value='$i'>$i Year".($i>1?'s':'')."</option>"; ?>
-                                    </select>
-                                </div>
-
-                                <div class="col-12 mt-5">
-                                    <h4 class="fw-bold mb-4" style="color: var(--service-primary);">Upload Required Documents</h4>
-                                    <div class="row" id="doc_container">
-                                        <?php 
-                                        if($selected_service):
-                                            $sid = $selected_service['id'];
-                                            $docRes = mysqli_query($conn, "SELECT * FROM service_documents WHERE service_id = $sid");
-                                            while($doc = mysqli_fetch_assoc($docRes)):
-                                        ?>
-                                            <div class="col-md-6">
-                                                <div class="doc-upload-item">
-                                                    <i class="fas fa-cloud-upload-alt fa-2x text-muted mb-2"></i>
-                                                    <label class="d-block fw-bold small mb-2"><?= $doc['doc_name'] ?></label>
-                                                    <input type="file" name="loan_docs[<?= str_replace(' ', '_', $doc['doc_name']) ?>]" class="form-control form-control-sm" required>
-                                                </div>
-                                            </div>
-                                        <?php 
-                                            endwhile;
-                                        else:
-                                            echo '<div class="col-12 text-center py-4 text-muted border rounded">Please select a service above to see document requirements.</div>';
-                                        endif; 
-                                        ?>
-                                    </div>
-                                </div>
-
-                                <div class="col-12 text-center mt-5 border-top pt-5">
-                                    <button type="submit" class="service-btn-custom shadow-lg">
-                                        Submit My Application <i class="fas fa-paper-plane ms-2"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-11">
+            
+            <?php if(!$is_logged_in): ?>
+            <div class="text-center">
+                <div class="login-banner">
+                    <span class="text-muted small fw-bold">ALREADY HAVE AN ACCOUNT?</span> 
+                    <a href="login.php?redirect=<?= urlencode($return_path) ?>" class="ms-2 fw-bold text-decoration-none" style="color: var(--udhhar-navy);">
+                        LOGIN HERE <i class="fas fa-chevron-right ms-1 small"></i>
+                    </a>
                 </div>
             </div>
+            <?php endif; ?>
+
+            <div class="wireframe-stepper">
+                <div class="progress-track"></div>
+                <div class="progress-fill" id="progressLine"></div>
+                
+                <div class="step-item <?= $is_logged_in ? 'completed' : 'active' ?>" id="s0">
+                    <div class="step-blob"><?= $is_logged_in ? '✓' : '1' ?></div>
+                    <small class="fw-bold">Auth</small>
+                </div>
+                
+                <div class="step-item <?= $is_logged_in ? 'completed' : '' ?>" id="s1">
+                    <div class="step-blob"><?= $is_logged_in ? '✓' : '2' ?></div>
+                    <small class="fw-bold">Profile</small>
+                </div>
+
+                <?php if(!$is_register_only): ?>
+                <div class="step-item <?= $is_logged_in ? 'active' : '' ?>" id="s2">
+                    <div class="step-blob">3</div>
+                    <small class="fw-bold">Apply</small>
+                </div>
+                <?php endif; ?>
+            </div>
+
+            <div class="apply-glass-card mt-4">
+                <form id="loanForm" action="insert/process_universal_apply.php" method="POST" enctype="multipart/form-data">
+                    <input type="hidden" name="mode" value="<?= $is_register_only ? 'register' : 'apply' ?>">
+
+                    <div class="p-4 p-md-5">
+                        
+                        <?php if(!$is_logged_in): ?>
+                        <div class="tab" id="tab0">
+                            <h4 class="section-title">Step 1: Account Setup</h4>
+                            <div class="row g-4">
+                                <div class="col-md-6"><label class="form-label">Full Name</label><input type="text" name="full_name" class="form-control" required></div>
+                                <div class="col-md-6"><label class="form-label">Mobile</label><input type="text" name="phone" class="form-control" required pattern="[6-9]{1}[0-9]{9}"></div>
+                                <div class="col-md-6"><label class="form-label">Email</label><input type="email" name="email" class="form-control" required></div>
+                                <div class="col-md-6"><label class="form-label">Password</label><input type="password" name="password" class="form-control" required minlength="8"></div>
+                                <div class="col-md-12"><label class="form-label">Birth Date</label><input type="date" name="birth_date" class="form-control" required></div>
+                            </div>
+                        </div>
+
+                        <div class="tab d-none" id="tab1">
+                            <h4 class="section-title">Step 2: Profile & KYC</h4>
+                            <div class="row g-4">
+                                <div class="col-md-4"><label class="form-label">PAN Number</label><input type="text" name="pan_number" class="form-control" style="text-transform:uppercase" required pattern="[A-Z]{5}[0-9]{4}[A-Z]{1}"></div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Employment</label>
+                                    <select name="employee_type" id="employee_type" class="form-select" onchange="toggleCompany(this.value)">
+                                        <option value="salaried">Salaried</option>
+                                        <option value="business">Business Owner</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4"><label class="form-label">Monthly Income</label><input type="number" name="monthly_income" class="form-control" required></div>
+                                
+                                <div class="col-md-12" id="comp_box" style="display:none">
+                                    <label class="form-label">Company / Business Name</label>
+                                    <input type="text" name="company_name" id="comp_input" class="form-control">
+                                </div>
+
+                                <div class="col-md-4"><label class="form-label">State</label><input type="text" name="state" class="form-control" required></div>
+                                <div class="col-md-4"><label class="form-label">City</label><input type="text" name="city" class="form-control" required></div>
+                                <div class="col-md-4"><label class="form-label">Pin Code</label><input type="text" name="pin_code" class="form-control" required maxlength="6" pattern="[0-9]{6}"></div>
+                                
+                                <div class="col-md-6">
+                                    <label class="form-label">Reference 1</label>
+                                    <div class="input-group">
+                                        <input type="text" name="reference1_name" class="form-control" placeholder="Name" required>
+                                        <input type="text" name="reference1_phone" class="form-control" placeholder="Mobile" required maxlength="10">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Reference 2</label>
+                                    <div class="input-group">
+                                        <input type="text" name="reference2_name" class="form-control" placeholder="Name" required>
+                                        <input type="text" name="reference2_phone" class="form-control" placeholder="Mobile" required maxlength="10">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <?php endif; ?>
+
+                        <?php if(!$is_register_only): ?>
+                       <div class="tab <?= ($is_logged_in && !$is_register_only) ? '' : 'd-none' ?>" id="tab2">
+                            <h4 class="section-title">Step 3: Loan Submission</h4>
+                            <div class="row g-4">
+                                <div class="col-md-6">
+                                    <label class="form-label">Loan Product</label>
+                                    <select name="service_id" id="service_select" class="form-select" onchange="fetchDocs(this.value)" required>
+                                        <option value="">-- Choose --</option>
+                                        <?php 
+                                        $sQuery = mysqli_query($conn, "SELECT id, service_name FROM services");
+                                        while($s = mysqli_fetch_assoc($sQuery)): 
+                                            $sel = ($pre_selected_id == $s['id']) ? 'selected' : '';
+                                        ?>
+                                            <option value="<?= $s['id'] ?>" <?= $sel ?>><?= $s['service_name'] ?></option>
+                                        <?php endwhile; ?>
+                                    </select>
+                                </div>
+                                <div class="col-md-6"><label class="form-label">Amount Required (₹)</label><input type="number" name="requested_amount" class="form-control" required></div>
+                                <div class="col-12"><div id="doc_container" class="row g-3"></div></div>
+                                
+                                <div class="col-12">
+                                    <div class="consent-wrapper p-4">
+                                        <div class="form-check mb-2"><input class="form-check-input" type="checkbox" id="c2" onchange="toggleSubmit()"><label class="form-check-label small fw-bold">I agree to Terms & Conditions.</label></div>
+                                        <div class="form-check"><input class="form-check-input" type="checkbox" id="c3" onchange="toggleSubmit()"><label class="form-check-label small fw-bold">I accept the Privacy Policy.</label></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <?php endif; ?>
+
+                        <div class="d-flex justify-content-between mt-5 pt-4 border-top">
+                            <button type="button" class="btn btn-light" id="prevBtn" onclick="changeTab(-1)">Back</button>
+                            <button type="button" class="btn btn-dark px-5 py-3 fw-bold" id="nextBtn" onclick="changeTab(1)" style="border-radius:15px; background:var(--udhhar-navy)">Next Step</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
         </div>
-    </section>
-</main>
+    </div>
+</div>
+
 
 <script>
-/**
- * Dynamic Document Loader for the Dropdown mode
- */
-async function loadRequiredDocs(serviceId) {
-    if(!serviceId) return;
-    const container = document.getElementById('doc_container');
-    container.innerHTML = '<div class="col-12 text-center py-4"><i class="fas fa-spinner fa-spin fa-2x text-muted"></i><p>Fetching requirements...</p></div>';
+    // Configuration from PHP
+    const isLoggedIn = <?= $is_logged_in ? 'true' : 'false' ?>;
+    const isRegisterOnly = <?= $is_register_only ? 'true' : 'false' ?>;
+    
+    // Always start at 0. 
+    // If logged in, tabs[0] is the Apply tab. 
+    // If guest, tabs[0] is the Auth tab.
+    let currentTab = 0; 
+    const tabs = document.getElementsByClassName("tab");
 
-    try {
-        const response = await fetch(`api/get_service_docs.php?service_id=${serviceId}`);
-        const docs = await response.json();
+    /**
+     * Core function to display the correct step
+     */
+    function showTab(n) {
+        if (!tabs[n]) return; // Safety guard: exit if tab index doesn't exist in DOM
+
+        // 1. Hide all tabs to prevent overlaps
+        for (let i = 0; i < tabs.length; i++) {
+            tabs[i].classList.add("d-none");
+        }
         
-        container.innerHTML = '';
-        if(docs.length === 0) {
-            container.innerHTML = '<div class="col-12 text-center text-muted py-4 border rounded">No specific documents required. We will use your profile KYC.</div>';
-            return;
+        // 2. Show the target tab
+        tabs[n].classList.remove("d-none");
+
+        const prevBtn = document.getElementById("prevBtn");
+        const nextBtn = document.getElementById("nextBtn");
+
+        // 3. UI Logic for Logged In Users (Step 3 only)
+        if (isLoggedIn && !isRegisterOnly) {
+            prevBtn.style.display = "none";
+            nextBtn.innerText = "Submit Application";
+            
+            // Update Stepper to show steps 1 & 2 as completed
+            document.getElementById('s0')?.classList.add('completed');
+            document.getElementById('s1')?.classList.add('completed');
+            document.getElementById('s2')?.classList.add('active');
+            document.getElementById("progressLine").style.width = "100%";
+            
+            toggleSubmit(); // Verify checkboxes for Step 3
+        } 
+        // 4. UI Logic for Guests (Multi-step)
+        else {
+            prevBtn.style.display = (n === 0) ? "none" : "block";
+            
+            let totalSteps = isRegisterOnly ? 1 : 2; 
+            document.getElementById("progressLine").style.width = (n / totalSteps) * 100 + "%";
+            
+            // Sync Stepper Classes
+            for(let i=0; i <= 2; i++) {
+                let el = document.getElementById('s'+i);
+                if(el) {
+                    el.classList.remove('completed', 'active');
+                    if(i < n) el.classList.add('completed');
+                    if(i === n) el.classList.add('active');
+                }
+            }
+
+            // Determine if this is the final visible tab
+            let isFinalTab = (isRegisterOnly && n === 1) || (!isRegisterOnly && n === 2);
+            if (isFinalTab) {
+                nextBtn.innerText = isRegisterOnly ? "Complete Registration" : "Submit Application";
+                if(!isRegisterOnly) toggleSubmit();
+            } else {
+                nextBtn.innerText = "Next Step";
+                nextBtn.disabled = false;
+                nextBtn.style.opacity = "1";
+            }
+        }
+    }
+
+    /**
+     * Handles Next/Back navigation
+     */
+    function changeTab(n) {
+        if (n === 1 && !validateForm()) return;
+        
+        // If in "Register Only" mode and finishing Step 2
+        if (isRegisterOnly && currentTab === 1 && n === 1) { 
+            document.getElementById("loanForm").submit(); 
+            return; 
         }
 
-        docs.forEach(doc => {
-            container.innerHTML += `
-                <div class="col-md-6">
-                    <div class="doc-upload-item">
-                        <i class="fas fa-file-image text-muted mb-2 fa-lg"></i>
-                        <label class="d-block fw-bold small text-dark mb-2">${doc.doc_name}</label>
-                        <input type="file" name="loan_docs[${doc.doc_name.replace(/ /g, '_')}]" class="form-control form-control-sm" required>
-                    </div>
-                </div>
-            `;
-        });
-    } catch (e) {
-        container.innerHTML = '<div class="alert alert-danger">Network error. Please refresh and try again.</div>';
+        currentTab += n;
+
+        // If we reached the end of the tabs currently in the DOM
+        if (currentTab >= tabs.length) { 
+            document.getElementById("loanForm").submit(); 
+            return; 
+        }
+        
+        showTab(currentTab);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
-}
+
+    /**
+     * Validates required fields on the current tab
+     */
+    function validateForm() {
+        let inputs = tabs[currentTab].querySelectorAll("input[required], select[required]");
+        let valid = true;
+        inputs.forEach(i => {
+            if(!i.checkValidity()) { 
+                i.classList.add("is-invalid"); 
+                valid = false; 
+            } else { 
+                i.classList.remove("is-invalid"); 
+            }
+        });
+        return valid;
+    }
+
+    /**
+     * Manages the Submit button state based on checkboxes
+     */
+    function toggleSubmit() {
+        // Find checkboxes (c2 is Terms, c3 is Privacy)
+        const c2 = document.getElementById("c2");
+        const c3 = document.getElementById("c3");
+        const btn = document.getElementById("nextBtn");
+
+        // If checkboxes exist (Step 3), validate them
+        if (c2 && c3) {
+            const isReady = c2.checked && c3.checked;
+            btn.disabled = !isReady;
+            btn.style.opacity = isReady ? "1" : "0.5";
+        }
+    }
+
+    /**
+     * Dynamic document fetch for Step 3
+     */
+    async function fetchDocs(sid) {
+        if(!sid) return;
+        try {
+            const res = await fetch(`api/get_service_docs.php?service_id=${sid}`);
+            const docs = await res.json();
+            const container = document.getElementById('doc_container');
+            container.innerHTML = '';
+            docs.forEach(d => {
+                container.innerHTML += `
+                    <div class="col-md-6">
+                        <div class="p-3 border rounded bg-white text-center">
+                            <label class="form-label small">${d.doc_name}</label>
+                            <input type="file" name="loan_docs[${d.doc_name.replace(/ /g, '_')}]" class="form-control form-control-sm" required>
+                        </div>
+                    </div>`;
+            });
+        } catch (e) { console.error("Error fetching docs", e); }
+    }
+
+    /**
+     * Toggle company input for business employment type
+     */
+    function toggleCompany(val) {
+        const box = document.getElementById('comp_box');
+        const input = document.getElementById('comp_input');
+        if(box && input) {
+            if(val === 'business') { 
+                box.style.display = "block"; 
+                input.required = true; 
+            } else { 
+                box.style.display = "none"; 
+                input.required = false; 
+                input.value = ""; 
+            }
+        }
+    }
+
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', () => {
+        // For Step 3, if a service is already selected (via slug), fetch docs immediately
+        const serviceSelect = document.getElementById('service_select');
+        if(serviceSelect && serviceSelect.value) {
+            fetchDocs(serviceSelect.value);
+        }
+        
+        showTab(currentTab);
+    });
 </script>
 
-<?php include 'includes/footer.php'; ?>
+<?php 'footer.php' ?>

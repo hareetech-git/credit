@@ -271,7 +271,7 @@ if ($selected_category) {
                                 'overview' => ['title' => 'Service Overview', 'has_title' => true, 'h1' => 'Overview Title', 'k' => 'keys[]', 'v' => 'values[]', 'kp' => 'Feature', 'vp' => 'Details', 'type' => 'save_overview'],
                                 'features' => ['title' => 'Key Features', 'h1' => 'Feature Title', 'k' => 'title[]', 'v' => 'description[]', 'kp' => 'Title', 'vp' => 'Description', 'type' => 'add_feature'],
                                 'eligibility' => ['title' => 'Eligibility Criteria', 'h1' => 'Criteria', 'k' => 'criteria_key[]', 'v' => 'criteria_value[]', 'kp' => 'Criteria', 'vp' => 'Value', 'type' => 'add_eligibility'],
-                                'documents' => ['title' => 'Required Documents', 'h1' => 'Document Name', 'k' => 'doc_name[]', 'v' => 'disclaimer[]', 'kp' => 'Name', 'vp' => 'Notes', 'type' => 'add_document'],
+                                'documents' => ['title' => 'Required Documents', 'h1' => 'Document Name', 'k' => 'doc_name[]', 'v' => 'disclaimer[]', 'kp' => 'Name', 'vp' => 'Notes', 'type' => 'add_document', 'legal_notice' => 'Notice: As per Government of India regulations, the use, entry, or storage of Aadhaar number or Aadhaar-related information is strictly prohibited on this platform.'],
                                 'fees' => ['title' => 'Fees & Charges', 'h1' => 'Fee Name', 'k' => 'fee_key[]', 'v' => 'fee_value[]', 'kp' => 'Type', 'vp' => 'Amount/%', 'type' => 'add_fee', 'mode' => 'input'],
                                 'repayment' => ['title' => 'Repayment Details', 'h1' => 'Option', 'k' => 'title[]', 'v' => 'description[]', 'kp' => 'Title', 'vp' => 'Description', 'type' => 'add_repayment'],
                                 'why' => ['title' => 'Why Choose Us', 'has_image' => true, 'h1' => 'Reason', 'k' => 'title[]', 'v' => 'description[]', 'kp' => 'Benefit', 'vp' => 'Details', 'type' => 'add_why'],
@@ -285,6 +285,11 @@ if ($selected_category) {
                                 ?>
                                 <h3 class="fw-bold mb-1"><?= $config['title'] ?></h3>
                                 <p class="text-muted mb-5">Define the data points for this service section.</p>
+                                <?php if (isset($config['legal_notice'])): ?>
+        <div class="alert alert-warning py-2 mb-4" style="font-size: 0.8rem; border-left: 4px solid #f59e0b; background-color: #fff9db;">
+            <i class="fas fa-exclamation-triangle me-2"></i> <?= $config['legal_notice'] ?>
+        </div>
+    <?php endif; ?>
 
                                 <form method="POST" action="db/insert/service_handler.php" <?= $encType ?>>
                                     <input type="hidden" name="type" value="<?= $config['type'] ?>">
@@ -296,6 +301,7 @@ if ($selected_category) {
                                             <input type="text" name="title" class="form-control"
                                                 placeholder="e.g. Service Highlights" required>
                                         </div>
+                                        
                                     <?php endif; ?>
 
                                     <div id="dynamic_container">
@@ -403,6 +409,38 @@ if ($selected_category) {
         const row = btn.closest('.input-row');
         if (row) row.remove();
     }
+
+    // 1. Function to validate forbidden keywords
+function validateAadhaarInput(element) {
+    // Regex to catch Aadhaar, Adhaar, Aadhar, etc.
+    const forbiddenPattern = /a+d+h+a+r/i; 
+    
+    if (forbiddenPattern.test(element.value)) {
+        element.style.borderColor = "#dc3545"; // Red border
+        element.style.backgroundColor = "#fff5f5";
+        
+        // Optional: Add a tiny warning message if it doesn't exist
+        if (!element.nextElementSibling || !element.nextElementSibling.classList.contains('aadhaar-error')) {
+            const error = document.createElement('small');
+            error.className = 'aadhaar-error text-danger d-block';
+            error.style.fontSize = '0.65rem';
+            error.innerText = 'Restricted: Use "Identity Proof" instead of "Aadhaar".';
+            element.parentNode.appendChild(error);
+        }
+    } else {
+        element.style.borderColor = "";
+        element.style.backgroundColor = "";
+        const errorMsg = element.parentNode.querySelector('.aadhaar-error');
+        if (errorMsg) errorMsg.remove();
+    }
+}
+
+// 2. Attach listener to existing and future inputs
+document.addEventListener('input', function (e) {
+    if (e.target && e.target.name === 'doc_name[]') {
+        validateAadhaarInput(e.target);
+    }
+});
 </script>
 
 <?php include 'footer.php'; ?>

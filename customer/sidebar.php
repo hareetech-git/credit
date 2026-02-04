@@ -91,24 +91,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
     <div data-simplebar class="h-100">
         <ul class="side-nav">
-       <li class="side-nav-item <?= ($current_page == 'documents.php') ? 'active' : '' ?>">
-                <a href="documents.php" class="side-nav-link">
-                    <i class="ri-folder-shield-2-line"></i>
-                    <span>Documents</span>
-                </a>
-            </li>
-                    <li class="side-nav-title">Personal</li>
-
-            <li class="side-nav-item <?= ($current_page == 'my-profile.php') ? 'active' : '' ?>">
-                <a href="my-profile.php" class="side-nav-link">
-                    <i class="ri-user-settings-line"></i>
-                    <span>My Profile</span>
-                </a>
-            </li>
-
-     
-
-
+            
             <li class="side-nav-title">Navigation</li>
 
             <li class="side-nav-item <?= ($current_page == 'dashboard.php') ? 'active' : '' ?>">
@@ -118,19 +101,35 @@ $current_page = basename($_SERVER['PHP_SELF']);
                 </a>
             </li>
 
+            <li class="side-nav-title">Personal</li>
+
+            <li class="side-nav-item <?= ($current_page == 'profile.php') ? 'active' : '' ?>">
+                <a href="profile.php" class="side-nav-link">
+                    <i class="ri-user-settings-line"></i>
+                    <span>My Profile</span>
+                </a>
+            </li>
+
+            <li class="side-nav-item <?= ($current_page == 'documents.php') ? 'active' : '' ?>">
+                <a href="documents.php" class="side-nav-link">
+                    <i class="ri-folder-shield-2-line"></i>
+                    <span>E-Vault Documents</span>
+                </a>
+            </li>
+
             <li class="side-nav-title">Loan Desk</li>
 
-            <li class="side-nav-item <?= ($current_page == 'loan-application.php') ? 'active' : '' ?>">
-                <a href="loan-application.php" class="side-nav-link">
+            <li class="side-nav-item <?= ($current_page == 'loan-application.php' || $current_page == 'apply-loan.php') ? 'active' : '' ?>">
+                <a href="../apply-loan.php" class="side-nav-link">
                     <i class="ri-file-edit-line"></i>
                     <span>New Application</span>
                 </a>
             </li>
 
-            <li class="side-nav-item <?= ($current_page == 'my-loans.php') ? 'active' : '' ?>">
-                <a href="my-loans.php" class="side-nav-link">
+            <li class="side-nav-item <?= ($current_page == 'my-applications.php' || $current_page == 'view-application-detail.php') ? 'active' : '' ?>">
+                <a href="my-applications.php" class="side-nav-link">
                     <i class="ri-bank-card-line"></i>
-                    <span>All Applications</span>
+                    <span>My Applications</span>
                 </a>
             </li>
 
@@ -141,11 +140,10 @@ $current_page = basename($_SERVER['PHP_SELF']);
                 </a>
             </li>
 
-
             <li class="side-nav-title">System</li>
 
             <li class="side-nav-item">
-                <a href="logout.php" class="side-nav-link" style="color: #ef4444 !important;">
+                <a href="db/auth-logout.php" class="side-nav-link" style="color: #ef4444 !important;">
                     <i class="ri-shut-down-line" style="color: #ef4444 !important;"></i>
                     <span>Logout</span>
                 </a>

@@ -32,10 +32,10 @@ $docs_res = mysqli_query($conn, "SELECT * FROM loan_application_docs WHERE loan_
                             <p class="text-center text-muted"><?= htmlspecialchars($loan['service_name']) ?></p>
                             <hr>
                             <div class="d-flex justify-content-between mb-2">
-                                <span>Amount:</span> <strong>₹<?= number_format($loan['requested_amount']) ?></strong>
+                                <span>Requested:</span> <strong>₹<?= number_format($loan['requested_amount']) ?></strong>
                             </div>
                             <div class="d-flex justify-content-between mb-2">
-                                <span>Tenure:</span> <strong><?= $loan['tenure_years'] ?> Years</strong>
+                                <span>Current Tenure:</span> <strong><?= $loan['tenure_years'] ?> Years</strong>
                             </div>
                             <div class="d-flex justify-content-between mb-2">
                                 <span>Status:</span> <span class="badge bg-secondary"><?= strtoupper($loan['status']) ?></span>
@@ -46,17 +46,33 @@ $docs_res = mysqli_query($conn, "SELECT * FROM loan_application_docs WHERE loan_
                                 <input type="hidden" name="loan_id" value="<?= $loan_id ?>">
                                 <input type="hidden" name="action" value="update_loan_status">
                                 
-                                <label class="form-label fw-bold">Update Status</label>
-                                <select name="status" class="form-select mb-2" required>
-                                    <option value="pending" <?= $loan['status']=='pending'?'selected':'' ?>>Pending</option>
-                                    <option value="approved" <?= $loan['status']=='approved'?'selected':'' ?>>Approved</option>
-                                    <option value="rejected" <?= $loan['status']=='rejected'?'selected':'' ?>>Rejected</option>
-                                    <option value="disbursed" <?= $loan['status']=='disbursed'?'selected':'' ?>>Disbursed</option>
-                                </select>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Update Status</label>
+                                    <select name="status" class="form-select" required>
+                                        <option value="pending" <?= $loan['status']=='pending'?'selected':'' ?>>Pending</option>
+                                        <option value="approved" <?= $loan['status']=='approved'?'selected':'' ?>>Approved</option>
+                                        <option value="rejected" <?= $loan['status']=='rejected'?'selected':'' ?>>Rejected</option>
+                                        <option value="disbursed" <?= $loan['status']=='disbursed'?'selected':'' ?>>Disbursed</option>
+                                    </select>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col-6">
+                                        <label class="form-label fw-bold small">Final Tenure (Yrs)</label>
+                                        <input type="number" name="tenure_years" class="form-control" value="<?= $loan['tenure_years'] ?>">
+                                    </div>
+                                    <div class="col-6">
+                                        <label class="form-label fw-bold small">Monthly EMI (₹)</label>
+                                        <input type="number" name="emi_amount" class="form-control" value="<?= $loan['emi_amount'] ?>">
+                                    </div>
+                                </div>
                                 
-                                <textarea name="note" class="form-control mb-3" placeholder="Rejection/Approval Note..." rows="2"><?= $loan['rejection_note'] ?></textarea>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Admin Note</label>
+                                    <textarea name="note" class="form-control" placeholder="Rejection reason or approval details..." rows="2"><?= $loan['rejection_note'] ?></textarea>
+                                </div>
                                 
-                                <button class="btn btn-dark w-100">Update Application</button>
+                                <button type="submit" class="btn btn-dark w-100">Update Application</button>
                             </form>
                         </div>
                     </div>
@@ -84,9 +100,9 @@ $docs_res = mysqli_query($conn, "SELECT * FROM loan_application_docs WHERE loan_
                                                     <a href="../<?= $doc['doc_path'] ?>" target="_blank" class="btn btn-sm btn-info text-white">View File</a>
                                                 </td>
                                                 <td>
-                                                    <?php if($doc['status'] == 'verified') echo '<span class="badge bg-success">Verified</span>'; ?>
-                                                    <?php if($doc['status'] == 'rejected') echo '<span class="badge bg-danger">Rejected</span>'; ?>
-                                                    <?php if($doc['status'] == 'pending') echo '<span class="badge bg-warning">Pending</span>'; ?>
+                                                    <?php if($doc['status'] == 'verified') echo '<span class="badge bg-success">Verified</span>'; 
+                                                          elseif($doc['status'] == 'rejected') echo '<span class="badge bg-danger">Rejected</span>'; 
+                                                          else echo '<span class="badge bg-warning">Pending</span>'; ?>
                                                 </td>
                                                 <td>
                                                     <button class="btn btn-sm btn-outline-dark" data-bs-toggle="modal" data-bs-target="#docModal<?= $doc['id'] ?>">
@@ -111,10 +127,11 @@ $docs_res = mysqli_query($conn, "SELECT * FROM loan_application_docs WHERE loan_
                                                                         <option value="rejected">Reject</option>
                                                                     </select>
                                                                     <label>Rejection Reason (If rejecting)</label>
-                                                                    <textarea name="reason" class="form-control"></textarea>
+                                                                    <textarea name="reason" class="form-control" rows="3"><?= $doc['rejection_reason'] ?></textarea>
                                                                 </div>
                                                                 <div class="modal-footer">
-                                                                    <button class="btn btn-primary">Save Changes</button>
+                                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                                    <button type="submit" class="btn btn-primary">Save Changes</button>
                                                                 </div>
                                                             </form>
                                                         </div>
