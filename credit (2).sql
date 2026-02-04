@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 30, 2026 at 12:43 PM
+-- Generation Time: Feb 04, 2026 at 01:52 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -69,7 +69,10 @@ CREATE TABLE `customers` (
 
 INSERT INTO `customers` (`id`, `full_name`, `email`, `phone`, `password`, `aadhaar_number`, `status`, `created_at`, `updated_at`) VALUES
 (1, 'Sanyam Srivastava', 'srivastavasanyam8052@gmail.com', '9984278970', '$2y$10$Vi3kwMBdcDqMKJMjbjklVut4qdYRkR0h8n.44nF2N..5h8GvuKPvC', '656512344321', 'active', '2026-01-29 12:27:10', '2026-01-30 10:29:03'),
-(2, 'Sanyamsdsfdsa Srivastava', 'srivafdgfdgfdgstavasanyam8052@gmail.com', '8984278970', '$2y$10$73OybQocLn6ovNVxrPp7JOBxvb77VBUuZ.7JgQBs8erjW65iZFZlK', '998737892939', 'active', '2026-01-30 06:03:18', '2026-01-30 07:48:53');
+(10, 'Test New ', 'newemail@example.com', '9982784875', '$2y$10$qbM8PpJoyjX4oK7ft.Nk0eaBdYLf3LIJa2KPF/QNAqiMSo7XJ89si', NULL, 'active', '2026-02-04 06:22:20', '2026-02-04 06:22:20'),
+(11, 'new test', 'adsdgsdgdfgdfmin@gmail.com', '9378948949', '$2y$10$o4Dh3F1PW4T1OTGu0d3N5uGUN/Vw4QApkPJacJ/PWrlC.KuO3mmBi', '', 'active', '2026-02-04 07:28:41', '2026-02-04 07:28:41'),
+(12, 'Sanyam Srivastava', 'srivdfsdastavasanyam8052@gmail.com', '7984278970', '$2y$10$r3.WRC0NQPcj1zNaN.Mz6.TGOgkoFcSG3GkwTwmrX85skj94c64Om', NULL, 'active', '2026-02-04 07:48:14', '2026-02-04 07:48:14'),
+(13, 'Sanyam Srivastava', 'srivastavfgvdfgfdasdsanyam8052@gmail.com', '9876567890', '$2y$10$Tw9Ec.C8fVcK51tUcihk6ewiwISNg.PRYjQqY52ZUQJdHLjQ8tHgq', NULL, 'active', '2026-02-04 08:32:04', '2026-02-04 08:32:04');
 
 -- --------------------------------------------------------
 
@@ -102,7 +105,12 @@ CREATE TABLE `customer_profiles` (
 
 INSERT INTO `customer_profiles` (`id`, `customer_id`, `pan_number`, `birth_date`, `state`, `city`, `pin_code`, `employee_type`, `company_name`, `monthly_income`, `reference1_name`, `reference1_phone`, `reference2_name`, `reference2_phone`, `created_at`, `updated_at`) VALUES
 (10, 1, 'ABCDE1232G', '2006-09-11', 'uttar pradesh', 'lmp', '262701', 'business', 'Hareetech Development Pvt Ltd', 200000.00, 'nhnh', '8787878787', 'kjkjk', '9984278787', '2026-01-30 10:29:03', '2026-01-30 10:29:57'),
-(13, 2, 'ABCDE1234F', '2026-01-21', 'Uttar Pradesh', 'Lakhimpur', '261506', 'business', 'sac', 4.00, 'xzczx', '9984278970', 'cxzc', '9984278970', '2026-01-30 10:41:31', '2026-01-30 10:42:07');
+(13, 2, 'ABCDE1234F', '2026-01-21', 'Uttar Pradesh', 'Lakhimpur', '261506', 'salaried', 'sac', 4.00, 'xzczx', '9984278970', 'cxzc', '9984278970', '2026-01-30 10:41:31', '2026-01-30 12:42:30'),
+(20, 7, 'ABCDE1234F', NULL, '', '', NULL, 'business', NULL, 600.00, NULL, NULL, NULL, NULL, '2026-01-31 09:23:46', '2026-01-31 09:23:46'),
+(22, 9, 'ABCDE1234F', '2026-02-19', 'Uttar Pradesh', 'Lakhimpur', '261506', 'business', 'Random Pvt Ltd', 90000.00, 'Sanyam Srivastava', '9984278970', 'Sanyam Srivastava', '9984278970', '2026-02-04 05:17:41', '2026-02-04 05:17:41'),
+(23, 10, 'ABCDE1234F', '2026-02-20', 'Uttar Pradesh', 'Lakhimpur', '261506', 'salaried', 'Not Applicable', 90000.00, 'Sanyam Srivastava', '9984278970', 'Sanyam Srivastava', '9984278970', '2026-02-04 06:22:20', '2026-02-04 06:22:20'),
+(24, 12, 'ABCDE1234F', '2026-03-01', 'Uttar Pradesh', 'Lakhimpur', '261506', 'business', '', 90000.00, '', '', '', '', '2026-02-04 07:48:14', '2026-02-04 07:48:14'),
+(25, 13, 'ABCDE1234F', '2026-02-27', 'Uttar Pradesh', 'Lakhimpur', '261506', 'business', NULL, 90000.00, 'Sanyam Srivastava', '9984278970', 'Sanyam Srivastava', '9984278970', '2026-02-04 08:32:04', '2026-02-04 08:32:04');
 
 -- --------------------------------------------------------
 
@@ -173,7 +181,9 @@ CREATE TABLE `loan_applications` (
 --
 
 INSERT INTO `loan_applications` (`id`, `customer_id`, `service_id`, `requested_amount`, `tenure_years`, `emi_amount`, `status`, `created_at`, `rejection_note`) VALUES
-(1, 2, 5, 90000.00, 1, 0.00, 'pending', '2026-01-30 10:49:22', NULL);
+(5, 10, 5, 90000.00, 0, 0.00, 'pending', '2026-02-04 06:22:20', NULL),
+(6, 1, 6, 9000.00, 9, 700.00, 'approved', '2026-02-04 09:16:03', 'Contact'),
+(7, 1, 6, 800000.00, 0, 0.00, 'pending', '2026-02-04 10:33:51', NULL);
 
 -- --------------------------------------------------------
 
@@ -190,6 +200,41 @@ CREATE TABLE `loan_application_docs` (
   `status` enum('pending','verified','rejected') DEFAULT 'pending',
   `rejection_reason` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `loan_application_docs`
+--
+
+INSERT INTO `loan_application_docs` (`id`, `loan_application_id`, `doc_name`, `doc_path`, `created_at`, `status`, `rejection_reason`) VALUES
+(3, 5, 'Aadhar Card', 'uploads/loans/loan_5_1770186140_Aadhar_Card.pdf', '2026-02-04 06:22:20', 'pending', NULL),
+(4, 5, 'fsdfsd', 'uploads/loans/loan_5_1770186140_fsdfsd.pdf', '2026-02-04 06:22:20', 'pending', NULL),
+(6, 6, 'new', 'uploads/loans/loan_6_1770196563_new.jfif', '2026-02-04 09:16:03', 'verified', 'gghghghg'),
+(7, 7, 'Other', 'uploads/loans/loan_7_1770201231_Other.jfif', '2026-02-04 10:33:51', 'pending', NULL),
+(8, 7, 'new', 'uploads/loans/loan_7_1770201231_new.pdf', '2026-02-04 10:33:51', 'pending', NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `permissions`
+--
+
+CREATE TABLE `permissions` (
+  `id` int(11) NOT NULL,
+  `perm_key` varchar(50) NOT NULL,
+  `description` varchar(255) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `permissions`
+--
+
+INSERT INTO `permissions` (`id`, `perm_key`, `description`) VALUES
+(1, 'cust_create', 'Add New Customers'),
+(2, 'cust_read', 'View Customer Details'),
+(3, 'cust_update', 'Edit Customer Info'),
+(4, 'cust_delete', 'Delete Customers'),
+(5, 'loan_view', 'View Loan Apps'),
+(6, 'loan_process', 'Approve/Reject Loans');
 
 -- --------------------------------------------------------
 
@@ -221,7 +266,9 @@ INSERT INTO `services` (`id`, `category_id`, `sub_category_id`, `service_name`, 
 (3, 1, 3, 'Loan for Doctor', 'Loan for Doctor', 'loan-for-doctor', 'Medical professionals loan.', 'Loans designed specifically for doctors to support clinic setup and expansion.', NULL, '2026-01-29 08:03:53', '2026-01-29 08:03:53'),
 (4, 1, 3, 'Loan for Architect dsdfd', 'Loan for Architect', 'loan-for-architect', 'Loan for architecture professionals.', 'Professional loans for architects to fund projects and office expansion.', NULL, '2026-01-29 08:03:53', '2026-01-29 10:32:53'),
 (5, 1, 2, 'Secured Business Loan', 'Looking for a secured business Loan?', 'looking-for-a-secured-business-loan', 'Are you ready to take your business to greater heights? Apply for business loans online at low-interest rates through Udhar Capital. Do apply now!', 'For business owners looking to start or expand their enterprises, online business loans are critical. Udhar Capital financial services have undergone continuous innovation to satisfy the demands of entrepreneurs seeking capital. The purpose of the business loan is to businesses acquire the finance they need.The instant business loan may be utilised to cover all of your company’s needs, it’s the finest lending option for a startup. Apply business loans online for an attractive and affordable interest rate ensures you won’t have to cut back on expenses.', 'uploads/services/service_1769768621_534.jpg', '2026-01-29 08:53:13', '2026-01-30 10:23:41'),
-(6, 1, 1, 'Personal Loan', 'APPLY FOR PERSONAL LOAN', 'apply-for-personal-loan', 'Collateral-free personal loan with lowest interest rate is just a few clicks away from you. Apply Personal Loan online and fulfill your dreams without worrying about money', 'The term personal loan has emerged as a boon for individuals seeking quick and hassle free access to funds. Personal loan is a financial tool that offers unparalleled flexibility and convenience to borrowers. Unlike traditional loans, a personal loan is unsecured, meaning you don’t have to provide any collateral to secure it.\r\n\r\nWith Udhar Capital Personal Loan you can say goodbye to lengthy approval processes and mountains of paperwork. Our application process ensures that you can get the funds you need when you need them, without the unnecessary delays. We are committed to providing you with the best financial solutions.', 'uploads/services/service_1769770355_584.jfif', '2026-01-29 12:09:21', '2026-01-30 10:52:35');
+(6, 1, 1, 'Personal Loan', 'APPLY FOR PERSONAL LOAN', 'apply-for-personal-loan', 'Collateral-free personal loan with lowest interest rate is just a few clicks away from you. Apply Personal Loan online and fulfill your dreams without worrying about money', 'The term personal loan has emerged as a boon for individuals seeking quick and hassle free access to funds. Personal loan is a financial tool that offers unparalleled flexibility and convenience to borrowers. Unlike traditional loans, a personal loan is unsecured, meaning you don’t have to provide any collateral to secure it.\r\n\r\nWith Udhar Capital Personal Loan you can say goodbye to lengthy approval processes and mountains of paperwork. Our application process ensures that you can get the funds you need when you need them, without the unnecessary delays. We are committed to providing you with the best financial solutions.', 'uploads/services/service_1769770355_584.jfif', '2026-01-29 12:09:21', '2026-01-30 10:52:35'),
+(7, 1, 5, 'CSWIP 3.1 Preparatory Course', 'ndjkc', 'ndjkc', 'sadfcasdf', 'dasfdas', '', '2026-02-04 06:45:13', '2026-02-04 06:45:13'),
+(8, 1, 2, 'Eddy Current Testing (ET)', 'fcsdf', 'fcsdfsdfsd', 'dsfsdf', 'dsfdsaf', '', '2026-02-04 07:07:05', '2026-02-04 07:07:05');
 
 -- --------------------------------------------------------
 
@@ -323,8 +370,10 @@ CREATE TABLE `service_documents` (
 --
 
 INSERT INTO `service_documents` (`id`, `service_id`, `doc_name`, `disclaimer`, `created_at`, `updated_at`) VALUES
-(1, 5, 'Aadhar Card', '', '2026-01-29 08:57:31', '2026-01-29 08:57:31'),
-(2, 5, 'fsdfsd', '', '2026-01-29 08:57:31', '2026-01-29 08:57:31');
+(5, 5, 'Identity Proof', '', '2026-02-04 07:20:45', '2026-02-04 07:20:45'),
+(6, 5, 'fsdfsd', '', '2026-02-04 07:20:45', '2026-02-04 07:20:45'),
+(7, 6, 'Other', '', '2026-02-04 07:21:22', '2026-02-04 07:21:22'),
+(8, 6, 'new', '', '2026-02-04 07:21:22', '2026-02-04 07:21:22');
 
 -- --------------------------------------------------------
 
@@ -465,6 +514,41 @@ INSERT INTO `service_why_choose_us` (`id`, `service_id`, `image`, `title`, `desc
 (1, 5, 'uploads/why_choose_us/why_1769677182_752.png', 'Competitive Interest Rates', 'To meet your financial objectives and budget, we offer low interest rates.', '2026-01-29 08:59:42', '2026-01-29 08:59:42'),
 (2, 5, 'uploads/why_choose_us/why_1769677182_773.png', 'Fast Approval Process', 'Using Udhar Capital, you can count on a simple and rapid approval process that gives you access to funds exactly when you need them.', '2026-01-29 08:59:42', '2026-01-29 08:59:42');
 
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `staff`
+--
+
+CREATE TABLE `staff` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `department_id` int(11) DEFAULT NULL,
+  `created_by` bigint(20) UNSIGNED DEFAULT NULL,
+  `status` enum('active','inactive') DEFAULT 'active',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `staff`
+--
+
+INSERT INTO `staff` (`id`, `name`, `email`, `password`, `department_id`, `created_by`, `status`, `created_at`) VALUES
+(2, 'Sanyam ', 'staff@gmail.com', '$2y$10$V/MUwV4GfYq9XMyUzWRdc.BmzSLu8ALNgwaPoqIFLtrSKtNihpLB2', 1, 1, 'active', '2026-02-04 12:47:18');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `staff_permissions`
+--
+
+CREATE TABLE `staff_permissions` (
+  `staff_id` bigint(20) UNSIGNED NOT NULL,
+  `permission_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
 --
 -- Indexes for dumped tables
 --
@@ -515,6 +599,13 @@ ALTER TABLE `loan_applications`
 --
 ALTER TABLE `loan_application_docs`
   ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `permissions`
+--
+ALTER TABLE `permissions`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `perm_key` (`perm_key`);
 
 --
 -- Indexes for table `services`
@@ -587,6 +678,19 @@ ALTER TABLE `service_why_choose_us`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `staff`
+--
+ALTER TABLE `staff`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `email` (`email`);
+
+--
+-- Indexes for table `staff_permissions`
+--
+ALTER TABLE `staff_permissions`
+  ADD PRIMARY KEY (`staff_id`,`permission_id`);
+
+--
 -- AUTO_INCREMENT for dumped tables
 --
 
@@ -600,13 +704,13 @@ ALTER TABLE `admin`
 -- AUTO_INCREMENT for table `customers`
 --
 ALTER TABLE `customers`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `customer_profiles`
 --
 ALTER TABLE `customer_profiles`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
 
 --
 -- AUTO_INCREMENT for table `departments`
@@ -624,19 +728,25 @@ ALTER TABLE `enquiries`
 -- AUTO_INCREMENT for table `loan_applications`
 --
 ALTER TABLE `loan_applications`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `loan_application_docs`
 --
 ALTER TABLE `loan_application_docs`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+
+--
+-- AUTO_INCREMENT for table `permissions`
+--
+ALTER TABLE `permissions`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `services`
 --
 ALTER TABLE `services`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `services_subcategories`
@@ -660,7 +770,7 @@ ALTER TABLE `service_categories`
 -- AUTO_INCREMENT for table `service_documents`
 --
 ALTER TABLE `service_documents`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `service_eligibility_criteria`
@@ -696,6 +806,12 @@ ALTER TABLE `service_overview`
 -- AUTO_INCREMENT for table `service_why_choose_us`
 --
 ALTER TABLE `service_why_choose_us`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `staff`
+--
+ALTER TABLE `staff`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 COMMIT;
 

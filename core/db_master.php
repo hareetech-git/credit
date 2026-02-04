@@ -10,8 +10,8 @@ if (
     define('DB_PORT', 3307);
 } else {
     define('DB_HOST', 'localhost');
-    define('DB_USER', 'u443392627_credit_loan');
-    define('DB_PASS', '~Q9fm9|HZi8y');
-    define('DB_NAME', 'u443392627_credit_loan');
+    define('DB_USER', 'u443392627_credit');
+    define('DB_PASS', 'j?oku6wH0@');
+    define('DB_NAME', 'u443392627_credit');
     define('DB_PORT', 3306);
 }
