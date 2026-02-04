@@ -73,18 +73,59 @@
             <!-- Horizontal Line -->
             <hr class="my-4" style="border-color: rgba(255, 255, 255, 0.1);">
 
-            <!-- Bottom Links -->
-            <div class="row">
-                <div class="col-12">
-                    <div class="d-flex flex-wrap justify-content-center gap-3 mb-3">
-                        <a href="#" class="footer-link text-decoration-none small">Privacy Policy</a>
-                        <a href="#" class="footer-link text-decoration-none small">Corporate Governance</a>
-                        <a href="#" class="footer-link text-decoration-none small">RBI Disclaimer</a>
-                        <a href="#" class="footer-link text-decoration-none small">Our Partners</a>
-                        <a href="#" class="footer-link text-decoration-none small">Sitemap</a>
-                    </div>
-                </div>
-            </div>
+         <div class="row mb-4">
+    <div class="col-lg-3 col-md-6 mb-4 mb-lg-0">
+        <h5 class="fw-bold mb-3" style="color: #f1f5f9;">Quick Links</h5>
+        <ul class="list-unstyled footer-links-list">
+            <li class="mb-2"><a href="index.php" class="footer-quick-link text-decoration-none"><i class="fas fa-angle-right me-2"></i>Home</a></li>
+            <li class="mb-2"><a href="about.php" class="footer-quick-link text-decoration-none"><i class="fas fa-angle-right me-2"></i>About Us</a></li>
+            <li class="mb-2"><a href="services.php" class="footer-quick-link text-decoration-none"><i class="fas fa-angle-right me-2"></i>Our Services</a></li>
+            <li class="mb-2"><a href="contact.php" class="footer-quick-link text-decoration-none"><i class="fas fa-angle-right me-2"></i>Contact Us</a></li>
+            <li class="mb-2"><a href="careers.php" class="footer-quick-link text-decoration-none"><i class="fas fa-angle-right me-2"></i>Careers</a></li>
+        </ul>
+    </div>
+
+    <div class="col-lg-3 col-md-6 mb-4 mb-lg-0">
+        <h5 class="fw-bold mb-3" style="color: #f1f5f9;">Contact Info</h5>
+        <ul class="list-unstyled footer-contact-list">
+            <li class="mb-3">
+                <i class="fas fa-map-marker-alt me-2" style="color: var(--primary-color);"></i>
+                <span class="footer-contact-text">123 Business Tower, Mumbai, India</span>
+            </li>
+            <li class="mb-3">
+                <i class="fas fa-phone-alt me-2" style="color: var(--primary-color);"></i>
+                <a href="tel:+911800XXXXXX" class="footer-contact-link text-decoration-none">+91 1800-XXX-XXXX</a>
+            </li>
+            <li class="mb-3">
+                <i class="fas fa-envelope me-2" style="color: var(--primary-color);"></i>
+                <a href="mailto:support@udharcapital.com" class="footer-contact-link text-decoration-none">support@udharcapital.com</a>
+            </li>
+            <li class="mb-3">
+                <i class="fas fa-clock me-2" style="color: var(--primary-color);"></i>
+                <span class="footer-contact-text">Mon - Sat: 9 AM - 7 PM</span>
+            </li>
+        </ul>
+    </div>
+
+    <div class="col-lg-6 col-md-12">
+        <div class="map-container" style="border-radius: 15px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); height: 200px;">
+            <iframe 
+               src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3508.136847287864!2d77.497722!3d28.474722!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390ceb8c00e7e3b3%3A0x7c8b6c7b5c8c8c8c!2sKasana%20Tower%2C%20Alpha-I%20Commercial%20Belt%2C%20Greater%20Noida%2C%20Uttar%20Pradesh%20201310!5e0!3m2!1sen!2sin!4v1641234567890!5m2!1sen!2sin" 
+                width="100%" 
+                height="100%" 
+                style="border:0;" 
+                allowfullscreen="" 
+                loading="lazy" 
+                referrerpolicy="no-referrer-when-downgrade">
+            </iframe>
+        </div>
+    </div>
+</div>
+
+            <!-- Horizontal Line -->
+            <hr class="my-4" style="border-color: rgba(255, 255, 255, 0.1);">
+
+           
 
             <!-- Copyright -->
             <div class="row">
@@ -269,6 +310,43 @@
 
         .footer-top-link:hover::after {
             width: 100%;
+        }
+
+        /* Quick Links Styling */
+        .footer-quick-link {
+            color: #94a3b8;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+
+        .footer-quick-link:hover {
+            color: #fff !important;
+            transform: translateX(5px);
+        }
+
+        .footer-quick-link i {
+            transition: transform 0.3s ease;
+        }
+
+        .footer-quick-link:hover i {
+            transform: translateX(3px);
+        }
+
+        /* Contact Info Styling */
+        .footer-contact-text {
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+
+        .footer-contact-link {
+            color: #94a3b8;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .footer-contact-link:hover {
+            color: #fff !important;
         }
 
         /* Footer Bottom Links */

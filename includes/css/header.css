@@ -14,15 +14,15 @@
         }
 
        body {
-            font-family:  'Jost', serif;
+        
             color: var(--text-dark);
             background-color: #fff;
             padding-top: 85px;
             margin: 0;
         }
 
-        body *{
-            font-family:  'Jost', serif;
+         *{
+            font-family:  'Alfa Slab One', serif;
     
         }
         /* Header Styles */
@@ -70,7 +70,7 @@
         }
 
         .logo-img {
-            height: 50px;
+            height: 90px;
             width: auto;
             object-fit: contain;
         }
@@ -100,9 +100,9 @@
         
 
         .nav-link-custom {
-            font-weight: 600;
+            font-weight: 900;
             color: var(--text-dark);
-            font-size: 3 rem;
+            font-size: 4 rem;
             padding: 0.65rem 1rem;
             transition: all 0.2s ease;
             text-decoration: none;
