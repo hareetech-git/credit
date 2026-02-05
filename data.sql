@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 05, 2026 at 10:56 AM
+-- Generation Time: Feb 05, 2026 at 01:13 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -151,6 +151,14 @@ CREATE TABLE `enquiries` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `enquiries`
+--
+
+INSERT INTO `enquiries` (`id`, `customer_id`, `full_name`, `phone`, `email`, `loan_type_id`, `loan_type_name`, `query_message`, `status`, `assigned_staff_id`, `assigned_by`, `assigned_at`, `converted_by_role`, `converted_by_id`, `converted_at`, `closed_by_role`, `closed_by_id`, `closed_at`, `created_at`) VALUES
+(3, 2, 'Sanyam Customer', '9984278970', 'sanyam.fullstackdev@gmail.com', 2, 'Business Loans', 'fujyuj', 'converted', 1, 1, '2026-02-05 10:21:44', 'staff', 1, '2026-02-05 10:22:58', NULL, NULL, NULL, '2026-02-05 10:17:09'),
+(4, NULL, 'Sanyam Customer', '9948728807', 'fgadmin@gmail.com', 1, 'Personal Loan', 'gfd', 'new', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2026-02-05 12:00:59');
+
 -- --------------------------------------------------------
 
 --
@@ -162,6 +170,13 @@ CREATE TABLE `enquiry_conversations` (
   `enquiry_id` int(11) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `enquiry_conversations`
+--
+
+INSERT INTO `enquiry_conversations` (`id`, `enquiry_id`, `created_at`) VALUES
+(1, 3, '2026-02-05 10:21:53');
 
 -- --------------------------------------------------------
 
@@ -178,6 +193,16 @@ CREATE TABLE `enquiry_messages` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `enquiry_messages`
+--
+
+INSERT INTO `enquiry_messages` (`id`, `conversation_id`, `sender_role`, `sender_id`, `message`, `created_at`) VALUES
+(1, 1, 'admin', 1, 'jhj', '2026-02-05 10:21:53'),
+(2, 1, 'customer', 2, 'hfghfg', '2026-02-05 10:22:06'),
+(3, 1, 'customer', 2, 'hfghfgh', '2026-02-05 10:22:16'),
+(4, 1, 'staff', 1, 'nrtr', '2026-02-05 10:22:33');
+
 -- --------------------------------------------------------
 
 --
@@ -192,6 +217,13 @@ CREATE TABLE `enquiry_notes` (
   `created_by_id` bigint(20) UNSIGNED NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `enquiry_notes`
+--
+
+INSERT INTO `enquiry_notes` (`id`, `enquiry_id`, `note`, `created_by_role`, `created_by_id`, `created_at`) VALUES
+(1, 3, 'jkhj', 'staff', 1, '2026-02-05 10:54:05');
 
 -- --------------------------------------------------------
 
@@ -220,7 +252,7 @@ CREATE TABLE `loan_applications` (
 --
 
 INSERT INTO `loan_applications` (`id`, `customer_id`, `service_id`, `assigned_staff_id`, `assigned_by`, `assigned_at`, `interest_rate`, `requested_amount`, `tenure_years`, `emi_amount`, `status`, `created_at`, `rejection_note`) VALUES
-(1, 2, 5, NULL, NULL, NULL, 0.00, 90000.00, 0, 0.00, 'pending', '2026-02-05 09:55:25', NULL);
+(1, 2, 5, 1, 1, '2026-02-05 10:36:47', 0.00, 90000.00, 0, 0.00, 'pending', '2026-02-05 09:55:25', NULL);
 
 -- --------------------------------------------------------
 
@@ -622,7 +654,7 @@ CREATE TABLE `staff` (
 --
 
 INSERT INTO `staff` (`id`, `name`, `email`, `password`, `department_id`, `created_by`, `status`, `created_at`, `role_id`) VALUES
-(1, 'Sanyam Staff', 'rahul9369917075@gmail.com', '$2y$10$xescOMJIKTr4o33NG2LVXuckSu5mroEUOsH.Uu4j7zpMZbnNyf5hC', 1, 1, 'active', '2026-02-05 09:40:42', NULL);
+(1, 'Sanyam Staff', 'rahul9369917075@gmail.com', '$2y$10$xescOMJIKTr4o33NG2LVXuckSu5mroEUOsH.Uu4j7zpMZbnNyf5hC', 1, 1, 'active', '2026-02-05 09:40:42', 1);
 
 -- --------------------------------------------------------
 
@@ -634,23 +666,6 @@ CREATE TABLE `staff_permissions` (
   `staff_id` bigint(20) UNSIGNED NOT NULL,
   `permission_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `staff_permissions`
---
-
-INSERT INTO `staff_permissions` (`staff_id`, `permission_id`) VALUES
-(1, 1),
-(1, 2),
-(1, 3),
-(1, 4),
-(1, 5),
-(1, 6),
-(1, 7),
-(1, 8),
-(1, 9),
-(1, 10),
-(1, 11);
 
 --
 -- Indexes for dumped tables
@@ -866,25 +881,25 @@ ALTER TABLE `departments`
 -- AUTO_INCREMENT for table `enquiries`
 --
 ALTER TABLE `enquiries`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `enquiry_conversations`
 --
 ALTER TABLE `enquiry_conversations`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `enquiry_messages`
 --
 ALTER TABLE `enquiry_messages`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `enquiry_notes`
 --
 ALTER TABLE `enquiry_notes`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `loan_applications`
