@@ -173,7 +173,7 @@ $redirect_to = isset($_GET['redirect']) ? $_GET['redirect'] : '';
         
             <div class="form-group">
                 <label>Email Address</label>
-                <input type="email" name="login" placeholder="name@company.com" required>
+                <input type="email" name="login" placeholder="srivastavasanyam8052@gmail.com" required>
             </div>
 
             <div class="form-group">

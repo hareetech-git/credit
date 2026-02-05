@@ -614,7 +614,7 @@ unset($_SESSION['success_message']);
                                 <div class="form-group">
                                     <label class="form-label" for="phone">Phone Number *</label>
                                     <input type="tel" name="phone" id="phone" class="form-control"
-                                           placeholder="10-digit mobile number"
+                                           placeholder="9984278970"
                                            value=""
                                            pattern="[0-9]{10}" maxlength="10" required>
                                 </div>
@@ -624,7 +624,7 @@ unset($_SESSION['success_message']);
                         <div class="form-group">
                             <label class="form-label" for="email">Email *</label>
                             <input type="email" name="email" id="email" class="form-control"
-                                   placeholder="Enter your email address"
+                                   placeholder="srivastavasanyam8052@gmail.com"
                                    value=""
                                    required>
                         </div>

@@ -197,13 +197,13 @@ include 'includes/connection.php';
                     <div class="col-md-6">
                         <div class="input-group-custom">
                             <label class="form-label">Phone Number</label>
-                            <input type="text" name="phone" class="form-control" placeholder="10-digit Mobile" required>
+                            <input type="text" name="phone" class="form-control" placeholder="9984278970" required>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="input-group-custom">
                             <label class="form-label">Email Address</label>
-                            <input type="email" name="email" class="form-control" placeholder="name@domain.com" required>
+                            <input type="email" name="email" class="form-control" placeholder="srivastavasanyam8052@gmail.com" required>
                         </div>
                     </div>
                 </div>

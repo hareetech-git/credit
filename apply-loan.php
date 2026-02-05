@@ -132,14 +132,14 @@ include 'includes/header.php';
                                     <label class="form-label">Reference 1</label>
                                     <div class="input-group">
                                         <input type="text" name="reference1_name" class="form-control" placeholder="Name" required>
-                                        <input type="text" name="reference1_phone" class="form-control" placeholder="Mobile" required maxlength="10">
+                                        <input type="text" name="reference1_phone" class="form-control" placeholder="9984278970" required maxlength="10">
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label">Reference 2</label>
                                     <div class="input-group">
                                         <input type="text" name="reference2_name" class="form-control" placeholder="Name" required>
-                                        <input type="text" name="reference2_phone" class="form-control" placeholder="Mobile" required maxlength="10">
+                                        <input type="text" name="reference2_phone" class="form-control" placeholder="9984278970" required maxlength="10">
                                     </div>
                                 </div>
                             </div>
