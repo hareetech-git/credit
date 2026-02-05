@@ -245,7 +245,8 @@ INSERT INTO `permissions` (`id`, `perm_key`, `description`) VALUES
 (3, 'cust_update', 'Edit Customer Info'),
 (4, 'cust_delete', 'Delete Customers'),
 (5, 'loan_view', 'View Loan Apps'),
-(6, 'loan_process', 'Approve/Reject Loans');
+(6, 'loan_process', 'Approve/Reject Loans'),
+(7, 'loan_delete', 'Delete Loan Applications');
 
 -- --------------------------------------------------------
 

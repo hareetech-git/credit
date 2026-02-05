@@ -10,6 +10,7 @@ if (!hasAccess($conn, 'loan_view')) {
 }
 
 $staff_id = (int)$_SESSION['staff_id'];
+$can_delete = hasAccess($conn, 'loan_delete');
 
 $query = "SELECT l.*, c.full_name, c.phone, s.service_name 
           FROM loan_applications l
@@ -70,6 +71,13 @@ $result = mysqli_query($conn, $query);
                                     <td><?= date('d M, Y', strtotime($row['created_at'])) ?></td>
                                     <td>
                                         <a href="loan_view.php?id=<?= $row['id'] ?>" class="btn btn-sm btn-primary">Process</a>
+                                        <?php if ($can_delete): ?>
+                                            <form action="db/loan_handler.php" method="POST" class="d-inline-block ms-1" onsubmit="return confirm('Delete this loan application? This will also remove its documents.');">
+                                                <input type="hidden" name="action" value="delete_loan">
+                                                <input type="hidden" name="loan_id" value="<?= $row['id'] ?>">
+                                                <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                                            </form>
+                                        <?php endif; ?>
                                     </td>
                                 </tr>
                             <?php } ?>

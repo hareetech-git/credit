@@ -114,6 +114,12 @@ $docs_res = mysqli_query($conn, "SELECT * FROM loan_application_docs WHERE loan_
                                 
                                 <button type="submit" class="btn btn-dark w-100">Update Application</button>
                             </form>
+
+                            <form action="db/loan_handler.php" method="POST" class="mt-3" onsubmit="return confirm('Delete this loan application? This will also remove its documents.');">
+                                <input type="hidden" name="action" value="delete_loan">
+                                <input type="hidden" name="loan_id" value="<?= $loan_id ?>">
+                                <button type="submit" class="btn btn-outline-danger w-100">Delete Application</button>
+                            </form>
                         </div>
                     </div>
                 </div>

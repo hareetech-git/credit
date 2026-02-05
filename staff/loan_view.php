@@ -14,6 +14,7 @@ if (!$loan_id) die("Invalid Loan ID");
 
 $staff_id = (int)$_SESSION['staff_id'];
 $can_process = hasAccess($conn, 'loan_process');
+$can_delete = hasAccess($conn, 'loan_delete');
 
 $loan_sql = "SELECT l.*, c.full_name, c.email, c.phone, s.service_name 
              FROM loan_applications l
@@ -96,6 +97,14 @@ $docs_res = mysqli_query($conn, "SELECT * FROM loan_application_docs WHERE loan_
                                 </form>
                             <?php } else { ?>
                                 <p class="text-muted small">You do not have permission to process loans.</p>
+                            <?php } ?>
+
+                            <?php if ($can_delete) { ?>
+                                <form action="db/loan_handler.php" method="POST" class="mt-3" onsubmit="return confirm('Delete this loan application? This will also remove its documents.');">
+                                    <input type="hidden" name="action" value="delete_loan">
+                                    <input type="hidden" name="loan_id" value="<?= $loan_id ?>">
+                                    <button type="submit" class="btn btn-outline-danger w-100">Delete Application</button>
+                                </form>
                             <?php } ?>
                         </div>
                     </div>

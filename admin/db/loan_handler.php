@@ -122,4 +122,35 @@ if ($action == 'upload_doc') {
     }
     exit;
 }
+
+if ($action == 'delete_loan') {
+    $loan_id = (int)$_POST['loan_id'];
+
+    if ($loan_id <= 0) {
+        header("Location: ../loan_applications.php?err=Invalid Loan ID");
+        exit;
+    }
+
+    // Delete files from disk
+    $docs_res = mysqli_query($conn, "SELECT doc_path FROM loan_application_docs WHERE loan_application_id = $loan_id");
+    if ($docs_res) {
+        while ($doc = mysqli_fetch_assoc($docs_res)) {
+            $file = realpath(__DIR__ . '/../../' . $doc['doc_path']);
+            if ($file && file_exists($file)) {
+                unlink($file);
+            }
+        }
+    }
+
+    // Delete doc records
+    mysqli_query($conn, "DELETE FROM loan_application_docs WHERE loan_application_id = $loan_id");
+
+    // Delete loan
+    if (mysqli_query($conn, "DELETE FROM loan_applications WHERE id = $loan_id")) {
+        header("Location: ../loan_applications.php?msg=Loan deleted successfully");
+    } else {
+        header("Location: ../loan_applications.php?err=Delete failed");
+    }
+    exit;
+}
 ?>

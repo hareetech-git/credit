@@ -29,12 +29,11 @@ function staffHasAccess($conn, $perm_key, $staff_id) {
     return (mysqli_num_rows($result) > 0);
 }
 
-if (!staffHasAccess($conn, 'loan_process', $staff_id)) {
-    header("Location: ../loan_applications.php?err=No permission");
-    exit();
-}
-
 if ($action == 'update_loan_status') {
+    if (!staffHasAccess($conn, 'loan_process', $staff_id)) {
+        header("Location: ../loan_applications.php?err=No permission");
+        exit();
+    }
     $loan_id = (int)$_POST['loan_id'];
 
     $check = mysqli_query($conn, "SELECT id FROM loan_applications WHERE id=$loan_id AND assigned_staff_id=$staff_id");
@@ -66,6 +65,10 @@ if ($action == 'update_loan_status') {
 }
 
 if ($action == 'verify_doc') {
+    if (!staffHasAccess($conn, 'loan_process', $staff_id)) {
+        header("Location: ../loan_applications.php?err=No permission");
+        exit();
+    }
     $doc_id = (int)$_POST['doc_id'];
     $loan_id = (int)$_POST['loan_id'];
 
@@ -96,6 +99,10 @@ if ($action == 'verify_doc') {
 }
 
 if ($action == 'upload_doc') {
+    if (!staffHasAccess($conn, 'loan_process', $staff_id)) {
+        header("Location: ../loan_applications.php?err=No permission");
+        exit();
+    }
     $loan_id = (int)$_POST['loan_id'];
     $doc_name = trim($_POST['doc_name'] ?? '');
 
@@ -141,6 +148,44 @@ if ($action == 'upload_doc') {
         header("Location: ../loan_view.php?id=$loan_id&msg=Document uploaded");
     } else {
         header("Location: ../loan_view.php?id=$loan_id&err=Database insert failed");
+    }
+    exit;
+}
+
+if ($action == 'delete_loan') {
+    if (!staffHasAccess($conn, 'loan_delete', $staff_id)) {
+        header("Location: ../loan_applications.php?err=No permission");
+        exit();
+    }
+
+    $loan_id = (int)$_POST['loan_id'];
+    if ($loan_id <= 0) {
+        header("Location: ../loan_applications.php?err=Invalid Loan ID");
+        exit();
+    }
+
+    $check = mysqli_query($conn, "SELECT id FROM loan_applications WHERE id=$loan_id AND assigned_staff_id=$staff_id");
+    if (mysqli_num_rows($check) == 0) {
+        header("Location: ../loan_applications.php?err=Not assigned to you");
+        exit();
+    }
+
+    $docs_res = mysqli_query($conn, "SELECT doc_path FROM loan_application_docs WHERE loan_application_id = $loan_id");
+    if ($docs_res) {
+        while ($doc = mysqli_fetch_assoc($docs_res)) {
+            $file = realpath(__DIR__ . '/../../' . $doc['doc_path']);
+            if ($file && file_exists($file)) {
+                unlink($file);
+            }
+        }
+    }
+
+    mysqli_query($conn, "DELETE FROM loan_application_docs WHERE loan_application_id = $loan_id");
+
+    if (mysqli_query($conn, "DELETE FROM loan_applications WHERE id = $loan_id")) {
+        header("Location: ../loan_applications.php?msg=Loan deleted successfully");
+    } else {
+        header("Location: ../loan_applications.php?err=Delete failed");
     }
     exit;
 }
