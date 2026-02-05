@@ -8,6 +8,18 @@ include 'includes/connection.php';
 
 // Fetch loan types from services_subcategories table
 $loan_types = [];
+if (!function_exists('limitWords')) {
+    function limitWords($text, $limit = 10) {
+        $text = trim((string)$text);
+        if ($text === '') return $text;
+        $words = preg_split('/\s+/', $text);
+        if (count($words) <= $limit) {
+            return $text;
+        }
+        return implode(' ', array_slice($words, 0, $limit)) . '...';
+    }
+}
+
 if (isset($conn)) {
     $query = "SELECT id, sub_category_name 
               FROM services_subcategories 
@@ -582,7 +594,6 @@ unset($_SESSION['success_message']);
                         <h3 class="form-title">Get Started Today</h3>
                         <p class="form-subtitle">We'll get back to you shortly</p>
                     </div>
-                    
                     <?php if (!empty($success_message)): ?>
                         <div class="alert alert-success">
                             <i class="fas fa-check-circle me-2"></i><?php echo htmlspecialchars($success_message); ?>
@@ -597,9 +608,7 @@ unset($_SESSION['success_message']);
                         </div>
                     <?php endif; ?>
                     
-                    <!-- Note: Form action points to the separate backend file -->
                     <form method="POST" action="insert/enquiry_form.php" class="needs-validation" novalidate>
-                        <!-- Full Name and Phone in one row -->
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
@@ -710,7 +719,7 @@ unset($_SESSION['success_message']);
                             </div>
                             <div class="flex-grow-1">
                                 <h5 class="fw-bold mb-1"><?php echo htmlspecialchars($title); ?></h5>
-                                <p class="text-muted small mb-0"><?php echo htmlspecialchars($desc); ?></p>
+                                <p class="text-muted small mb-0"><?php echo htmlspecialchars(limitWords($desc, 10)); ?></p>
                             </div>
                         </div>
                         <div class="d-flex justify-content-between align-items-center pt-3 border-top border-light">
@@ -747,7 +756,7 @@ unset($_SESSION['success_message']);
                             </div>
                             <div class="flex-grow-1">
                                 <h5 class="fw-bold mb-1"><?php echo $product['name']; ?></h5>
-                                <p class="text-muted small mb-0"><?php echo $product['desc']; ?></p>
+                                <p class="text-muted small mb-0"><?php echo htmlspecialchars(limitWords($product['desc'], 10)); ?></p>
                             </div>
                         </div>
                         <div class="d-flex justify-content-between align-items-center pt-3 border-top border-light">
@@ -766,8 +775,7 @@ unset($_SESSION['success_message']);
         </div>
     </div>
 </section>
- 
-<!-- Why Choose Us Section -->
+ <!-- Why Choose Us Section -->
 <section class="why-choose-section position-relative py-5" style="background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('includes/assets/why choose us.png') center center / cover no-repeat; min-height: 500px;">
     <div class="container py-5">
         <div class="row">

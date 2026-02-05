@@ -207,7 +207,7 @@ include 'sidebar.php';
         <div class="container-fluid">
 
             <div class="greeting-header">
-                <h1>Hi, <?= htmlspecialchars($adminName) ?> 👋</h1>
+                <h1>Hi, <?= htmlspecialchars($adminName) ?> <i class="ri-hand-heart-line"></i></h1>
                 <p class="mb-0">Here's what's happening with your lending platform today.</p>
             </div>
 
