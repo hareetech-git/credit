@@ -1,6 +1,8 @@
 <?php
 include 'db/config.php';
 include 'header.php';
+// Professional icons and typography
+echo '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">';
 include 'topbar.php';
 include 'sidebar.php';
 
@@ -16,10 +18,11 @@ $staff_id = (int)$_SESSION['staff_id'];
 $can_process = hasAccess($conn, 'loan_process');
 $can_delete = hasAccess($conn, 'loan_delete');
 
-$loan_sql = "SELECT l.*, c.full_name, c.email, c.phone, s.service_name 
+$loan_sql = "SELECT l.*, c.full_name, c.email, c.phone, s.service_name, st.name AS staff_name
              FROM loan_applications l
              JOIN customers c ON l.customer_id = c.id
              JOIN services s ON l.service_id = s.id
+             LEFT JOIN staff st ON l.assigned_staff_id = st.id
              WHERE l.id = $loan_id AND l.assigned_staff_id = $staff_id";
 $loan = mysqli_fetch_assoc(mysqli_query($conn, $loan_sql));
 
@@ -31,179 +34,222 @@ if (!$loan) {
 $docs_res = mysqli_query($conn, "SELECT * FROM loan_application_docs WHERE loan_application_id = $loan_id");
 ?>
 
+<style>
+    :root {
+        --slate-900: #0f172a;
+        --slate-800: #1e293b;
+        --slate-500: #64748b;
+        --slate-200: #e2e8f0;
+        --blue-600: #2563eb;
+        --blue-50: #eff6ff;
+    }
+    .content-page { background-color: #f8fafc; padding-bottom: 50px; }
+    
+    /* Summary Hero Card */
+    .loan-hero {
+        background: linear-gradient(135deg, var(--slate-900) 0%, #1e293b 100%);
+        color: white;
+        border-radius: 20px;
+        padding: 30px;
+        margin-bottom: 30px;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+    }
+    
+    .card-modern {
+        border: 1px solid var(--slate-200);
+        border-radius: 16px;
+        background: #ffffff;
+        overflow: hidden;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+    }
+
+    .card-title-sm {
+        font-size: 0.75rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--slate-500);
+        margin-bottom: 15px;
+        display: block;
+    }
+
+    .form-control, .form-select {
+        border: 1px solid var(--slate-200);
+        padding: 12px;
+        font-size: 0.9rem;
+        border-radius: 10px;
+        transition: 0.2s;
+    }
+    .form-control:focus { border-color: var(--blue-600); box-shadow: 0 0 0 4px var(--blue-50); }
+
+    /* Verification Rows */
+    .doc-item {
+        padding: 16px;
+        border-bottom: 1px solid var(--slate-200);
+        transition: 0.2s;
+    }
+    .doc-item:last-child { border-bottom: none; }
+    .doc-item:hover { background: #fdfdfd; }
+
+    .btn-slate { background: var(--slate-900); color: white; border-radius: 10px; font-weight: 600; padding: 10px 20px; }
+    .btn-slate:hover { background: #000; color: white; }
+
+    .status-pill {
+        padding: 4px 12px;
+        border-radius: 6px;
+        font-size: 0.65rem;
+        font-weight: 800;
+        letter-spacing: 0.05em;
+    }
+</style>
+
 <div class="content-page">
-    <div class="content">
-        <div class="container-fluid pt-4">
-            
-            <div class="row">
-                <div class="col-md-4">
-                    <div class="card">
-                        <div class="card-header bg-primary text-white">Application #L-<?= $loan['id'] ?></div>
-                        <div class="card-body">
-                            <h5 class="text-center"><?= htmlspecialchars($loan['full_name']) ?></h5>
-                            <p class="text-center text-muted"><?= htmlspecialchars($loan['service_name']) ?></p>
-                            <hr>
-                            <div class="d-flex justify-content-between mb-2">
-                                <span>Requested:</span> <strong>&#8377;<?= number_format($loan['requested_amount']) ?></strong>
-                            </div>
-                            <div class="d-flex justify-content-between mb-2">
-                                <span>Current Tenure:</span> <strong><?= $loan['tenure_years'] ?> Years</strong>
-                            </div>
-                            <div class="d-flex justify-content-between mb-2">
-                                <span>Status:</span> <span class="badge bg-secondary"><?= strtoupper($loan['status']) ?></span>
-                            </div>
-                            <div class="d-flex justify-content-between mb-2">
-                                <span>Interest Rate (p.a.):</span> <strong><?= number_format((float)$loan['interest_rate'], 2) ?>%</strong>
-                            </div>
+    <div class="container-fluid pt-4">
+        
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h3 class="fw-bold text-dark mb-0">Underwriting Workflow</h3>
+                <span class="text-muted">Agent: <?= htmlspecialchars($loan['staff_name']) ?></span>
+            </div>
+            <a href="loan_applications.php" class="btn btn-white border rounded-pill px-4 btn-sm shadow-sm fw-bold">
+                <i class="fas fa-arrow-left me-2"></i>Exit to Queue
+            </a>
+        </div>
 
-                            <hr>
-
-                            <?php if ($can_process) { ?>
-                                <form action="db/loan_handler.php" method="POST">
-                                    <input type="hidden" name="loan_id" value="<?= $loan_id ?>">
-                                    <input type="hidden" name="action" value="update_loan_status">
-                                    
-                                    <div class="mb-3">
-                                        <label class="form-label fw-bold">Update Status</label>
-                                        <select name="status" class="form-select" required>
-                                            <option value="pending" <?= $loan['status']=='pending'?'selected':'' ?>>Pending</option>
-                                            <option value="approved" <?= $loan['status']=='approved'?'selected':'' ?>>Approved</option>
-                                            <option value="rejected" <?= $loan['status']=='rejected'?'selected':'' ?>>Rejected</option>
-                                            <option value="disbursed" <?= $loan['status']=='disbursed'?'selected':'' ?>>Disbursed</option>
-                                        </select>
-                                    </div>
-
-                                    <div class="row mb-3">
-                                        <div class="col-6">
-                                            <label class="form-label fw-bold small">Final Tenure (Yrs)</label>
-                                            <input type="number" name="tenure_years" class="form-control" value="<?= $loan['tenure_years'] ?>">
-                                        </div>
-                                        <div class="col-6">
-                                            <label class="form-label fw-bold small">Monthly EMI (&#8377;)</label>
-                                            <input type="number" name="emi_amount" class="form-control" value="<?= $loan['emi_amount'] ?>">
-                                        </div>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label fw-bold small">Interest Rate (p.a.)</label>
-                                        <input type="number" step="0.01" name="interest_rate" class="form-control" value="<?= htmlspecialchars($loan['interest_rate']) ?>">
-                                    </div>
-                                    
-                                    <div class="mb-3">
-                                        <label class="form-label fw-bold">Note</label>
-                                        <textarea name="note" class="form-control" placeholder="Rejection reason or approval details..." rows="2"><?= $loan['rejection_note'] ?></textarea>
-                                    </div>
-                                    
-                                    <button type="submit" class="btn btn-dark w-100">Update Application</button>
-                                </form>
-                            <?php } else { ?>
-                                <p class="text-muted small">You do not have permission to process loans.</p>
-                            <?php } ?>
-
-                            <?php if ($can_delete) { ?>
-                                <form action="db/loan_handler.php" method="POST" class="mt-3" onsubmit="return confirm('Delete this loan application? This will also remove its documents.');">
-                                    <input type="hidden" name="action" value="delete_loan">
-                                    <input type="hidden" name="loan_id" value="<?= $loan_id ?>">
-                                    <button type="submit" class="btn btn-outline-danger w-100">Delete Application</button>
-                                </form>
-                            <?php } ?>
-                        </div>
-                    </div>
+        <div class="loan-hero">
+            <div class="row align-items-center">
+                <div class="col-md-6 border-end border-secondary">
+                    <span class="opacity-75 small">Applicant Profile</span>
+                    <h2 class="fw-bold mb-1"><?= htmlspecialchars($loan['full_name']) ?></h2>
+                    <p class="mb-0 opacity-75"><i class="fas fa-envelope me-2"></i><?= $loan['email'] ?> | <i class="fas fa-phone me-2"></i><?= $loan['phone'] ?></p>
                 </div>
-
-                <div class="col-md-8">
-                    <div class="card">
-                        <div class="card-header fw-bold">Submitted Documents</div>
-                        <div class="card-body">
-                            <?php if ($can_process) { ?>
-                                <form action="db/loan_handler.php" method="POST" enctype="multipart/form-data" class="mb-3">
-                                    <input type="hidden" name="action" value="upload_doc">
-                                    <input type="hidden" name="loan_id" value="<?= $loan_id ?>">
-                                    <div class="row g-2 align-items-end">
-                                        <div class="col-md-5">
-                                            <label class="form-label small fw-bold">Document Name</label>
-                                            <input type="text" name="doc_name" class="form-control form-control-sm" placeholder="e.g. Bank Statement" required>
-                                        </div>
-                                        <div class="col-md-5">
-                                            <label class="form-label small fw-bold">Select File</label>
-                                            <input type="file" name="doc_file" class="form-control form-control-sm" required>
-                                        </div>
-                                        <div class="col-md-2">
-                                            <button type="submit" class="btn btn-sm btn-primary w-100">Upload</button>
-                                        </div>
-                                    </div>
-                                    <div class="small text-muted mt-1">Allowed: PDF, JPG, JPEG, PNG, JFIF</div>
-                                </form>
-                            <?php } ?>
-                            <div class="table-responsive">
-                                <table class="table table-bordered">
-                                    <thead>
-                                        <tr>
-                                            <th>Document Name</th>
-                                            <th>Preview</th>
-                                            <th>Status</th>
-                                            <th>Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <?php while($doc = mysqli_fetch_assoc($docs_res)) { ?>
-                                            <tr>
-                                                <td><?= htmlspecialchars($doc['doc_name']) ?></td>
-                                                <td>
-                                                    <a href="../<?= $doc['doc_path'] ?>" target="_blank" class="btn btn-sm btn-info text-white">View File</a>
-                                                </td>
-                                                <td>
-                                                    <?php if($doc['status'] == 'verified') echo '<span class="badge bg-success">Verified</span>'; 
-                                                          elseif($doc['status'] == 'rejected') echo '<span class="badge bg-danger">Rejected</span>'; 
-                                                          else echo '<span class="badge bg-warning">Pending</span>'; ?>
-                                                </td>
-                                                <td>
-                                                    <?php if ($can_process) { ?>
-                                                        <button class="btn btn-sm btn-outline-dark" data-bs-toggle="modal" data-bs-target="#docModal<?= $doc['id'] ?>">
-                                                            Verify / Reject
-                                                        </button>
-                                                    <?php } else { ?>
-                                                        <button class="btn btn-sm btn-outline-dark access-locked" disabled>Verify / Reject</button>
-                                                    <?php } ?>
-
-                                                    <div class="modal fade" id="docModal<?= $doc['id'] ?>" tabindex="-1">
-                                                        <div class="modal-dialog">
-                                                            <form action="db/loan_handler.php" method="POST" class="modal-content">
-                                                                <input type="hidden" name="action" value="verify_doc">
-                                                                <input type="hidden" name="doc_id" value="<?= $doc['id'] ?>">
-                                                                <input type="hidden" name="loan_id" value="<?= $loan_id ?>">
-                                                                
-                                                                <div class="modal-header">
-                                                                    <h5 class="modal-title">Action on <?= $doc['doc_name'] ?></h5>
-                                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                                                </div>
-                                                                <div class="modal-body">
-                                                                    <label>Status</label>
-                                                                    <select name="status" class="form-select mb-3">
-                                                                        <option value="verified">Approve (Verify)</option>
-                                                                        <option value="rejected">Reject</option>
-                                                                    </select>
-                                                                    <label>Rejection Reason (If rejecting)</label>
-                                                                    <textarea name="reason" class="form-control" rows="3"><?= $doc['rejection_reason'] ?></textarea>
-                                                                </div>
-                                                                <div class="modal-footer">
-                                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                                                    <button type="submit" class="btn btn-primary">Save Changes</button>
-                                                                </div>
-                                                            </form>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        <?php } ?>
-                                    </tbody>
-                                </table>
-                            </div>
+                <div class="col-md-6 ps-md-5">
+                    <div class="row text-center">
+                        <div class="col-4">
+                            <span class="opacity-75 x-small d-block text-uppercase">Amount</span>
+                            <span class="h4 fw-bold mb-0">₹<?= number_format($loan['requested_amount']) ?></span>
+                        </div>
+                        <div class="col-4">
+                            <span class="opacity-75 x-small d-block text-uppercase">Tenure</span>
+                            <span class="h4 fw-bold mb-0"><?= $loan['tenure_years'] ?>Y</span>
+                        </div>
+                        <div class="col-4">
+                            <span class="opacity-75 x-small d-block text-uppercase">Interest</span>
+                            <span class="h4 fw-bold mb-0"><?= number_format((float)$loan['interest_rate'], 2) ?>%</span>
                         </div>
                     </div>
                 </div>
             </div>
-
         </div>
+
+        <div class="row g-4">
+            <div class="col-lg-4">
+                <div class="card-modern p-4">
+                    <span class="card-title-sm">Officer Decision Terminal</span>
+                    
+                    <?php if ($can_process): ?>
+                        <form action="db/loan_handler.php" method="POST">
+                            <input type="hidden" name="loan_id" value="<?= $loan_id ?>">
+                            <input type="hidden" name="action" value="update_loan_status">
+                            
+                            <div class="mb-4">
+                                <label class="form-label">Application Status</label>
+                                <select name="status" class="form-select bg-light fw-bold" required>
+                                    <option value="pending" <?= $loan['status']=='pending'?'selected':'' ?>>Under Review</option>
+                                    <option value="approved" <?= $loan['status']=='approved'?'selected':'' ?>>Approve Loan</option>
+                                    <option value="rejected" <?= $loan['status']=='rejected'?'selected':'' ?>>Reject Application</option>
+                                    <option value="disbursed" <?= $loan['status']=='disbursed'?'selected':'' ?>>Funds Disbursed</option>
+                                </select>
+                            </div>
+
+                            <div class="row g-3 mb-4">
+                                <div class="col-6">
+                                    <label class="form-label">Adjust Tenure</label>
+                                    <input type="number" name="tenure_years" class="form-control" value="<?= $loan['tenure_years'] ?>">
+                                </div>
+                                <div class="col-6">
+                                    <label class="form-label">Adjust Rate %</label>
+                                    <input type="number" step="0.01" name="interest_rate" class="form-control" value="<?= $loan['interest_rate'] ?>">
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label">Internal & Customer Note</label>
+                                <textarea name="note" class="form-control" rows="4" placeholder="Detail the basis for this decision..."><?= $loan['rejection_note'] ?></textarea>
+                            </div>
+
+                            <button type="submit" class="btn btn-slate w-100 shadow-lg py-3">Commit Decision</button>
+                        </form>
+                    <?php endif; ?>
+
+                    <?php if ($can_delete): ?>
+                        <form action="db/loan_handler.php" method="POST" class="mt-4" onsubmit="return confirm('Archive this request?');">
+                            <input type="hidden" name="action" value="delete_loan">
+                            <input type="hidden" name="loan_id" value="<?= $loan_id ?>">
+                            <button type="submit" class="btn btn-link text-danger w-100 fw-bold text-decoration-none small">Archive Application</button>
+                        </form>
+                    <?php endif; ?>
+                </div>
+            </div>
+
+            <div class="col-lg-8">
+                <div class="card-modern">
+                    <div class="p-4 border-bottom bg-light d-flex justify-content-between align-items-center">
+                        <span class="card-title-sm mb-0">Verification Evidence</span>
+                        <span class="badge bg-dark rounded-pill px-3"><?= mysqli_num_rows($docs_res) ?> Files</span>
+                    </div>
+                    
+                    <div class="card-body p-0">
+                        <?php while($doc = mysqli_fetch_assoc($docs_res)): ?>
+                            <div class="doc-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="fw-bold text-dark mb-1"><?= htmlspecialchars($doc['doc_name']) ?></h6>
+                                    <div class="d-flex align-items-center gap-3">
+                                        <a href="../<?= $doc['doc_path'] ?>" target="_blank" class="text-blue-600 small fw-bold"><i class="fas fa-eye me-1"></i> Preview Asset</a>
+                                        <?php if($doc['status'] == 'verified'): ?>
+                                            <span class="status-pill bg-success text-white">VERIFIED</span>
+                                        <?php elseif($doc['status'] == 'rejected'): ?>
+                                            <span class="status-pill bg-danger text-white">REJECTED</span>
+                                        <?php else: ?>
+                                            <span class="status-pill bg-warning text-dark">PENDING</span>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                                <button class="btn btn-sm btn-white border rounded-pill px-3 fw-bold" data-bs-toggle="modal" data-bs-target="#docModal<?= $doc['id'] ?>">Verify</button>
+
+                                <div class="modal fade" id="docModal<?= $doc['id'] ?>" tabindex="-1">
+                                    <div class="modal-dialog modal-dialog-centered">
+                                        <form action="db/loan_handler.php" method="POST" class="modal-content border-0 shadow-lg" style="border-radius:20px;">
+                                            <input type="hidden" name="action" value="verify_doc">
+                                            <input type="hidden" name="doc_id" value="<?= $doc['id'] ?>">
+                                            <input type="hidden" name="loan_id" value="<?= $loan_id ?>">
+                                            <div class="modal-header border-0 pb-0">
+                                                <h5 class="fw-800">Verify Asset</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                            </div>
+                                            <div class="modal-body py-4">
+                                                <label class="form-label">Review Status</label>
+                                                <select name="status" class="form-select mb-4">
+                                                    <option value="verified" <?= $doc['status']=='verified'?'selected':'' ?>>Verify & Approve</option>
+                                                    <option value="rejected" <?= $doc['status']=='rejected'?'selected':'' ?>>Flag/Reject Asset</option>
+                                                </select>
+                                                <label class="form-label">Reasoning (Optional)</label>
+                                                <textarea name="reason" class="form-control" rows="3"><?= $doc['rejection_reason'] ?></textarea>
+                                            </div>
+                                            <div class="modal-footer border-0">
+                                                <button type="submit" class="btn btn-slate w-100 py-3">Submit Review</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php endwhile; ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>
+
 <?php include 'footer.php'; ?>

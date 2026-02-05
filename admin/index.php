@@ -91,7 +91,7 @@
                     <div class="row g-0">
                         <div class="col-lg-6 p-4 p-md-5">
                             <div class="auth-header text-center text-lg-start mb-4">
-                                <h4 class="fs-24">Management Access</h4>
+                                <h4 class="fs-24">Admin Access</h4>
                                 <p class="text-muted">Securely sign in to manage your platform.</p>
                             </div>
 
@@ -119,8 +119,8 @@
                         </div>
 
                         <div class="col-lg-6 d-none d-lg-block bg-light">
-                            <img src="uploads/logo.png" 
-                                 alt="Management Logo" class="side-image">
+                            <img src="assets/admin_login_bg.jpg" 
+                                 alt="Management Logo" class="side-image" style="object-fit:fill;">
                         </div>
                     </div>
                 </div>

@@ -2,26 +2,64 @@
 include 'header.php';
 
 /* ------------------------------
-   Static Values (No DB)
+   Dynamic Values (DB)
 --------------------------------*/
-$adminName        = 'Admin';
-$categoryCount    = 12;
-$subCategoryCount = 34;
-$serviceCount     = 18;
-$departmentCount  = 5;
-
+$adminName = $_SESSION['staff_name'] ?? 'Staff';
 $staff_id = (int)$_SESSION['staff_id'];
+
+function getCountStaff($conn, $table, $where = '') {
+    $sql = "SELECT COUNT(*) AS total FROM $table";
+    if (!empty($where)) $sql .= " WHERE $where";
+    $res = mysqli_query($conn, $sql);
+    $row = $res ? mysqli_fetch_assoc($res) : null;
+    return (int)($row['total'] ?? 0);
+}
+
+$loanWhere = "assigned_staff_id = $staff_id";
+$loanTotal = getCountStaff($conn, 'loan_applications', $loanWhere);
+$loanPending = getCountStaff($conn, 'loan_applications', "$loanWhere AND status='pending'");
+$loanApproved = getCountStaff($conn, 'loan_applications', "$loanWhere AND status='approved'");
+$loanRejected = getCountStaff($conn, 'loan_applications', "$loanWhere AND status='rejected'");
+$loanDisbursed = getCountStaff($conn, 'loan_applications', "$loanWhere AND status='disbursed'");
+
 if (hasAccess($conn, 'enquiry_view_all')) {
-    $count_res = mysqli_query($conn, "SELECT COUNT(*) AS total FROM enquiries");
+    $enquiryWhere = "1=1";
 } elseif (hasAccess($conn, 'enquiry_view_assigned')) {
-    $count_res = mysqli_query($conn, "SELECT COUNT(*) AS total FROM enquiries WHERE assigned_staff_id = $staff_id");
+    $enquiryWhere = "assigned_staff_id = $staff_id";
 } else {
-    $count_res = false;
+    $enquiryWhere = "1=0";
 }
-$enquiryCount = 0;
-if ($count_res && ($row = mysqli_fetch_assoc($count_res))) {
-    $enquiryCount = (int)$row['total'];
+$enquiryCount = getCountStaff($conn, 'enquiries', $enquiryWhere);
+$enquiryNew = getCountStaff($conn, 'enquiries', "$enquiryWhere AND status='new'");
+$enquiryAssigned = getCountStaff($conn, 'enquiries', "$enquiryWhere AND status='assigned'");
+$enquiryConversation = getCountStaff($conn, 'enquiries', "$enquiryWhere AND status='conversation'");
+$enquiryConverted = getCountStaff($conn, 'enquiries', "$enquiryWhere AND status='converted'");
+$enquiryClosed = getCountStaff($conn, 'enquiries', "$enquiryWhere AND status='closed'");
+
+function dailyCountsStaff($conn, $table, $dateField, $where = '') {
+    $labels = [];
+    $data = [];
+    for ($i = 6; $i >= 0; $i--) {
+        $d = new DateTime();
+        $d->modify("-$i days");
+        $key = $d->format('Y-m-d');
+        $labels[] = $d->format('M d');
+        $data[$key] = 0;
+    }
+    $whereSql = $where ? "WHERE $where" : "";
+    $res = mysqli_query($conn, "SELECT DATE($dateField) AS d, COUNT(*) AS total FROM $table $whereSql GROUP BY DATE($dateField)");
+    if ($res) {
+        while ($row = mysqli_fetch_assoc($res)) {
+            if (isset($data[$row['d']])) {
+                $data[$row['d']] = (int)$row['total'];
+            }
+        }
+    }
+    return [$labels, array_values($data)];
 }
+
+[$trendLabels, $trendLoans] = dailyCountsStaff($conn, 'loan_applications', 'created_at', $loanWhere);
+[$_t1, $trendEnquiries] = dailyCountsStaff($conn, 'enquiries', 'created_at', $enquiryWhere);
 ?>
 
 <?php include 'topbar.php'; ?>
@@ -115,6 +153,26 @@ if ($count_res && ($row = mysqli_fetch_assoc($count_res))) {
         background: var(--slate-900);
         color: #fff;
     }
+
+    .dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 16px;
+    }
+
+    .chart-card {
+        background: #fff;
+        border: 1px solid var(--slate-200);
+        border-radius: 16px;
+        padding: 20px;
+        height: 100%;
+    }
+
+    .chart-title {
+        font-weight: 700;
+        color: var(--slate-900);
+        margin-bottom: 12px;
+    }
 </style>
 
 <div class="content-page">
@@ -126,57 +184,87 @@ if ($count_res && ($row = mysqli_fetch_assoc($count_res))) {
                 <p>System performance and management overview.</p>
             </div>
 
-            <div class="row">
+            <div class="dashboard-grid">
 
-                <div class="col-md-4 mb-4">
+                <a href="loan_applications.php" class="stat-card-link">
                     <div class="stat-card">
-                        <span class="label">Total Categories</span>
-                        <span class="value"><?= $categoryCount ?></span>
-                        <div class="footer-link">View all categories →</div>
+                        <span class="label">Assigned Loans</span>
+                        <span class="value"><?= $loanTotal ?></span>
+                        <div class="footer-link">View loans →</div>
                     </div>
+                </a>
+
+                <div class="stat-card">
+                    <span class="label">Pending Loans</span>
+                    <span class="value"><?= $loanPending ?></span>
+                    <div class="footer-link">Awaiting decision</div>
                 </div>
 
-                <div class="col-md-4 mb-4">
-                    <div class="stat-card">
-                        <span class="label">Sub Categories</span>
-                        <span class="value"><?= $subCategoryCount ?></span>
-                        <div class="footer-link">View subcategories →</div>
-                    </div>
+                <div class="stat-card">
+                    <span class="label">Approved Loans</span>
+                    <span class="value"><?= $loanApproved ?></span>
+                    <div class="footer-link">Approved by you</div>
                 </div>
 
-                <div class="col-md-4 mb-4">
-                    <div class="stat-card">
-                        <span class="label">Total Services</span>
-                        <span class="value"><?= $serviceCount ?></span>
-                        <div class="footer-link">Manage services →</div>
-                    </div>
+                <div class="stat-card">
+                    <span class="label">Rejected Loans</span>
+                    <span class="value"><?= $loanRejected ?></span>
+                    <div class="footer-link">Needs follow-up</div>
                 </div>
 
-                <div class="col-md-4 mb-4">
+                <a href="enquiries.php" class="stat-card-link">
                     <div class="stat-card">
-                        <span class="label">Total Departments</span>
-                        <span class="value"><?= $departmentCount ?></span>
-                        <div class="footer-link">Manage departments →</div>
-                    </div>
-                </div>
-
-                <div class="col-md-4 mb-4">
-                    <div class="stat-card">
-                        <span class="label">Total Enquiries</span>
+                        <span class="label">Enquiries</span>
                         <span class="value"><?= $enquiryCount ?></span>
                         <div class="footer-link">View enquiries →</div>
                     </div>
+                </a>
+
+                <div class="stat-card">
+                    <span class="label">New Enquiries</span>
+                    <span class="value"><?= $enquiryNew ?></span>
+                    <div class="footer-link">Needs response</div>
+                </div>
+
+                <div class="stat-card">
+                    <span class="label">In Conversation</span>
+                    <span class="value"><?= $enquiryConversation ?></span>
+                    <div class="footer-link">Active chats</div>
+                </div>
+
+                <div class="stat-card">
+                    <span class="label">Closed/Converted</span>
+                    <span class="value"><?= ($enquiryClosed + $enquiryConverted) ?></span>
+                    <div class="footer-link">Resolved</div>
                 </div>
 
             </div>
 
-            <div class="row mt-4">
-                <div class="col-12">
-                    <div class="p-4 bg-white rounded-4 border">
-                        <h5 class="fw-bold mb-4">Control Panel</h5>
+            <div class="row mt-4 g-4">
+                <div class="col-lg-8">
+                    <div class="chart-card">
+                        <div class="chart-title">7-Day Activity</div>
+                        <canvas id="trendChart" height="110"></canvas>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="chart-card">
+                        <div class="chart-title">Loan Status</div>
+                        <canvas id="loanPie" height="220"></canvas>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="chart-card">
+                        <div class="chart-title">Enquiry Status</div>
+                        <canvas id="enquiryPie" height="220"></canvas>
+                    </div>
+                </div>
+                <div class="col-lg-8">
+                    <div class="p-4 bg-white rounded-4 border h-100">
+                        <h5 class="fw-bold mb-4">Quick Actions</h5>
                         <div class="d-flex gap-3">
-                            <a href="#" class="action-btn">Add Category</a>
-                            <a href="#" class="action-btn-outline">New Service Entry</a>
+                            <a href="loan_applications.php" class="action-btn">Assigned Loans</a>
+                            <a href="enquiries.php" class="action-btn-outline">Enquiries</a>
                         </div>
                     </div>
                 </div>
@@ -185,5 +273,50 @@ if ($count_res && ($row = mysqli_fetch_assoc($count_res))) {
         </div>
     </div>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+const trendLabels = <?= json_encode($trendLabels) ?>;
+const trendLoans = <?= json_encode($trendLoans) ?>;
+const trendEnquiries = <?= json_encode($trendEnquiries) ?>;
 
+new Chart(document.getElementById('trendChart'), {
+    type: 'line',
+    data: {
+        labels: trendLabels,
+        datasets: [
+            { label: 'Loans', data: trendLoans, borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,0.15)', tension: 0.35, fill: true },
+            { label: 'Enquiries', data: trendEnquiries, borderColor: '#f59e0b', backgroundColor: 'rgba(245,158,11,0.15)', tension: 0.35, fill: true }
+        ]
+    },
+    options: {
+        responsive: true,
+        plugins: { legend: { position: 'bottom' } },
+        scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
+    }
+});
+
+new Chart(document.getElementById('loanPie'), {
+    type: 'doughnut',
+    data: {
+        labels: ['Pending', 'Approved', 'Rejected', 'Disbursed'],
+        datasets: [{
+            data: [<?= $loanPending ?>, <?= $loanApproved ?>, <?= $loanRejected ?>, <?= $loanDisbursed ?>],
+            backgroundColor: ['#fbbf24', '#34d399', '#f87171', '#60a5fa']
+        }]
+    },
+    options: { plugins: { legend: { position: 'bottom' } } }
+});
+
+new Chart(document.getElementById('enquiryPie'), {
+    type: 'doughnut',
+    data: {
+        labels: ['New', 'Assigned', 'Conversation', 'Converted', 'Closed'],
+        datasets: [{
+            data: [<?= $enquiryNew ?>, <?= $enquiryAssigned ?>, <?= $enquiryConversation ?>, <?= $enquiryConverted ?>, <?= $enquiryClosed ?>],
+            backgroundColor: ['#a5b4fc', '#fbbf24', '#38bdf8', '#34d399', '#94a3b8']
+        }]
+    },
+    options: { plugins: { legend: { position: 'bottom' } } }
+});
+</script>
 <?php include 'footer.php'; ?>

@@ -113,7 +113,7 @@ $staff_active = in_array($current_page, [
 <div class="leftside-menu">
     <a href="dashboard.php" class="logo text-center d-block">
         <span class="logo-lg">
-            <img src="uploads/logo-ravi.png" alt="logo" style="max-height: 40px; margin: 20px 0; filter: brightness(0) invert(1);">
+            <img src="assets/udhaar_logo.png" alt="logo" style="max-height: 40px; margin: 20px 0; filter: brightness(0) invert(1);">
         </span>
     </a>
 

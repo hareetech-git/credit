@@ -25,6 +25,44 @@ $serviceCount     = getCount($conn, 'services'); // add WHERE if needed
 $enquiryCount     = getCount($conn, 'enquiries');
 $customerCount = getCount($conn,'customers' );
 $departmentCount = getCount ($conn,'departments');
+$staffCount = getCount($conn, 'staff');
+$loanCount = getCount($conn, 'loan_applications');
+$loanPending = getCount($conn, 'loan_applications', "status='pending'");
+$loanApproved = getCount($conn, 'loan_applications', "status='approved'");
+$loanRejected = getCount($conn, 'loan_applications', "status='rejected'");
+$loanDisbursed = getCount($conn, 'loan_applications', "status='disbursed'");
+
+$enquiryNew = getCount($conn, 'enquiries', "status='new'");
+$enquiryAssigned = getCount($conn, 'enquiries', "status='assigned'");
+$enquiryConversation = getCount($conn, 'enquiries', "status='conversation'");
+$enquiryConverted = getCount($conn, 'enquiries', "status='converted'");
+$enquiryClosed = getCount($conn, 'enquiries', "status='closed'");
+
+function dailyCounts($conn, $table, $dateField, $where = '') {
+    $labels = [];
+    $data = [];
+    for ($i = 6; $i >= 0; $i--) {
+        $d = new DateTime();
+        $d->modify("-$i days");
+        $key = $d->format('Y-m-d');
+        $labels[] = $d->format('M d');
+        $data[$key] = 0;
+    }
+    $whereSql = $where ? "WHERE $where" : "";
+    $res = mysqli_query($conn, "SELECT DATE($dateField) AS d, COUNT(*) AS total FROM $table $whereSql GROUP BY DATE($dateField)");
+    if ($res) {
+        while ($row = mysqli_fetch_assoc($res)) {
+            if (isset($data[$row['d']])) {
+                $data[$row['d']] = (int)$row['total'];
+            }
+        }
+    }
+    return [$labels, array_values($data)];
+}
+
+[$trendLabels, $trendCustomers] = dailyCounts($conn, 'customers', 'created_at');
+[$_t1, $trendLoans] = dailyCounts($conn, 'loan_applications', 'created_at');
+[$_t2, $trendEnquiries] = dailyCounts($conn, 'enquiries', 'created_at');
 $adminName = $_SESSION['admin_name'] ?? 'Admin';
 ?>
 
@@ -120,6 +158,26 @@ $adminName = $_SESSION['admin_name'] ?? 'Admin';
         background: var(--slate-900);
         color: #fff;
     }
+
+    .dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 16px;
+    }
+
+    .chart-card {
+        background: #fff;
+        border: 1px solid var(--slate-200);
+        border-radius: 16px;
+        padding: 20px;
+        height: 100%;
+    }
+
+    .chart-title {
+        font-weight: 700;
+        color: var(--slate-900);
+        margin-bottom: 12px;
+    }
 </style>
 
 <div class="content-page">
@@ -131,77 +189,99 @@ $adminName = $_SESSION['admin_name'] ?? 'Admin';
                 <p>System performance and management overview.</p>
             </div>
 
-            <div class="row">
+            <div class="dashboard-grid">
 
-                <div class="col-md-4 mb-4">
-                    <a href="category.php" class="stat-card-link">
-                        <div class="stat-card">
-                            <span class="label">Total Categories</span>
-                            <span class="value"><?= $categoryCount ?></span>
-                            <div class="footer-link">View all categories →</div>
-                        </div>
-                    </a>
-                </div>
+                <a href="category.php" class="stat-card-link">
+                    <div class="stat-card">
+                        <span class="label">Total Categories</span>
+                        <span class="value"><?= $categoryCount ?></span>
+                        <div class="footer-link">View all categories →</div>
+                    </div>
+                </a>
 
-                <div class="col-md-4 mb-4">
-                    <a href="subcategory.php" class="stat-card-link">
-                        <div class="stat-card">
-                            <span class="label">Sub Categories</span>
-                            <span class="value"><?= $subCategoryCount ?></span>
-                            <div class="footer-link">View subcategories →</div>
-                        </div>
-                    </a>
-                </div>
+                <a href="subcategory.php" class="stat-card-link">
+                    <div class="stat-card">
+                        <span class="label">Sub Categories</span>
+                        <span class="value"><?= $subCategoryCount ?></span>
+                        <div class="footer-link">View subcategories →</div>
+                    </div>
+                </a>
 
-                <div class="col-md-4 mb-4">
-                    <a href="services.php" class="stat-card-link">
-                        <div class="stat-card">
-                            <span class="label">Total Services</span>
-                            <span class="value"><?= $serviceCount ?></span>
-                            <div class="footer-link">Manage services →</div>
-                        </div>
-                    </a>
-                </div>
+                <a href="services.php" class="stat-card-link">
+                    <div class="stat-card">
+                        <span class="label">Total Services</span>
+                        <span class="value"><?= $serviceCount ?></span>
+                        <div class="footer-link">Manage services →</div>
+                    </div>
+                </a>
 
-               <div class="col-md-4 mb-4">
-                    <a href="subcategory.php" class="stat-card-link">
-                        <div class="stat-card">
-                            <span class="label">Sub Categories</span>
-                            <span class="value"><?= $subCategoryCount ?></span>
-                            <div class="footer-link">View subcategories →</div>
-                        </div>
-                    </a>
-                </div>
-              
-              <div class="col-md-4 mb-4">
-                    <a href="departments.php" class="stat-card-link">
-                        <div class="stat-card">
-                            <span class="label">Total Department</span>
-                            <span class="value"><?= $departmentCount ?></span>
-                            <div class="footer-link">Manage Departments →</div>
-                        </div>
-                    </a>
-                </div>
+                <a href="departments.php" class="stat-card-link">
+                    <div class="stat-card">
+                        <span class="label">Total Departments</span>
+                        <span class="value"><?= $departmentCount ?></span>
+                        <div class="footer-link">Manage Departments →</div>
+                    </div>
+                </a>
 
-                <div class="col-md-4 mb-4">
-                    <a href="enquiries.php" class="stat-card-link">
-                        <div class="stat-card">
-                            <span class="label">Total Enquiries</span>
-                            <span class="value"><?= $enquiryCount ?></span>
-                            <div class="footer-link">View enquiries →</div>
-                        </div>
-                    </a>
-                </div>
+                <a href="enquiries.php" class="stat-card-link">
+                    <div class="stat-card">
+                        <span class="label">Total Enquiries</span>
+                        <span class="value"><?= $enquiryCount ?></span>
+                        <div class="footer-link">View enquiries →</div>
+                    </div>
+                </a>
+
+                <a href="customers.php" class="stat-card-link">
+                    <div class="stat-card">
+                        <span class="label">Total Customers</span>
+                        <span class="value"><?= $customerCount ?></span>
+                        <div class="footer-link">View customers →</div>
+                    </div>
+                </a>
+
+                <a href="staff_list.php" class="stat-card-link">
+                    <div class="stat-card">
+                        <span class="label">Total Staff</span>
+                        <span class="value"><?= $staffCount ?></span>
+                        <div class="footer-link">View staff →</div>
+                    </div>
+                </a>
+
+                <a href="loan_applications.php" class="stat-card-link">
+                    <div class="stat-card">
+                        <span class="label">Total Loans</span>
+                        <span class="value"><?= $loanCount ?></span>
+                        <div class="footer-link">View loans →</div>
+                    </div>
+                </a>
 
             </div>
 
-            <div class="row mt-4">
-                <div class="col-12">
-                    <div class="p-4 bg-white rounded-4 border">
+            <div class="row mt-4 g-4">
+                <div class="col-lg-8">
+                    <div class="chart-card">
+                        <div class="chart-title">7-Day Activity</div>
+                        <canvas id="trendChart" height="110"></canvas>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="chart-card">
+                        <div class="chart-title">Loan Status</div>
+                        <canvas id="loanPie" height="220"></canvas>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="chart-card">
+                        <div class="chart-title">Enquiry Status</div>
+                        <canvas id="enquiryPie" height="220"></canvas>
+                    </div>
+                </div>
+                <div class="col-lg-8">
+                    <div class="p-4 bg-white rounded-4 border h-100">
                         <h5 class="fw-bold mb-4">Control Panel</h5>
                         <div class="d-flex gap-3">
-                            <a href="add-category.php" class="action-btn">Add Category</a>
-                            <a href="add-service.php" class="action-btn-outline">New Service Entry</a>
+                            <a href="category_add.php" class="action-btn">Add Category</a>
+                            <a href="service_add.php" class="action-btn-outline">New Service Entry</a>
                         </div>
                     </div>
                 </div>
@@ -210,5 +290,52 @@ $adminName = $_SESSION['admin_name'] ?? 'Admin';
         </div>
     </div>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+const trendLabels = <?= json_encode($trendLabels) ?>;
+const trendCustomers = <?= json_encode($trendCustomers) ?>;
+const trendLoans = <?= json_encode($trendLoans) ?>;
+const trendEnquiries = <?= json_encode($trendEnquiries) ?>;
 
+new Chart(document.getElementById('trendChart'), {
+    type: 'line',
+    data: {
+        labels: trendLabels,
+        datasets: [
+            { label: 'Customers', data: trendCustomers, borderColor: '#2563eb', backgroundColor: 'rgba(37,99,235,0.15)', tension: 0.35, fill: true },
+            { label: 'Loans', data: trendLoans, borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,0.15)', tension: 0.35, fill: true },
+            { label: 'Enquiries', data: trendEnquiries, borderColor: '#f59e0b', backgroundColor: 'rgba(245,158,11,0.15)', tension: 0.35, fill: true }
+        ]
+    },
+    options: {
+        responsive: true,
+        plugins: { legend: { position: 'bottom' } },
+        scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
+    }
+});
+
+new Chart(document.getElementById('loanPie'), {
+    type: 'doughnut',
+    data: {
+        labels: ['Pending', 'Approved', 'Rejected', 'Disbursed'],
+        datasets: [{
+            data: [<?= $loanPending ?>, <?= $loanApproved ?>, <?= $loanRejected ?>, <?= $loanDisbursed ?>],
+            backgroundColor: ['#fbbf24', '#34d399', '#f87171', '#60a5fa']
+        }]
+    },
+    options: { plugins: { legend: { position: 'bottom' } } }
+});
+
+new Chart(document.getElementById('enquiryPie'), {
+    type: 'doughnut',
+    data: {
+        labels: ['New', 'Assigned', 'Conversation', 'Converted', 'Closed'],
+        datasets: [{
+            data: [<?= $enquiryNew ?>, <?= $enquiryAssigned ?>, <?= $enquiryConversation ?>, <?= $enquiryConverted ?>, <?= $enquiryClosed ?>],
+            backgroundColor: ['#a5b4fc', '#fbbf24', '#38bdf8', '#34d399', '#94a3b8']
+        }]
+    },
+    options: { plugins: { legend: { position: 'bottom' } } }
+});
+</script>
 <?php include 'footer.php'; ?>
