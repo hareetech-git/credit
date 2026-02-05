@@ -31,6 +31,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         // Get the ID of the newly created user
         $new_id = mysqli_insert_id($conn);
 
+        // Link any existing enquiries by email to this customer
+        mysqli_query($conn, "UPDATE enquiries SET customer_id = $new_id WHERE customer_id IS NULL AND email = '$email'");
+
         // 4. Set Session variables to log them in automatically
         $_SESSION['customer_id']    = $new_id;
         $_SESSION['customer_name']  = $full_name;

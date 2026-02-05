@@ -22,6 +22,9 @@ try {
         mysqli_query($conn, "INSERT INTO customers (full_name, email, phone, password, status) VALUES ('$full_name', '$email', '$phone', '$hashedPass', 'active')");
         $cid = mysqli_insert_id($conn);
 
+        // Link any existing enquiries by email to this customer
+        mysqli_query($conn, "UPDATE enquiries SET customer_id = $cid WHERE customer_id IS NULL AND email = '$email'");
+
         $pan = strtoupper(mysqli_real_escape_string($conn, $_POST['pan_number']));
         $dob = $_POST['birth_date'];
         $emp = $_POST['employee_type'];

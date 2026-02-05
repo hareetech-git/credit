@@ -14,7 +14,7 @@ if (isset($_POST['save_staff'])) {
         $staff_id = (int)$_POST['staff_id'];
         
         // Update basic info
-        $update_sql = "UPDATE staff SET name='$name', email='$email', department_id=$dept_id WHERE id=$staff_id";
+        $update_sql = "UPDATE staff SET name='$name', email='$email', department_id=$dept_id, role_id=IFNULL(role_id,1) WHERE id=$staff_id";
         mysqli_query($conn, $update_sql);
 
         // Update password ONLY if provided
@@ -34,8 +34,8 @@ if (isset($_POST['save_staff'])) {
     } else {
         // --- ADD MODE ---
         $pass = password_hash($_POST['password'], PASSWORD_DEFAULT);
-        $insert_sql = "INSERT INTO staff (name, email, password, department_id, created_by) 
-                       VALUES ('$name', '$email', '$pass', $dept_id, $admin_id)";
+        $insert_sql = "INSERT INTO staff (name, email, password, department_id, created_by, role_id) 
+                       VALUES ('$name', '$email', '$pass', $dept_id, $admin_id, 1)";
         
         if (mysqli_query($conn, $insert_sql)) {
             $staff_id = mysqli_insert_id($conn);

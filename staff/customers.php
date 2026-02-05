@@ -215,9 +215,13 @@ $result = mysqli_query($conn, $query);
             <a href="customer_add.php?id=<?= $row['id'] ?>" class="btn-action btn-edit"><i class="fas fa-edit"></i></a>
         <?php endif; ?>
 
-        <?php if (hasAccess($conn, 'cust_delete')): ?>
-            <a href="db/delete/customer_delete.php?id=<?= $row['id'] ?>" class="btn-action btn-delete" onclick="return confirm('Delete?')"><i class="fas fa-trash"></i></a>
-        <?php endif; ?>
+<?php if (hasAccess($conn, 'cust_delete')): ?>
+    <a href="db/delete/customer_delete.php?id=<?= $row['id'] ?>&action=delete" 
+       class="btn-action btn-delete" 
+       onclick="return confirm('Are you sure you want to delete this customer? This cannot be undone.')">
+       <i class="fas fa-trash"></i>
+    </a>
+<?php endif; ?>
         
     </div>
 </td>

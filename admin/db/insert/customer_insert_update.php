@@ -25,6 +25,8 @@ if ($action == 'create' || $action == 'update') {
             $id = mysqli_insert_id($conn);
             // Create empty profile entry for the new customer
             mysqli_query($conn, "INSERT INTO customer_profiles (customer_id) VALUES ($id)");
+            // Link any existing enquiries by email to this customer
+            mysqli_query($conn, "UPDATE enquiries SET customer_id = $id WHERE customer_id IS NULL AND email = '$email'");
         } else {
             die("Error creating customer: " . mysqli_error($conn));
         }
@@ -39,6 +41,8 @@ if ($action == 'create' || $action == 'update') {
                 status='$status' 
                 WHERE id=$id";
         mysqli_query($conn, $sql);
+        // If email changed or existed without customer_id, link enquiries
+        mysqli_query($conn, "UPDATE enquiries SET customer_id = $id WHERE customer_id IS NULL AND email = '$email'");
     }
 
     // --- UPDATE PROFILE DATA (Common for Create & Update) ---
