@@ -21,10 +21,10 @@
             margin: 0;
         }
 
-         *{
-            font-family:  'Alfa Slab One', serif;
-    
-        }
+    * {
+    font-family:  Helvetica, sans-serif;
+}
+
         /* Header Styles */
         .header-custom {
             background-color: rgba(255, 255, 255, 0.98);
@@ -100,7 +100,7 @@
         
 
         .nav-link-custom {
-            font-weight: 900;
+            font-weight: 600;
             color: var(--text-dark);
             font-size: 4 rem;
             padding: 0.65rem 1rem;

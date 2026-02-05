@@ -7,7 +7,7 @@ $redirect_to = isset($_GET['redirect']) ? $_GET['redirect'] : '';
 <style>
     body {
         margin: 0;
-        font-family: 'Plus Jakarta Sans', 'Segoe UI', sans-serif;
+        /* font-family: 'Plus Jakarta Sans', 'Segoe UI', sans-serif; */
         min-height: 100vh;
         display: flex;
         align-items: center;

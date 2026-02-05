@@ -24,7 +24,7 @@
             justify-content: center;
             height: 100vh;
             margin: 0;
-            font-family: 'Inter', sans-serif;
+            /* font-family: '', sans-serif; */
         }
 
         .auth-card {
