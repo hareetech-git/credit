@@ -6,10 +6,48 @@ include 'header.php';
 
 include 'sidebar.php';
 
-$categoryCount = 12;
-$serviceCount  = 8;
-$sliderCount   = 5;
-$adminName = $_SESSION['customer_name'] ?? 'Admin';
+$customer_id = $_SESSION['customer_id'] ?? 0;
+$adminName = $_SESSION['customer_name'] ?? 'Customer';
+
+$stats = [
+    'total' => 0,
+    'pending' => 0,
+    'approved' => 0,
+    'rejected' => 0,
+    'disbursed' => 0
+];
+$docStats = [
+    'pending_docs' => 0,
+    'rejected_docs' => 0
+];
+
+if ($customer_id) {
+    $loanRes = mysqli_query($conn, "
+        SELECT 
+            COUNT(*) AS total,
+            SUM(status='pending') AS pending,
+            SUM(status='approved') AS approved,
+            SUM(status='rejected') AS rejected,
+            SUM(status='disbursed') AS disbursed
+        FROM loan_applications
+        WHERE customer_id = $customer_id
+    ");
+    if ($loanRes) {
+        $stats = mysqli_fetch_assoc($loanRes);
+    }
+
+    $docRes = mysqli_query($conn, "
+        SELECT 
+            SUM(d.status='pending') AS pending_docs,
+            SUM(d.status='rejected') AS rejected_docs
+        FROM loan_application_docs d
+        JOIN loan_applications la ON la.id = d.loan_application_id
+        WHERE la.customer_id = $customer_id
+    ");
+    if ($docRes) {
+        $docStats = mysqli_fetch_assoc($docRes);
+    }
+}
 ?>
 
 
@@ -140,44 +178,56 @@ $adminName = $_SESSION['customer_name'] ?? 'Admin';
                 <div class="row align-items-center">
                     <div class="col">
                         <h1>Welcome, <?= htmlspecialchars($adminName) ?></h1>
-                        <p class="mb-0">System performance and management overview.</p>
+                        <p class="mb-0">Track your applications and document verification status.</p>
                     </div>
                 </div>
             </div>
 
             <div class="row">
                 
-                <div class="col-md-4 mb-4">
-                    <a href="manage-categories.php" class="stat-card-link">
+                <div class="col-md-3 mb-4">
+                    <a href="my-applications.php" class="stat-card-link">
                         <div class="stat-card">
-                            <span class="label">Total Categories</span>
-                            <span class="value"><?= $categoryCount ?></span>
+                            <span class="label">Total Applications</span>
+                            <span class="value"><?= (int)$stats['total'] ?></span>
                             <div class="footer-link">
-                                View all categories <i class="ri-arrow-right-line"></i>
+                                View applications <i class="ri-arrow-right-line"></i>
                             </div>
                         </div>
                     </a>
                 </div>
 
-                <div class="col-md-4 mb-4">
-                    <a href="manage-services.php" class="stat-card-link">
+                <div class="col-md-3 mb-4">
+                    <a href="my-applications.php" class="stat-card-link">
                         <div class="stat-card">
-                            <span class="label">Services Active</span>
-                            <span class="value"><?= $serviceCount ?></span>
+                            <span class="label">Pending</span>
+                            <span class="value"><?= (int)$stats['pending'] ?></span>
                             <div class="footer-link">
-                                Manage services <i class="ri-arrow-right-line"></i>
+                                Pending reviews <i class="ri-arrow-right-line"></i>
                             </div>
                         </div>
                     </a>
                 </div>
 
-                <div class="col-md-4 mb-4">
-                    <a href="slider-images.php" class="stat-card-link">
+                <div class="col-md-3 mb-4">
+                    <a href="my-applications.php" class="stat-card-link">
                         <div class="stat-card">
-                            <span class="label">Media Assets</span>
-                            <span class="value"><?= $sliderCount ?></span>
+                            <span class="label">Approved</span>
+                            <span class="value"><?= (int)$stats['approved'] ?></span>
                             <div class="footer-link">
-                                Update slider <i class="ri-arrow-right-line"></i>
+                                Approved loans <i class="ri-arrow-right-line"></i>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                
+                <div class="col-md-3 mb-4">
+                    <a href="documents.php" class="stat-card-link">
+                        <div class="stat-card">
+                            <span class="label">Rejected Docs</span>
+                            <span class="value"><?= (int)$docStats['rejected_docs'] ?></span>
+                            <div class="footer-link">
+                                Fix documents <i class="ri-arrow-right-line"></i>
                             </div>
                         </div>
                     </a>
@@ -188,14 +238,10 @@ $adminName = $_SESSION['customer_name'] ?? 'Admin';
             <div class="row mt-4">
                 <div class="col-12">
                     <div class="p-4 bg-white rounded-4 border">
-                        <h5 class="fw-bold mb-4">Control Panel</h5>
+                        <h5 class="fw-bold mb-4">Quick Actions</h5>
                         <div class="d-flex gap-3">
-                            <a href="add-category.php" class="action-btn">
-                                Add Category
-                            </a>
-                            <a href="add-service.php" class="action-btn-outline">
-                                New Service Entry
-                            </a>
+                            <a href="../apply-loan.php" class="action-btn">Apply for Loan</a>
+                            <a href="my-applications.php" class="action-btn-outline">Track Applications</a>
                         </div>
                     </div>
                 </div>

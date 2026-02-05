@@ -75,3 +75,61 @@ if ($action === 'delete' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     exit;
 }
+
+/* ================= UPLOAD NEW DOC ================= */
+if ($action === 'upload' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+
+    $loan_id = (int)($_POST['loan_id'] ?? 0);
+    $doc_name = trim($_POST['doc_name'] ?? '');
+
+    if ($loan_id <= 0 || $doc_name === '' || empty($_FILES['doc_file']['name'])) {
+        header("Location: ../view-application-detail.php?id=$loan_id&err=Missing document data");
+        exit;
+    }
+
+    $check = "
+    SELECT la.id
+    FROM loan_applications la
+    WHERE la.id = $loan_id
+    AND la.customer_id = $customer_id
+    ";
+    $res = mysqli_query($conn, $check);
+    if (mysqli_num_rows($res) !== 1) {
+        header("Location: ../view-application-detail.php?id=$loan_id&err=Invalid loan");
+        exit;
+    }
+
+    $allowed_exts = ['pdf', 'jpg', 'jpeg', 'png', 'jfif'];
+    $upload_dir = realpath(__DIR__ . '/../../uploads/loans');
+    if ($upload_dir === false) {
+        header("Location: ../view-application-detail.php?id=$loan_id&err=Upload directory not found");
+        exit;
+    }
+
+    $tmp_name = $_FILES['doc_file']['tmp_name'];
+    $original = $_FILES['doc_file']['name'];
+    $ext = strtolower(pathinfo($original, PATHINFO_EXTENSION));
+    if (!in_array($ext, $allowed_exts, true)) {
+        header("Location: ../view-application-detail.php?id=$loan_id&err=Invalid file type");
+        exit;
+    }
+
+    $safe_doc_name = mysqli_real_escape_string($conn, $doc_name);
+    $new_name = "loan_{$loan_id}_" . time() . "_" . preg_replace('/[^A-Za-z0-9_-]/', '_', $safe_doc_name) . "." . $ext;
+    $dest = $upload_dir . DIRECTORY_SEPARATOR . $new_name;
+
+    if (!move_uploaded_file($tmp_name, $dest)) {
+        header("Location: ../view-application-detail.php?id=$loan_id&err=Upload failed");
+        exit;
+    }
+
+    $db_path = "uploads/loans/" . $new_name;
+    $sql = "INSERT INTO loan_application_docs (loan_application_id, doc_name, doc_path, status)
+            VALUES ($loan_id, '$safe_doc_name', '$db_path', 'pending')";
+    if (mysqli_query($conn, $sql)) {
+        header("Location: ../view-application-detail.php?id=$loan_id&msg=Document uploaded");
+    } else {
+        header("Location: ../view-application-detail.php?id=$loan_id&err=Database insert failed");
+    }
+    exit;
+}

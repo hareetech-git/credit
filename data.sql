@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 04, 2026 at 01:52 PM
+-- Generation Time: Feb 05, 2026 at 08:12 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -72,7 +72,9 @@ INSERT INTO `customers` (`id`, `full_name`, `email`, `phone`, `password`, `aadha
 (10, 'Test New ', 'newemail@example.com', '9982784875', '$2y$10$qbM8PpJoyjX4oK7ft.Nk0eaBdYLf3LIJa2KPF/QNAqiMSo7XJ89si', NULL, 'active', '2026-02-04 06:22:20', '2026-02-04 06:22:20'),
 (11, 'new test', 'adsdgsdgdfgdfmin@gmail.com', '9378948949', '$2y$10$o4Dh3F1PW4T1OTGu0d3N5uGUN/Vw4QApkPJacJ/PWrlC.KuO3mmBi', '', 'active', '2026-02-04 07:28:41', '2026-02-04 07:28:41'),
 (12, 'Sanyam Srivastava', 'srivdfsdastavasanyam8052@gmail.com', '7984278970', '$2y$10$r3.WRC0NQPcj1zNaN.Mz6.TGOgkoFcSG3GkwTwmrX85skj94c64Om', NULL, 'active', '2026-02-04 07:48:14', '2026-02-04 07:48:14'),
-(13, 'Sanyam Srivastava', 'srivastavfgvdfgfdasdsanyam8052@gmail.com', '9876567890', '$2y$10$Tw9Ec.C8fVcK51tUcihk6ewiwISNg.PRYjQqY52ZUQJdHLjQ8tHgq', NULL, 'active', '2026-02-04 08:32:04', '2026-02-04 08:32:04');
+(13, 'Sanyam Srivastava', 'srivastavfgvdfgfdasdsanyam8052@gmail.com', '9876567890', '$2y$10$Tw9Ec.C8fVcK51tUcihk6ewiwISNg.PRYjQqY52ZUQJdHLjQ8tHgq', NULL, 'active', '2026-02-04 08:32:04', '2026-02-04 08:32:04'),
+(15, 'new test ', 'customer@gmail.com', '9378948945', '$2y$10$mxapsXbbJfrH5hO8bWezsurvYix/OGNQlgCOUKjn1KIhDNBjE84rC', '999999999999', 'active', '2026-02-05 06:14:54', '2026-02-05 06:14:54'),
+(16, 'Testting Sanyam', 'sanyam.fullstackdev@gmail.com', '9948728807', '$2y$10$rmznVTp9sLltC/YhZaoxhOZI1fhV/jXNAADiTqXMbCJCHZHPGoAra', NULL, 'active', '2026-02-05 06:57:52', '2026-02-05 06:57:52');
 
 -- --------------------------------------------------------
 
@@ -110,7 +112,9 @@ INSERT INTO `customer_profiles` (`id`, `customer_id`, `pan_number`, `birth_date`
 (22, 9, 'ABCDE1234F', '2026-02-19', 'Uttar Pradesh', 'Lakhimpur', '261506', 'business', 'Random Pvt Ltd', 90000.00, 'Sanyam Srivastava', '9984278970', 'Sanyam Srivastava', '9984278970', '2026-02-04 05:17:41', '2026-02-04 05:17:41'),
 (23, 10, 'ABCDE1234F', '2026-02-20', 'Uttar Pradesh', 'Lakhimpur', '261506', 'salaried', 'Not Applicable', 90000.00, 'Sanyam Srivastava', '9984278970', 'Sanyam Srivastava', '9984278970', '2026-02-04 06:22:20', '2026-02-04 06:22:20'),
 (24, 12, 'ABCDE1234F', '2026-03-01', 'Uttar Pradesh', 'Lakhimpur', '261506', 'business', '', 90000.00, '', '', '', '', '2026-02-04 07:48:14', '2026-02-04 07:48:14'),
-(25, 13, 'ABCDE1234F', '2026-02-27', 'Uttar Pradesh', 'Lakhimpur', '261506', 'business', NULL, 90000.00, 'Sanyam Srivastava', '9984278970', 'Sanyam Srivastava', '9984278970', '2026-02-04 08:32:04', '2026-02-04 08:32:04');
+(25, 13, 'ABCDE1234F', '2026-02-27', 'Uttar Pradesh', 'Lakhimpur', '261506', 'business', NULL, 90000.00, 'Sanyam Srivastava', '9984278970', 'Sanyam Srivastava', '9984278970', '2026-02-04 08:32:04', '2026-02-04 08:32:04'),
+(26, 15, 'ABCDE1234F', '2026-02-13', 'H', 'B', '767678', 'self_employed', NULL, 90000.00, NULL, NULL, NULL, NULL, '2026-02-05 06:14:54', '2026-02-05 06:14:54'),
+(27, 16, 'XYZPA1234A', '2026-03-07', 'u p ', 'lakhim', '675676', 'business', NULL, 90000.00, 'fadsd', '6789234567', 'hfhfg', '8734567890', '2026-02-05 06:57:52', '2026-02-05 06:57:52');
 
 -- --------------------------------------------------------
 
@@ -168,6 +172,10 @@ CREATE TABLE `loan_applications` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `customer_id` bigint(20) UNSIGNED NOT NULL,
   `service_id` bigint(20) UNSIGNED NOT NULL,
+  `assigned_staff_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `assigned_by` bigint(20) UNSIGNED DEFAULT NULL,
+  `assigned_at` timestamp NULL DEFAULT NULL,
+  `interest_rate` decimal(5,2) NOT NULL DEFAULT 0.00,
   `requested_amount` decimal(15,2) NOT NULL,
   `tenure_years` int(11) NOT NULL,
   `emi_amount` decimal(15,2) NOT NULL,
@@ -180,10 +188,11 @@ CREATE TABLE `loan_applications` (
 -- Dumping data for table `loan_applications`
 --
 
-INSERT INTO `loan_applications` (`id`, `customer_id`, `service_id`, `requested_amount`, `tenure_years`, `emi_amount`, `status`, `created_at`, `rejection_note`) VALUES
-(5, 10, 5, 90000.00, 0, 0.00, 'pending', '2026-02-04 06:22:20', NULL),
-(6, 1, 6, 9000.00, 9, 700.00, 'approved', '2026-02-04 09:16:03', 'Contact'),
-(7, 1, 6, 800000.00, 0, 0.00, 'pending', '2026-02-04 10:33:51', NULL);
+INSERT INTO `loan_applications` (`id`, `customer_id`, `service_id`, `assigned_staff_id`, `assigned_by`, `assigned_at`, `interest_rate`, `requested_amount`, `tenure_years`, `emi_amount`, `status`, `created_at`, `rejection_note`) VALUES
+(5, 10, 5, 2, 1, '2026-02-05 06:51:42', 0.00, 90000.00, 0, 0.00, 'pending', '2026-02-04 06:22:20', NULL),
+(6, 1, 6, 2, 1, '2026-02-05 06:51:39', 0.00, 9000.00, 9, 700.00, 'approved', '2026-02-04 09:16:03', 'Contact'),
+(7, 1, 6, 2, 1, '2026-02-05 06:51:07', 0.00, 800000.00, 0, 0.00, 'pending', '2026-02-04 10:33:51', NULL),
+(8, 16, 5, 2, 1, '2026-02-05 06:58:34', 12.00, 90000.00, 5, 900.00, 'approved', '2026-02-05 06:57:52', 'Note: EMI pay on time if late then after 2 day each day penalty will 1% of intrest');
 
 -- --------------------------------------------------------
 
@@ -210,7 +219,9 @@ INSERT INTO `loan_application_docs` (`id`, `loan_application_id`, `doc_name`, `d
 (4, 5, 'fsdfsd', 'uploads/loans/loan_5_1770186140_fsdfsd.pdf', '2026-02-04 06:22:20', 'pending', NULL),
 (6, 6, 'new', 'uploads/loans/loan_6_1770196563_new.jfif', '2026-02-04 09:16:03', 'verified', 'gghghghg'),
 (7, 7, 'Other', 'uploads/loans/loan_7_1770201231_Other.jfif', '2026-02-04 10:33:51', 'pending', NULL),
-(8, 7, 'new', 'uploads/loans/loan_7_1770201231_new.pdf', '2026-02-04 10:33:51', 'pending', NULL);
+(8, 7, 'new', 'uploads/loans/loan_7_1770201231_new.pdf', '2026-02-04 10:33:51', 'pending', NULL),
+(9, 7, 'ff', 'uploads/loans/loan_7_1770273903_ff.png', '2026-02-05 06:45:03', 'pending', NULL),
+(10, 8, 'Identity Proof', 'uploads/loans/loan_8_1770274672_Identity_Proof.png', '2026-02-05 06:57:52', 'verified', '');
 
 -- --------------------------------------------------------
 
@@ -235,6 +246,35 @@ INSERT INTO `permissions` (`id`, `perm_key`, `description`) VALUES
 (4, 'cust_delete', 'Delete Customers'),
 (5, 'loan_view', 'View Loan Apps'),
 (6, 'loan_process', 'Approve/Reject Loans');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `roles`
+--
+
+CREATE TABLE `roles` (
+  `id` int(11) NOT NULL,
+  `role_name` varchar(50) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `roles`
+--
+
+INSERT INTO `roles` (`id`, `role_name`) VALUES
+(1, 'All Staff');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `role_permissions`
+--
+
+CREATE TABLE `role_permissions` (
+  `role_id` int(11) NOT NULL,
+  `permission_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -528,15 +568,17 @@ CREATE TABLE `staff` (
   `department_id` int(11) DEFAULT NULL,
   `created_by` bigint(20) UNSIGNED DEFAULT NULL,
   `status` enum('active','inactive') DEFAULT 'active',
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `role_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `staff`
 --
 
-INSERT INTO `staff` (`id`, `name`, `email`, `password`, `department_id`, `created_by`, `status`, `created_at`) VALUES
-(2, 'Sanyam ', 'staff@gmail.com', '$2y$10$V/MUwV4GfYq9XMyUzWRdc.BmzSLu8ALNgwaPoqIFLtrSKtNihpLB2', 1, 1, 'active', '2026-02-04 12:47:18');
+INSERT INTO `staff` (`id`, `name`, `email`, `password`, `department_id`, `created_by`, `status`, `created_at`, `role_id`) VALUES
+(2, 'Sanyam ', 'staff@gmail.com', '$2y$10$V/MUwV4GfYq9XMyUzWRdc.BmzSLu8ALNgwaPoqIFLtrSKtNihpLB2', 1, 1, 'active', '2026-02-04 12:47:18', 1),
+(3, 'Ananya Rao', 'ananya@gmail.com', '$2y$10$5cKgAjYCNlZR9tAAqzrdVuK76XbZ8uYVSMHvVMSYxNXGvW6YMkGsG', 1, 1, 'active', '2026-02-05 06:50:24', NULL);
 
 -- --------------------------------------------------------
 
@@ -548,6 +590,21 @@ CREATE TABLE `staff_permissions` (
   `staff_id` bigint(20) UNSIGNED NOT NULL,
   `permission_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `staff_permissions`
+--
+
+INSERT INTO `staff_permissions` (`staff_id`, `permission_id`) VALUES
+(2, 1),
+(2, 2),
+(2, 5),
+(2, 6),
+(3, 1),
+(3, 2),
+(3, 4),
+(3, 5),
+(3, 6);
 
 --
 -- Indexes for dumped tables
@@ -592,7 +649,9 @@ ALTER TABLE `enquiries`
 -- Indexes for table `loan_applications`
 --
 ALTER TABLE `loan_applications`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_assigned_staff` (`assigned_staff_id`),
+  ADD KEY `idx_assigned_by` (`assigned_by`);
 
 --
 -- Indexes for table `loan_application_docs`
@@ -606,6 +665,18 @@ ALTER TABLE `loan_application_docs`
 ALTER TABLE `permissions`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `perm_key` (`perm_key`);
+
+--
+-- Indexes for table `roles`
+--
+ALTER TABLE `roles`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `role_permissions`
+--
+ALTER TABLE `role_permissions`
+  ADD PRIMARY KEY (`role_id`,`permission_id`);
 
 --
 -- Indexes for table `services`
@@ -704,13 +775,13 @@ ALTER TABLE `admin`
 -- AUTO_INCREMENT for table `customers`
 --
 ALTER TABLE `customers`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT for table `customer_profiles`
 --
 ALTER TABLE `customer_profiles`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
 
 --
 -- AUTO_INCREMENT for table `departments`
@@ -728,19 +799,25 @@ ALTER TABLE `enquiries`
 -- AUTO_INCREMENT for table `loan_applications`
 --
 ALTER TABLE `loan_applications`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `loan_application_docs`
 --
 ALTER TABLE `loan_application_docs`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `permissions`
 --
 ALTER TABLE `permissions`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
+-- AUTO_INCREMENT for table `roles`
+--
+ALTER TABLE `roles`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `services`
@@ -812,7 +889,7 @@ ALTER TABLE `service_why_choose_us`
 -- AUTO_INCREMENT for table `staff`
 --
 ALTER TABLE `staff`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

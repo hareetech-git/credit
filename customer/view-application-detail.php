@@ -19,7 +19,7 @@ $loan = mysqli_fetch_assoc($res);
 if (!$loan) { header("Location: my-applications.php"); exit; }
 
 // Fetch Individual Document Status
-$docQuery = "SELECT * FROM loan_application_docs WHERE loan_application_id = $loan_id";
+$docQuery = "SELECT * FROM loan_application_docs WHERE loan_application_id = $loan_id ORDER BY created_at DESC";
 $docs = mysqli_query($conn, $docQuery);
 
 include 'topbar.php';
@@ -76,11 +76,19 @@ include 'sidebar.php';
                             <h6 class="fw-bold text-dark border-bottom pb-2 mb-3">Loan Summary</h6>
                             <div class="d-flex justify-content-between mb-2">
                                 <span class="text-muted small">Amount:</span>
-                                <span class="fw-bold small">₹<?= number_format($loan['requested_amount'], 2) ?></span>
+                                <span class="fw-bold small">&#8377;<?= number_format($loan['requested_amount'], 2) ?></span>
                             </div>
                             <div class="d-flex justify-content-between mb-2">
                                 <span class="text-muted small">Tenure:</span>
                                 <span class="fw-bold small"><?= $loan['tenure_years'] ?? 'N/A' ?> Years</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted small">EMI:</span>
+                                <span class="fw-bold small">&#8377;<?= number_format($loan['emi_amount'], 2) ?></span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted small">Interest Rate (p.a.):</span>
+                                <span class="fw-bold small"><?= number_format((float)$loan['interest_rate'], 2) ?>%</span>
                             </div>
                             <div class="d-flex justify-content-between">
                                 <span class="text-muted small">Applied on:</span>
@@ -91,7 +99,18 @@ include 'sidebar.php';
 
                     <div class="col-lg-8">
                         <div class="card-modern p-4">
-                            <h5 class="fw-bold text-dark mb-4">Document Verification History</h5>
+                            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
+                                <h5 class="fw-bold text-dark mb-0">Document Verification History</h5>
+                                <?php if ($loan['status'] !== 'disbursed'): ?>
+                                    <form action="db/get_documents.php?action=upload" method="POST" enctype="multipart/form-data" class="d-flex gap-2 align-items-center">
+                                        <input type="hidden" name="loan_id" value="<?= $loan_id ?>">
+                                        <input type="text" name="doc_name" class="form-control form-control-sm" placeholder="Document name" required>
+                                        <input type="file" name="doc_file" class="form-control form-control-sm" required>
+                                        <button type="submit" class="btn btn-sm btn-primary">Upload</button>
+                                    </form>
+                                <?php endif; ?>
+                            </div>
+                            <div class="small text-muted mb-3">Allowed: PDF, JPG, JPEG, PNG, JFIF</div>
                             
                             <?php if(mysqli_num_rows($docs) > 0): ?>
                                 <?php while($d = mysqli_fetch_assoc($docs)): ?>
@@ -100,6 +119,7 @@ include 'sidebar.php';
                                             <div class="col-md-7">
                                                 <div class="fw-bold text-dark small"><?= htmlspecialchars($d['doc_name']) ?></div>
                                                 <a href="../<?= $d['doc_path'] ?>" target="_blank" class="text-decoration-none small text-primary"><i class="fas fa-external-link-alt"></i> View Uploaded File</a>
+                                                <div class="text-muted" style="font-size: 0.7rem;">Uploaded: <?= date('d M Y, h:i A', strtotime($d['created_at'])) ?></div>
                                             </div>
                                             <div class="col-md-5 text-md-end mt-2 mt-md-0">
                                                 <?php if($d['status'] == 'verified'): ?>
@@ -107,6 +127,10 @@ include 'sidebar.php';
                                                 <?php elseif($d['status'] == 'rejected'): ?>
                                                     <span class="text-danger small fw-bold"><i class="fas fa-times-circle"></i> REJECTED</span>
                                                     <div class="text-muted" style="font-size: 0.65rem;"><?= htmlspecialchars($d['rejection_reason'] ?? 'Invalid document') ?></div>
+                                                    <form action="db/get_documents.php?action=delete" method="POST" class="mt-2 d-inline-block">
+                                                        <input type="hidden" name="doc_id" value="<?= (int)$d['id'] ?>">
+                                                        <button type="submit" class="btn btn-sm btn-outline-danger">Delete & Reupload</button>
+                                                    </form>
                                                 <?php else: ?>
                                                     <span class="text-warning small fw-bold"><i class="fas fa-clock"></i> PENDING REVIEW</span>
                                                 <?php endif; ?>
