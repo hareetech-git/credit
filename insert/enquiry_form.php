@@ -71,9 +71,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_enquiry'])) {
         if (mysqli_query($conn, $insert_query)) {
             // Store success message in session
             $_SESSION['success_message'] = "Thank you! Your enquiry has been submitted successfully. We'll contact you shortly.";
-            
+
             // Redirect to same page to prevent resubmission (PRG Pattern)
-            header("Location: ../index.php#loanForm");
+            $redirect_to = $_POST['redirect_to'] ?? '../index.php#loanForm';
+            if (strpos($redirect_to, '://') !== false || str_starts_with($redirect_to, '//')) {
+                $redirect_to = '../index.php#loanForm';
+            }
+            header("Location: " . $redirect_to);
             exit();
         } else {
             $form_errors[] = "Something went wrong. Please try again.";
@@ -83,7 +87,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_enquiry'])) {
     // If there are errors, store them in session and redirect
     if (!empty($form_errors)) {
         $_SESSION['errors'] = $form_errors;
-        header("Location: ../index.php#loanForm");
+        $redirect_to = $_POST['redirect_to'] ?? '../index.php#loanForm';
+        if (strpos($redirect_to, '://') !== false || str_starts_with($redirect_to, '//')) {
+            $redirect_to = '../index.php#loanForm';
+        }
+        header("Location: " . $redirect_to);
         exit();
     }
 } else {

@@ -1,506 +1,845 @@
 <?php
 require_once 'includes/header.php';
 
+$loan_types = [];
+if (isset($conn)) {
+    $query = "SELECT id, sub_category_name 
+              FROM services_subcategories 
+              WHERE status = 'active' AND live = 1 
+              ORDER BY sequence ASC";
+    $result = mysqli_query($conn, $query);
+    if ($result && mysqli_num_rows($result) > 0) {
+        while ($row = mysqli_fetch_assoc($result)) {
+            $loan_types[] = $row;
+        }
+    }
+}
+
+$errors = isset($_SESSION['errors']) ? $_SESSION['errors'] : [];
+$success_message = isset($_SESSION['success_message']) ? $_SESSION['success_message'] : '';
+unset($_SESSION['errors'], $_SESSION['success_message']);
 ?>
 
 <style>
-    /* Simple Contact Page Styles */
-    .contact-section {
-        padding: 80px 0;
-        background: #f8fafc;
+    :root {
+        --contact-ink: #0f172a;
+        --contact-muted: #64748b;
+        --contact-surface: #ffffff;
+        --contact-soft: #f8fafc;
+        --contact-accent: var(--primary-color);
+        --contact-accent-dark: var(--primary-dark);
+        --contact-accent-teal: var(--accent-teal);
+        --contact-outline: rgba(15, 23, 42, 0.08);
     }
-    
-    .contact-header {
-        text-align: center;
-        margin-bottom: 60px;
+
+    .contact-hero {
+        position: relative;
+        padding: 90px 0 60px;
+        background: radial-gradient(circle at 10% 20%, rgba(11, 8, 27, 0.35), transparent 52%),
+                    radial-gradient(circle at 85% 15%, rgba(0, 212, 170, 0.2), transparent 45%),
+                    linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 45%, #0f172a 100%);
+        color: #fff;
+        overflow: hidden;
     }
-    
-    .trusted-badge {
-        display: inline-block;
-        background: #e8f4ff;
-        color: #1e40af;
-        padding: 8px 20px;
-        border-radius: 20px;
-        font-size: 14px;
+
+    .contact-hero::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background-image: url('includes/assets/hero_section2.png');
+        background-size: cover;
+        background-position: center;
+        opacity: 0.08;
+        mix-blend-mode: screen;
+        pointer-events: none;
+    }
+
+    .hero-glow {
+        position: absolute;
+        right: -120px;
+        bottom: -120px;
+        width: 320px;
+        height: 320px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.25), transparent 60%);
+        filter: blur(8px);
+        opacity: 0.7;
+    }
+
+    .contact-hero-content {
+        position: relative;
+        z-index: 2;
+    }
+
+    .contact-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.9rem;
         font-weight: 600;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        padding: 10px 18px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.15);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        margin-bottom: 22px;
+    }
+
+    .contact-hero h1 {
+        font-size: 3.1rem;
+        font-weight: 800;
+        line-height: 1.1;
+        margin-bottom: 18px;
+        text-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+    }
+
+    .contact-hero p {
+        font-size: 1.1rem;
+        color: rgba(255, 255, 255, 0.8);
+        max-width: 560px;
+        margin-bottom: 28px;
+    }
+
+    .contact-hero-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+    .contact-hero-tag {
+        padding: 10px 16px;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.12);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        font-size: 0.9rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .contact-body {
+        background: var(--contact-soft);
+        padding: 70px 0 90px;
+    }
+
+    .contact-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+        gap: 40px;
+        align-items: start;
+    }
+
+    .contact-card {
+        background: var(--contact-surface);
+        border-radius: 20px;
+        padding: 35px;
+        border: 1px solid var(--contact-outline);
+        box-shadow: 0 20px 50px rgba(15, 23, 42, 0.08);
+    }
+
+    .contact-card h2 {
+        font-size: 1.6rem;
+        font-weight: 700;
+        margin-bottom: 8px;
+        color: var(--contact-ink);
+    }
+
+    .contact-card p {
+        color: var(--contact-muted);
         margin-bottom: 20px;
     }
-    
-    .contact-title {
-        font-size: 48px;
-        font-weight: 800;
-        color: #1f2937;
-        margin-bottom: 15px;
-    }
-    
-    .contact-subtitle {
-        font-size: 20px;
-        color: #6b7280;
-        max-width: 600px;
-        margin: 0 auto 40px;
-        line-height: 1.6;
-    }
-    
-    .contact-container {
-        max-width: 1200px;
-        margin: 0 auto;
+
+    .contact-details-list {
         display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 40px;
+        gap: 20px;
+        margin-top: 28px;
     }
-    
-    .contact-info-side {
-        background: white;
-        padding: 40px;
-        border-radius: 12px;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-    }
-    
-    .contact-form-side {
-        background: white;
-        padding: 40px;
-        border-radius: 12px;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-    }
-    
-    .section-heading {
-        font-size: 24px;
-        font-weight: 700;
-        color: #1f2937;
-        margin-bottom: 10px;
-    }
-    
-    .section-subheading {
-        color: #6b7280;
-        font-size: 16px;
-        margin-bottom: 30px;
-    }
-    
-    .contact-details {
-        margin: 40px 0;
-    }
-    
-    .contact-item {
+
+    .detail-item {
         display: flex;
-        align-items: flex-start;
-        margin-bottom: 30px;
-        padding-bottom: 30px;
-        border-bottom: 1px solid #e5e7eb;
+        gap: 16px;
+        padding: 18px;
+        border-radius: 16px;
+        background: #fff;
+        border: 1px solid rgba(15, 23, 42, 0.08);
+        box-shadow: 0 10px 25px rgba(15, 23, 42, 0.05);
     }
-    
-    .contact-item:last-child {
-        border-bottom: none;
-        margin-bottom: 0;
-        padding-bottom: 0;
-    }
-    
-    .contact-icon {
-        width: 50px;
-        height: 50px;
-        background: linear-gradient(135deg, #dc2626, #ef4444);
-        border-radius: 10px;
+
+    .detail-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, var(--contact-accent), var(--contact-accent-teal));
         display: flex;
         align-items: center;
         justify-content: center;
-        margin-right: 20px;
+        color: #fff;
+        font-size: 1.1rem;
         flex-shrink: 0;
     }
-    
-    .contact-icon i {
-        color: white;
-        font-size: 20px;
+
+    .detail-content h4 {
+        margin: 0 0 6px;
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--contact-ink);
     }
-    
-    .contact-content h4 {
-        font-size: 18px;
-        font-weight: 600;
-        color: #1f2937;
-        margin-bottom: 5px;
+
+    .detail-content p {
+        margin: 0;
+        color: var(--contact-muted);
+        font-size: 0.95rem;
     }
-    
-    .contact-content p {
-        color: #6b7280;
-        margin-bottom: 8px;
-        font-size: 16px;
-    }
-    
-    .contact-link {
-        color: #dc2626;
+
+    .detail-content a {
+        color: var(--contact-accent);
         text-decoration: none;
-        font-weight: 500;
-        font-size: 14px;
+        font-weight: 600;
+        font-size: 0.9rem;
     }
-    
-    .contact-link:hover {
-        text-decoration: underline;
+
+    .contact-form-card {
+        position: relative;
+        background: rgba(255, 255, 255, 0.92);
+        backdrop-filter: blur(14px);
+        border-radius: 24px;
+        padding: 40px;
+        border: 1px solid rgba(255, 255, 255, 0.7);
+        box-shadow: 0 25px 60px rgba(15, 23, 42, 0.18);
     }
-    
+
+    .contact-form-card::before {
+        content: '';
+        position: absolute;
+        inset: 16px;
+        border-radius: 20px;
+        border: 1px dashed rgba(15, 23, 42, 0.12);
+        pointer-events: none;
+    }
+
+    .form-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--contact-ink);
+        margin-bottom: 8px;
+    }
+
+    .form-subtitle {
+        color: var(--contact-muted);
+        margin-bottom: 24px;
+    }
+
     .form-group {
-        margin-bottom: 25px;
+        margin-bottom: 18px;
     }
-    
+
     .form-label {
         display: block;
-        font-size: 14px;
         font-weight: 600;
-        color: #374151;
         margin-bottom: 8px;
+        color: #1f2937;
     }
-    
-    .form-input {
+
+    .form-control {
         width: 100%;
-        padding: 12px 16px;
-        border: 1px solid #d1d5db;
-        border-radius: 8px;
-        font-size: 16px;
-        transition: border-color 0.2s;
+        padding: 12px 14px;
+        border-radius: 10px;
+        border: 1px solid #e2e8f0;
+        font-size: 1rem;
+        background: rgba(255, 255, 255, 0.95);
+        transition: border-color 0.2s, box-shadow 0.2s;
     }
-    
-    .form-input:focus {
+
+    .form-control:focus {
         outline: none;
-        border-color: #dc2626;
-        box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+        border-color: var(--contact-accent);
+        box-shadow: 0 0 0 4px rgba(11, 8, 27, 0.12);
     }
-    
-    textarea.form-input {
-        min-height: 120px;
-        resize: vertical;
-    }
-    
-    .checkbox-group {
-        display: flex;
-        align-items: center;
-        margin-bottom: 30px;
-    }
-    
-    .checkbox-input {
-        width: 18px;
-        height: 18px;
-        margin-right: 10px;
-        accent-color: #dc2626;
-    }
-    
-    .checkbox-label {
-        font-size: 14px;
-        color: #4b5563;
-    }
-    
+
     .submit-btn {
-        background: linear-gradient(135deg, #dc2626, #ef4444);
-        color: white;
-        border: none;
-        padding: 16px 32px;
-        font-size: 16px;
-        font-weight: 600;
-        border-radius: 8px;
-        cursor: pointer;
         width: 100%;
-        transition: transform 0.2s;
+        border: none;
+        border-radius: 12px;
+        padding: 14px 18px;
+        font-weight: 700;
+        color: #fff;
+        background: linear-gradient(135deg, var(--contact-accent), var(--contact-accent-dark));
+        box-shadow: 0 12px 25px rgba(11, 8, 27, 0.3);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
-    
+
     .submit-btn:hover {
         transform: translateY(-2px);
+        box-shadow: 0 18px 30px rgba(11, 8, 27, 0.35);
     }
-    
+
     .security-note {
         text-align: center;
-        font-size: 12px;
-        color: #9ca3af;
         margin-top: 15px;
+        font-size: 0.8rem;
+        color: #94a3b8;
     }
-    
-    .location-map {
-        margin-top: 40px;
-        background: white;
-        border-radius: 12px;
-        overflow: hidden;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-    }
-    
-    .map-container {
-        width: 100%;
-        height: 400px;
-    }
-    
-    .map-placeholder {
-        width: 100%;
-        height: 100%;
-        background: #f3f4f6;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: #6b7280;
-        font-size: 18px;
-    }
-    
-    .location-details {
-        padding: 30px;
-        border-top: 1px solid #e5e7eb;
-    }
-    
-    .location-details h3 {
-        font-size: 20px;
-        font-weight: 700;
-        color: #1f2937;
-        margin-bottom: 15px;
-    }
-    
-    .location-details p {
-        color: #6b7280;
-        line-height: 1.6;
-        margin-bottom: 10px;
-    }
-    
-    /* Messages */
+
     .alert {
-        padding: 15px 20px;
-        border-radius: 8px;
-        margin-bottom: 25px;
+        padding: 12px 16px;
+        border-radius: 10px;
+        margin-bottom: 20px;
     }
-    
+
     .alert-success {
-        background-color: #d1fae5;
+        background: #d1fae5;
         color: #065f46;
         border: 1px solid #a7f3d0;
     }
-    
+
     .alert-danger {
-        background-color: #fee2e2;
+        background: #fee2e2;
         color: #991b1b;
         border: 1px solid #fecaca;
     }
-    
-    /* Responsive */
-    @media (max-width: 992px) {
-        .contact-container {
+
+    .support-strip {
+        margin-top: 50px;
+        background: #ffffff;
+        border-radius: 20px;
+        padding: 28px;
+        border: 1px solid var(--contact-outline);
+        box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 20px;
+    }
+
+    .support-strip-item {
+        display: flex;
+        gap: 14px;
+        align-items: flex-start;
+    }
+
+    .support-strip-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        background: rgba(11, 8, 27, 0.08);
+        color: var(--contact-accent);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+        flex-shrink: 0;
+    }
+
+    .support-strip-item h4 {
+        margin: 0 0 4px;
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--contact-ink);
+    }
+
+    .support-strip-item p {
+        margin: 0;
+        color: var(--contact-muted);
+        font-size: 0.9rem;
+    }
+
+    .contact-features {
+        margin-top: 70px;
+    }
+
+    .contact-features-header {
+        text-align: center;
+        margin-bottom: 35px;
+    }
+
+    .contact-features-header span {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(11, 8, 27, 0.08);
+        color: var(--contact-accent);
+        padding: 8px 16px;
+        border-radius: 999px;
+        font-weight: 600;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+    }
+
+    .contact-features-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 24px;
+    }
+
+    .feature-card {
+        background: #fff;
+        border-radius: 18px;
+        padding: 24px;
+        border: 1px solid var(--contact-outline);
+        box-shadow: 0 12px 25px rgba(15, 23, 42, 0.06);
+        height: 100%;
+    }
+
+    .feature-card .feature-icon {
+        width: 52px;
+        height: 52px;
+        border-radius: 14px;
+        background: rgba(11, 8, 27, 0.08);
+        color: var(--contact-accent);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        margin-bottom: 14px;
+    }
+
+    .feature-card h3 {
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin-bottom: 8px;
+        color: var(--contact-ink);
+    }
+
+    .feature-card p {
+        color: var(--contact-muted);
+        margin: 0;
+        font-size: 0.95rem;
+    }
+
+    .faq-section {
+        margin-top: 60px;
+        background: #ffffff;
+        border-radius: 22px;
+        padding: 30px;
+        border: 1px solid var(--contact-outline);
+        box-shadow: 0 18px 45px rgba(15, 23, 42, 0.07);
+        display: grid;
+        grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+        gap: 24px;
+    }
+
+    .faq-list {
+        display: grid;
+        gap: 16px;
+    }
+
+    .faq-item {
+        padding: 16px 18px;
+        border-radius: 14px;
+        border: 1px solid rgba(15, 23, 42, 0.08);
+        background: rgba(248, 250, 252, 0.8);
+    }
+
+    .faq-item h4 {
+        margin: 0 0 6px;
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--contact-ink);
+    }
+
+    .faq-item p {
+        margin: 0;
+        color: var(--contact-muted);
+        font-size: 0.92rem;
+    }
+
+    .hours-card {
+        background: linear-gradient(135deg, rgba(11, 8, 27, 0.08), rgba(0, 212, 170, 0.12));
+        border-radius: 18px;
+        padding: 22px;
+        border: 1px solid rgba(15, 23, 42, 0.08);
+        height: 100%;
+    }
+
+    .hours-card h4 {
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin-bottom: 10px;
+        color: var(--contact-ink);
+    }
+
+    .hours-card ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: grid;
+        gap: 10px;
+    }
+
+    .hours-card li {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 0.95rem;
+        color: var(--contact-muted);
+    }
+
+    .hours-card li span {
+        font-weight: 600;
+        color: var(--contact-ink);
+    }
+
+    .apply-banner {
+        margin-top: 60px;
+        padding: 28px 30px;
+        border-radius: 18px;
+        background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        flex-wrap: wrap;
+    }
+
+    .apply-banner h3 {
+        margin: 0 0 6px;
+        font-size: 1.4rem;
+        font-weight: 700;
+    }
+
+    .apply-banner p {
+        margin: 0;
+        color: rgba(255, 255, 255, 0.8);
+    }
+
+    .apply-banner a {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 22px;
+        border-radius: 999px;
+        background: #fff;
+        color: var(--primary-color);
+        font-weight: 700;
+        text-decoration: none;
+        box-shadow: 0 12px 25px rgba(0, 0, 0, 0.2);
+    }
+
+    .contact-map {
+        margin-top: 60px;
+        border-radius: 22px;
+        overflow: hidden;
+        border: 1px solid var(--contact-outline);
+        box-shadow: 0 20px 50px rgba(15, 23, 42, 0.08);
+    }
+
+    .contact-map iframe {
+        width: 100%;
+        height: 420px;
+        border: 0;
+        display: block;
+    }
+
+    @media (max-width: 991px) {
+        .contact-hero {
+            padding: 70px 0 50px;
+        }
+
+        .contact-hero h1 {
+            font-size: 2.4rem;
+        }
+
+        .contact-grid {
             grid-template-columns: 1fr;
-            gap: 30px;
         }
-        
-        .contact-title {
-            font-size: 36px;
+
+        .contact-form-card {
+            padding: 30px;
         }
-        
-        .contact-section {
-            padding: 60px 20px;
+
+        .support-strip {
+            grid-template-columns: 1fr;
+        }
+
+        .contact-features-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .faq-section {
+            grid-template-columns: 1fr;
+        }
+
+        .apply-banner {
+            text-align: center;
+            justify-content: center;
         }
     }
-    
+
     @media (max-width: 576px) {
-        .contact-info-side,
-        .contact-form-side {
-            padding: 25px;
+        .contact-hero h1 {
+            font-size: 2rem;
         }
-        
-        .contact-title {
-            font-size: 32px;
-        }
-        
-        .contact-item {
-            flex-direction: column;
-        }
-        
-        .contact-icon {
-            margin-bottom: 15px;
+
+        .contact-card,
+        .contact-form-card {
+            padding: 24px;
         }
     }
 </style>
 
-<section class="contact-section">
-    <div class="contact-header">
-        <div class="trusted-badge">
-            <i class="fas fa-star me-1"></i> Trusted By the Genius People with <strong>Udhaar Capital</strong>
-        </div>
-        
-        <h1 class="contact-title">GET IN TOUCH</h1>
-        
-        <p class="contact-subtitle">
-            Media leadership skills before cross-media innovation main technology develop standardized platforms without consalt.
+<section class="contact-hero">
+    <div class="hero-glow"></div>
+    <div class="container contact-hero-content">
+        <span class="contact-eyebrow">
+            <i class="fas fa-shield-alt"></i> Udhaar Capital Support
+        </span>
+        <h1>Lets build your next financial step</h1>
+        <p>
+            Speak with our loan specialists and get tailored recommendations in minutes.
+            We will guide you on the right plan, the right rate, and the right timing.
         </p>
+        <div class="contact-hero-tags">
+            <span class="contact-hero-tag"><i class="fas fa-bolt"></i> 10 minute approvals</span>
+            <span class="contact-hero-tag"><i class="fas fa-headset"></i> Dedicated support</span>
+            <span class="contact-hero-tag"><i class="fas fa-lock"></i> Secure submissions</span>
+        </div>
     </div>
-    
+</section>
+
+<section class="contact-body" id="contactForm">
     <div class="container">
-        <div class="contact-container">
-            <!-- Left Side: Contact Form -->
-            <div class="contact-form-side">
-                <h2 class="section-heading">CONTACT US</h2>
-                <p class="section-subheading">Fill the form to get in touch with Us</p>
-                
-                <?php if (isset($success_message)): ?>
-                    <div class="alert alert-success">
-                        <i class="fas fa-check-circle me-2"></i><?php echo $success_message; ?>
-                    </div>
-                <?php endif; ?>
-                
-                <?php if (!empty($errors)): ?>
-                    <div class="alert alert-danger">
-                        <?php foreach ($errors as $error): ?>
-                            <div><i class="fas fa-exclamation-circle me-2"></i><?php echo $error; ?></div>
-                        <?php endforeach; ?>
-                    </div>
-                <?php endif; ?>
-                
-                <form method="POST" action="">
-                    <div class="form-group">
-                        <label class="form-label" for="name">Your Name</label>
-                        <input type="text" name="name" id="name" class="form-input" 
-                               value="<?php echo isset($_POST['name']) ? htmlspecialchars($_POST['name']) : ''; ?>" 
-                               required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label" for="phone">Phone No</label>
-                        <input type="tel" name="phone" id="phone" class="form-input" 
-                               value="<?php echo isset($_POST['phone']) ? htmlspecialchars($_POST['phone']) : ''; ?>" 
-                               pattern="[0-9]{10}" maxlength="10" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label" for="email">E-Mail Address</label>
-                        <input type="email" name="email" id="email" class="form-input" 
-                               value="<?php echo isset($_POST['email']) ? htmlspecialchars($_POST['email']) : ''; ?>" 
-                               required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label" for="subject">Subject</label>
-                        <input type="text" name="subject" id="subject" class="form-input" 
-                               value="<?php echo isset($_POST['subject']) ? htmlspecialchars($_POST['subject']) : ''; ?>" 
-                               required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label" for="message">Write Message</label>
-                        <textarea name="message" id="message" class="form-input" required><?php echo isset($_POST['message']) ? htmlspecialchars($_POST['message']) : ''; ?></textarea>
-                    </div>
-                    
-                    <div class="checkbox-group">
-                        <input type="checkbox" name="request_call" id="requestCall" class="checkbox-input"
-                               <?php echo (isset($_POST['request_call']) && $_POST['request_call']) ? 'checked' : ''; ?>>
-                        <label class="checkbox-label" for="requestCall">
-                            <i class="fas fa-phone me-1"></i> Request Call Back
-                        </label>
-                    </div>
-                    
-                    <button type="submit" class="submit-btn">
-                        <i class="fas fa-paper-plane me-2"></i> Send Message
-                    </button>
-                    
-                    <div class="security-note">
-                        <i class="fas fa-lock me-1"></i> Your information is secure and encrypted
-                    </div>
-                </form>
-            </div>
-            
-            <!-- Right Side: Contact Info -->
-            <div class="contact-info-side">
-                <div class="contact-details">
-                    <!-- Phone -->
-                    <div class="contact-item">
-                        <div class="contact-icon">
+        <div class="contact-grid">
+            <div class="contact-card">
+                <h2>Reach our team directly</h2>
+                <p>We are here all week to help you compare loan options, rates, and timelines.</p>
+
+                <div class="contact-details-list">
+                    <div class="detail-item">
+                        <div class="detail-icon">
                             <i class="fas fa-phone"></i>
                         </div>
-                        <div class="contact-content">
-                            <h4>Call us Anytime</h4>
+                        <div class="detail-content">
+                            <h4>Call us anytime</h4>
                             <p>+91 8810380146</p>
-                            <a href="tel:+918810380146" class="contact-link">
-                                <i class="fas fa-phone-alt me-1"></i> Call Now
-                            </a>
+                            <a href="tel:+918810380146"><i class="fas fa-phone-alt me-1"></i>Call now</a>
                         </div>
                     </div>
-                    
-                    <!-- Email -->
-                    <div class="contact-item">
-                        <div class="contact-icon">
+
+                    <div class="detail-item">
+                        <div class="detail-icon">
                             <i class="fas fa-envelope"></i>
                         </div>
-                        <div class="contact-content">
-                            <h4>Email Us</h4>
+                        <div class="detail-content">
+                            <h4>Email us</h4>
                             <p>contact@taxesquire.in</p>
-                            <a href="mailto:contact@taxesquire.in" class="contact-link">
-                                <i class="fas fa-envelope me-1"></i> Send Email
-                            </a>
+                            <a href="mailto:contact@taxesquire.in"><i class="fas fa-envelope me-1"></i>Send email</a>
                         </div>
                     </div>
-                    
-                    <!-- Location -->
-                    <div class="contact-item">
-                        <div class="contact-icon">
+
+                    <div class="detail-item">
+                        <div class="detail-icon">
                             <i class="fas fa-map-marker-alt"></i>
                         </div>
-                        <div class="contact-content">
-                            <h4>Our Locations</h4>
+                        <div class="detail-content">
+                            <h4>Visit our office</h4>
                             <p>
                                 Kasana Tower, 712-A, Alpha-1 Commercial Belt,<br>
-                                Block A, Alpha 1, Greater Noida,<br>
-                                Uttar Pradesh 201310
+                                Block A, Alpha 1, Greater Noida, Uttar Pradesh 201310
                             </p>
-                            <a href="https://maps.google.com/?q=Kasana+Tower+Greater+Noida" target="_blank" class="contact-link">
-                                <i class="fas fa-map me-1"></i> View on Map
+                            <a href="https://maps.google.com/?q=Kasana+Tower+Greater+Noida" target="_blank">
+                                <i class="fas fa-map me-1"></i>View on map
                             </a>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-        
-        <!-- Map Section -->
-        <div class="location-map">
-            <div class="map-container">
-                <!-- Google Maps Embed -->
-                <iframe 
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3508.136847287864!2d77.497722!3d28.474722!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390ceb8c00e7e3b3%3A0x7c8b6c7b5c8c8c8c!2sKasana%20Tower%2C%20Alpha-I%20Commercial%20Belt%2C%20Greater%20Noida%2C%20Uttar%20Pradesh%20201310!5e0!3m2!1sen!2sin!4v1641234567890!5m2!1sen!2sin" 
-                    width="100%" 
-                    height="400" 
-                    style="border:0;" 
-                    allowfullscreen="" 
-                    loading="lazy" 
-                    referrerpolicy="no-referrer-when-downgrade">
-                </iframe>
+
+            <div class="contact-form-card">
+                <h3 class="form-title">Send us your loan enquiry</h3>
+                <p class="form-subtitle">Use the same quick form from our homepage to get a faster response.</p>
+
+                <?php if (!empty($success_message)): ?>
+                    <div class="alert alert-success">
+                        <i class="fas fa-check-circle me-2"></i><?php echo htmlspecialchars($success_message); ?>
+                    </div>
+                <?php endif; ?>
+
+                <?php if (!empty($errors)): ?>
+                    <div class="alert alert-danger">
+                        <?php foreach ($errors as $error): ?>
+                            <div class="mb-1"><i class="fas fa-exclamation-circle me-2"></i><?php echo htmlspecialchars($error); ?></div>
+                        <?php endforeach; ?>
+                    </div>
+                <?php endif; ?>
+
+                <form method="POST" action="insert/enquiry_form.php" class="needs-validation" novalidate>
+                    <input type="hidden" name="redirect_to" value="../contact.php#contactForm">
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label" for="full_name">Full name *</label>
+                                <input type="text" name="full_name" id="full_name" class="form-control"
+                                       placeholder="Enter your full name" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label" for="phone">Phone number *</label>
+                                <input type="tel" name="phone" id="phone" class="form-control"
+                                       placeholder="9984278970" pattern="[0-9]{10}" maxlength="10" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="email">Email *</label>
+                        <input type="email" name="email" id="email" class="form-control"
+                               placeholder="you@example.com" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="loan_type">Select loan type *</label>
+                        <select name="loan_type" id="loan_type" class="form-control" required>
+                            <option value="">-- Select loan type --</option>
+                            <?php if (!empty($loan_types)): ?>
+                                <?php foreach ($loan_types as $loan): ?>
+                                    <option value="<?php echo htmlspecialchars($loan['id']); ?>">
+                                        <?php echo htmlspecialchars($loan['sub_category_name']); ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <option value="" disabled>No loan types available</option>
+                            <?php endif; ?>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="query_message">Your query or message *</label>
+                        <textarea name="query_message" id="query_message" class="form-control"
+                                  placeholder="Please describe your requirements" rows="4" required></textarea>
+                    </div>
+
+                    <button type="submit" name="submit_enquiry" class="submit-btn">
+                        <i class="fas fa-paper-plane me-2"></i> Submit enquiry
+                    </button>
+
+                    <div class="security-note">
+                        <i class="fas fa-lock me-1"></i> Your information is 256-bit SSL encrypted
+                    </div>
+                </form>
             </div>
-            
-           
+        </div>
+
+        <div class="support-strip">
+            <div class="support-strip-item">
+                <div class="support-strip-icon"><i class="fas fa-clock"></i></div>
+                <div>
+                    <h4>Fast response</h4>
+                    <p>Average response time under 2 hours for new enquiries.</p>
+                </div>
+            </div>
+            <div class="support-strip-item">
+                <div class="support-strip-icon"><i class="fas fa-user-check"></i></div>
+                <div>
+                    <h4>Verified advisors</h4>
+                    <p>Every consultation is handled by trained loan specialists.</p>
+                </div>
+            </div>
+            <div class="support-strip-item">
+                <div class="support-strip-icon"><i class="fas fa-file-signature"></i></div>
+                <div>
+                    <h4>Paperless process</h4>
+                    <p>Minimal paperwork and secure digital documentation.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="contact-features">
+            <div class="contact-features-header">
+                <span><i class="fas fa-star"></i> Why customers choose us</span>
+                <h2 class="mt-3">Personal support from first call to disbursal</h2>
+                <p class="text-muted">We keep every step transparent so you can move with confidence.</p>
+            </div>
+            <div class="contact-features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-chart-line"></i></div>
+                    <h3>Smart rate matching</h3>
+                    <p>Compare multiple lenders to find the best match for your profile.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-shield-alt"></i></div>
+                    <h3>Secure data handling</h3>
+                    <p>Your documents stay protected with industry standard security.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-hands-helping"></i></div>
+                    <h3>Dedicated case manager</h3>
+                    <p>One point of contact for approvals, documentation, and updates.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="faq-section">
+            <div>
+                <h3 class="mb-3">Frequently asked questions</h3>
+                <div class="faq-list">
+                    <div class="faq-item">
+                        <h4>How soon will I receive a call back?</h4>
+                        <p>We typically respond within 2 hours during working days.</p>
+                    </div>
+                    <div class="faq-item">
+                        <h4>Do I need to visit the office?</h4>
+                        <p>No. Most applications can be completed online with digital documents.</p>
+                    </div>
+                    <div class="faq-item">
+                        <h4>What documents are required?</h4>
+                        <p>Common requirements include PAN, Aadhaar, and income proof.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="hours-card">
+                <h4>Support hours</h4>
+                <ul>
+                    <li><span>Mon - Fri</span> 9:00 AM - 8:00 PM</li>
+                    <li><span>Saturday</span> 10:00 AM - 6:00 PM</li>
+                    <li><span>Sunday</span> By appointment</li>
+                    <li><span>WhatsApp</span> 9:00 AM - 9:00 PM</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="apply-banner">
+            <div>
+                <h3>Ready to start your loan journey?</h3>
+                <p>Apply in minutes and track updates from your dashboard.</p>
+            </div>
+            <a href="apply-loan.php"><i class="fas fa-file-signature"></i>Apply for loan</a>
+        </div>
+
+        <div class="contact-map">
+            <iframe 
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3508.136847287864!2d77.497722!3d28.474722!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390ceb8c00e7e3b3%3A0x7c8b6c7b5c8c8c8c!2sKasana%20Tower%2C%20Alpha-I%20Commercial%20Belt%2C%20Greater%20Noida%2C%20Uttar%20Pradesh%20201310!5e0!3m2!1sen!2sin!4v1641234567890!5m2!1sen!2sin" 
+                allowfullscreen="" 
+                loading="lazy" 
+                referrerpolicy="no-referrer-when-downgrade">
+            </iframe>
         </div>
     </div>
 </section>
 
 <script>
-    // Form validation
-    document.addEventListener('DOMContentLoaded', function() {
+    (function() {
         const phoneInput = document.getElementById('phone');
         if (phoneInput) {
-            phoneInput.addEventListener('input', function(e) {
+            phoneInput.addEventListener('input', function() {
                 this.value = this.value.replace(/\D/g, '').substring(0, 10);
             });
         }
-        
-        // Form submission validation
-        const form = document.querySelector('form');
-        if (form) {
-            form.addEventListener('submit', function(e) {
-                const phone = document.getElementById('phone').value;
-                const email = document.getElementById('email').value;
-                let isValid = true;
-                
-                // Phone validation
-                if (phone.length !== 10 || !/^\d+$/.test(phone)) {
-                    alert('Please enter a valid 10-digit phone number');
-                    isValid = false;
+
+        const forms = document.querySelectorAll('.needs-validation');
+        Array.from(forms).forEach(form => {
+            form.addEventListener('submit', event => {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
                 }
-                
-                // Email validation
-                const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                if (!emailPattern.test(email)) {
-                    alert('Please enter a valid email address');
-                    isValid = false;
-                }
-                
-                if (!isValid) {
-                    e.preventDefault();
-                }
-            });
-        }
-    });
+                form.classList.add('was-validated');
+            }, false);
+        });
+    })();
 </script>
 
 <?php
