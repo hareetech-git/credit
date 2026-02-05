@@ -30,10 +30,14 @@ if (!empty($search_query)) {
     $query .= " AND (e.full_name LIKE '%$search_safe%' OR e.email LIKE '%$search_safe%' OR e.phone LIKE '%$search_safe%' OR e.loan_type_name LIKE '%$search_safe%')";
 }
 
-$allowed_status = ['new','assigned','conversation','converted','closed'];
+$allowed_status = ['new','assigned','conversation','converted','closed','resolved'];
 if (!empty($status_filter) && in_array($status_filter, $allowed_status, true)) {
-    $status_safe = mysqli_real_escape_string($conn, $status_filter);
-    $query .= " AND e.status = '$status_safe'";
+    if ($status_filter === 'resolved') {
+        $query .= " AND e.status IN ('closed','converted')";
+    } else {
+        $status_safe = mysqli_real_escape_string($conn, $status_filter);
+        $query .= " AND e.status = '$status_safe'";
+    }
 }
 
 $query .= " ORDER BY e.created_at DESC";
@@ -132,8 +136,8 @@ $result = mysqli_query($conn, $query);
                             <label class="form-label text-muted small fw-bold">Status</label>
                             <select name="status" class="form-select form-select-sm">
                                 <option value="">All</option>
-                                <?php foreach (['new','assigned','conversation','converted','closed'] as $s): ?>
-                                    <option value="<?= $s ?>" <?= ($status_filter === $s) ? 'selected' : '' ?>><?= ucfirst($s) ?></option>
+                                <?php foreach (['new','assigned','conversation','converted','closed','resolved'] as $s): ?>
+                                    <option value="<?= $s ?>" <?= ($status_filter === $s) ? 'selected' : '' ?>><?= ($s === 'resolved') ? 'Resolved' : ucfirst($s) ?></option>
                                 <?php endforeach; ?>
                             </select>
                         </div>

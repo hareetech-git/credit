@@ -173,7 +173,69 @@ function dailyCountsStaff($conn, $table, $dateField, $where = '') {
         color: var(--slate-900);
         margin-bottom: 12px;
     }
-</style>
+
+    .quick-actions {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 14px;
+    }
+
+    .quick-action-card {
+        border: 1px solid var(--slate-200);
+        border-radius: 14px;
+        padding: 16px;
+        background: #fff;
+        text-decoration: none;
+        color: inherit;
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        transition: all 0.2s ease;
+    }
+
+    .quick-action-card:hover {
+        border-color: var(--slate-900);
+        box-shadow: 0 12px 20px -10px rgba(15, 23, 42, 0.25);
+        transform: translateY(-2px);
+    }
+
+    .quick-action-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: #f1f5f9;
+        color: var(--slate-900);
+        font-size: 1rem;
+        flex-shrink: 0;
+    }
+
+    .quick-action-meta {
+        font-size: 0.78rem;
+        color: var(--slate-600);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        font-weight: 600;
+    }
+
+    .quick-action-title {
+        font-weight: 700;
+        color: var(--slate-900);
+        margin-bottom: 2px;
+    }
+
+    .quick-action-value {
+        font-size: 1.2rem;
+        font-weight: 800;
+        color: var(--slate-900);
+    }
+
+    .quick-action-sub {
+        font-size: 0.85rem;
+        color: var(--slate-600);
+    }</style>
 
 <div class="content-page">
     <div class="content">
@@ -194,23 +256,29 @@ function dailyCountsStaff($conn, $table, $dateField, $where = '') {
                     </div>
                 </a>
 
-                <div class="stat-card">
-                    <span class="label">Pending Loans</span>
-                    <span class="value"><?= $loanPending ?></span>
-                    <div class="footer-link">Awaiting decision</div>
-                </div>
+                <a href="loan_applications.php?status=new" class="stat-card-link">
+                    <div class="stat-card">
+                        <span class="label">New Applications</span>
+                        <span class="value"><?= $loanPending ?></span>
+                        <div class="footer-link">Awaiting decision</div>
+                    </div>
+                </a>
 
-                <div class="stat-card">
-                    <span class="label">Approved Loans</span>
-                    <span class="value"><?= $loanApproved ?></span>
-                    <div class="footer-link">Approved by you</div>
-                </div>
+                <a href="loan_applications.php?status=approved" class="stat-card-link">
+                    <div class="stat-card">
+                        <span class="label">Approved Loans</span>
+                        <span class="value"><?= $loanApproved ?></span>
+                        <div class="footer-link">Approved by you</div>
+                    </div>
+                </a>
 
-                <div class="stat-card">
-                    <span class="label">Rejected Loans</span>
-                    <span class="value"><?= $loanRejected ?></span>
-                    <div class="footer-link">Needs follow-up</div>
-                </div>
+                <a href="loan_applications.php?status=rejected" class="stat-card-link">
+                    <div class="stat-card">
+                        <span class="label">Rejected Loans</span>
+                        <span class="value"><?= $loanRejected ?></span>
+                        <div class="footer-link">Needs follow-up</div>
+                    </div>
+                </a>
 
                 <a href="enquiries.php" class="stat-card-link">
                     <div class="stat-card">
@@ -220,23 +288,29 @@ function dailyCountsStaff($conn, $table, $dateField, $where = '') {
                     </div>
                 </a>
 
-                <div class="stat-card">
-                    <span class="label">New Enquiries</span>
-                    <span class="value"><?= $enquiryNew ?></span>
-                    <div class="footer-link">Needs response</div>
-                </div>
+                <a href="enquiries.php?status=new" class="stat-card-link">
+                    <div class="stat-card">
+                        <span class="label">New Enquiries</span>
+                        <span class="value"><?= $enquiryNew ?></span>
+                        <div class="footer-link">Needs response</div>
+                    </div>
+                </a>
 
-                <div class="stat-card">
-                    <span class="label">In Conversation</span>
-                    <span class="value"><?= $enquiryConversation ?></span>
-                    <div class="footer-link">Active chats</div>
-                </div>
+                <a href="enquiries.php?status=conversation" class="stat-card-link">
+                    <div class="stat-card">
+                        <span class="label">In Conversation</span>
+                        <span class="value"><?= $enquiryConversation ?></span>
+                        <div class="footer-link">Active chats</div>
+                    </div>
+                </a>
 
-                <div class="stat-card">
-                    <span class="label">Closed/Converted</span>
-                    <span class="value"><?= ($enquiryClosed + $enquiryConverted) ?></span>
-                    <div class="footer-link">Resolved</div>
-                </div>
+                <a href="enquiries.php?status=resolved" class="stat-card-link">
+                    <div class="stat-card">
+                        <span class="label">Closed/Converted</span>
+                        <span class="value"><?= ($enquiryClosed + $enquiryConverted) ?></span>
+                        <div class="footer-link">Resolved</div>
+                    </div>
+                </a>
 
             </div>
 
@@ -261,10 +335,47 @@ function dailyCountsStaff($conn, $table, $dateField, $where = '') {
                 </div>
                 <div class="col-lg-8">
                     <div class="p-4 bg-white rounded-4 border h-100">
-                        <h5 class="fw-bold mb-4">Quick Actions</h5>
-                        <div class="d-flex gap-3">
-                            <a href="loan_applications.php" class="action-btn">Assigned Loans</a>
-                            <a href="enquiries.php" class="action-btn-outline">Enquiries</a>
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h5 class="fw-bold mb-0">Quick Actions</h5>
+                            <span class="text-muted small">Shortcuts to your most used work queues</span>
+                        </div>
+                        <div class="quick-actions">
+                            <a href="loan_applications.php" class="quick-action-card">
+                                <span class="quick-action-icon"><i class="fas fa-clipboard-list"></i></span>
+                                <div>
+                                    <div class="quick-action-meta">Loans</div>
+                                    <div class="quick-action-title">Assigned loans</div>
+                                    <div class="quick-action-sub">Total assigned</div>
+                                    <div class="quick-action-value"><?= $loanTotal ?></div>
+                                </div>
+                            </a>
+                            <a href="loan_applications.php?status=new" class="quick-action-card">
+                                <span class="quick-action-icon"><i class="fas fa-clock"></i></span>
+                                <div>
+                                    <div class="quick-action-meta">Applications</div>
+                                    <div class="quick-action-title">Pending decisions</div>
+                                    <div class="quick-action-sub">Need review</div>
+                                    <div class="quick-action-value"><?= $loanPending ?></div>
+                                </div>
+                            </a>
+                            <a href="enquiries.php?status=new" class="quick-action-card">
+                                <span class="quick-action-icon"><i class="fas fa-headset"></i></span>
+                                <div>
+                                    <div class="quick-action-meta">Enquiries</div>
+                                    <div class="quick-action-title">New enquiries</div>
+                                    <div class="quick-action-sub">Fresh requests</div>
+                                    <div class="quick-action-value"><?= $enquiryNew ?></div>
+                                </div>
+                            </a>
+                            <a href="enquiries.php?status=conversation" class="quick-action-card">
+                                <span class="quick-action-icon"><i class="fas fa-comments"></i></span>
+                                <div>
+                                    <div class="quick-action-meta">Conversations</div>
+                                    <div class="quick-action-title">Active chats</div>
+                                    <div class="quick-action-sub">In progress</div>
+                                    <div class="quick-action-value"><?= $enquiryConversation ?></div>
+                                </div>
+                            </a>
                         </div>
                     </div>
                 </div>
