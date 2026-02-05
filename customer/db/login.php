@@ -44,7 +44,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             exit;
         }
     } else {
-        header("Location: ../../lo.php?err=Invalid email or phone" . ($redirect ? "&redirect=".urlencode($redirect) : ""));
+        header("Location: ../../login.php?err=Invalid email or phone" . ($redirect ? "&redirect=".urlencode($redirect) : ""));
         exit;
     }
 }
