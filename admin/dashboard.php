@@ -1,32 +1,25 @@
 <?php
 include 'db/config.php';
 
-
-/* ------------------------------
-   Reusable count function
---------------------------------*/
+/* --- LOGIC REMAINS IDENTICAL --- */
 function getCount($conn, $table, $where = '') {
     $sql = "SELECT COUNT(*) AS total FROM $table";
-    if (!empty($where)) {
-        $sql .= " WHERE $where";
-    }
+    if (!empty($where)) { $sql .= " WHERE $where"; }
     $result = mysqli_query($conn, $sql);
     $row = mysqli_fetch_assoc($result);
     return $row['total'] ?? 0;
 }
 
-/* ------------------------------
-   Dynamic Counts
---------------------------------*/
 $categoryCount    = getCount($conn, 'service_categories');
 $subCategoryCount = getCount($conn, 'services_subcategories');
-$serviceCount     = getCount($conn, 'services'); // add WHERE if needed
-
+$serviceCount     = getCount($conn, 'services'); 
 $enquiryCount     = getCount($conn, 'enquiries');
-$customerCount = getCount($conn,'customers' );
-$departmentCount = getCount ($conn,'departments');
-$staffCount = getCount($conn, 'staff');
-$loanCount = getCount($conn, 'loan_applications');
+$customerCount    = getCount($conn,'customers' );
+$departmentCount  = getCount ($conn,'departments');
+$staffCount       = getCount($conn, 'staff');
+$loanCount        = getCount($conn, 'loan_applications');
+
+// Status specific counts
 $loanPending = getCount($conn, 'loan_applications', "status='pending'");
 $loanApproved = getCount($conn, 'loan_applications', "status='approved'");
 $loanRejected = getCount($conn, 'loan_applications', "status='rejected'");
@@ -39,8 +32,7 @@ $enquiryConverted = getCount($conn, 'enquiries', "status='converted'");
 $enquiryClosed = getCount($conn, 'enquiries', "status='closed'");
 
 function dailyCounts($conn, $table, $dateField, $where = '') {
-    $labels = [];
-    $data = [];
+    $labels = []; $data = [];
     for ($i = 6; $i >= 0; $i--) {
         $d = new DateTime();
         $d->modify("-$i days");
@@ -52,9 +44,7 @@ function dailyCounts($conn, $table, $dateField, $where = '') {
     $res = mysqli_query($conn, "SELECT DATE($dateField) AS d, COUNT(*) AS total FROM $table $whereSql GROUP BY DATE($dateField)");
     if ($res) {
         while ($row = mysqli_fetch_assoc($res)) {
-            if (isset($data[$row['d']])) {
-                $data[$row['d']] = (int)$row['total'];
-            }
+            if (isset($data[$row['d']])) { $data[$row['d']] = (int)$row['total']; }
         }
     }
     return [$labels, array_values($data)];
@@ -64,119 +54,151 @@ function dailyCounts($conn, $table, $dateField, $where = '') {
 [$_t1, $trendLoans] = dailyCounts($conn, 'loan_applications', 'created_at');
 [$_t2, $trendEnquiries] = dailyCounts($conn, 'enquiries', 'created_at');
 $adminName = $_SESSION['admin_name'] ?? 'Admin';
-?>
 
-<?php include 'header.php'; ?>
-<?php include 'topbar.php'; ?>
-<?php include 'sidebar.php'; ?>
+include 'header.php';
+include 'topbar.php';
+include 'sidebar.php';
+?>
 
 <style>
     :root {
+        --slate-950: #020617;
         --slate-900: #0f172a;
+        --slate-800: #1e293b;
         --slate-600: #475569;
         --slate-200: #e2e8f0;
         --blue-600: #2563eb;
+        --indigo-600: #4f46e5;
+        --emerald-500: #10b981;
     }
 
-    .content-page { background-color: #fcfcfd; }
-
+    .content-page { background-color: #f8fafc; padding-bottom: 60px; }
+    
+    /* Header Animation */
     .greeting-header {
-        padding: 40px 0;
+        padding: 40px 0 30px;
+        background: linear-gradient(to right, #ffffff, #f8fafc);
+        margin-bottom: 30px;
         border-bottom: 1px solid var(--slate-200);
-        margin-bottom: 40px;
     }
 
     .greeting-header h1 {
-        font-size: 1.75rem;
-        font-weight: 700;
-        color: var(--slate-900);
+        font-size: 2rem;
+        font-weight: 800;
+        color: var(--slate-950);
+        letter-spacing: -0.025em;
     }
 
-    .greeting-header p {
-        color: var(--slate-600);
+    /* Modern Grid */
+    .dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 20px;
     }
 
-    .stat-card-link {
-        text-decoration: none;
-        display: block;
-        transition: all 0.3s;
-    }
-
+    .stat-card-link { text-decoration: none; outline: none; }
+    
     .stat-card {
-        background: #fff;
+        background: #ffffff;
         border: 1px solid var(--slate-200);
-        border-radius: 16px;
+        border-radius: 20px;
         padding: 24px;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         height: 100%;
     }
 
-    .stat-card-link:hover .stat-card {
-        border-color: var(--slate-900);
-        box-shadow: 0 20px 25px -5px rgba(0,0,0,0.05);
+    .stat-card:hover {
+        transform: translateY(-5px);
+        border-color: var(--indigo-600);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
     }
 
-    .label {
+    .stat-card .label {
         font-size: 0.75rem;
         text-transform: uppercase;
         font-weight: 700;
-        letter-spacing: 0.1em;
+        letter-spacing: 0.05em;
         color: var(--slate-600);
+        display: block;
+        margin-bottom: 8px;
     }
 
-    .value {
-        font-size: 2.25rem;
+    .stat-card .value {
+        font-size: 2.5rem;
         font-weight: 800;
         color: var(--slate-900);
+        line-height: 1;
     }
 
-    .footer-link {
-        margin-top: 16px;
-        font-size: 0.85rem;
-        font-weight: 600;
-        color: var(--blue-600);
+    /* Icon Accents */
+    .stat-card::after {
+        content: '';
+        position: absolute;
+        top: -20px;
+        right: -20px;
+        width: 80px;
+        height: 80px;
+        background: var(--slate-100);
+        border-radius: 50%;
+        z-index: 0;
+        opacity: 0.5;
     }
 
-    .action-btn {
-        background: var(--slate-900);
-        color: #fff;
-        padding: 12px 24px;
-        border-radius: 10px;
-        font-weight: 600;
-        text-decoration: none;
-    }
+    .stat-card-content { position: relative; z-index: 1; }
 
-    .action-btn-outline {
-        border: 1px solid var(--slate-200);
-        padding: 12px 24px;
-        border-radius: 10px;
-        font-weight: 600;
-        color: var(--slate-900);
-        text-decoration: none;
-    }
-
-    .action-btn-outline:hover {
-        background: var(--slate-900);
-        color: #fff;
-    }
-
-    .dashboard-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-        gap: 16px;
-    }
-
+    /* Chart Cards */
     .chart-card {
         background: #fff;
         border: 1px solid var(--slate-200);
-        border-radius: 16px;
-        padding: 20px;
-        height: 100%;
+        border-radius: 24px;
+        padding: 24px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.02);
     }
 
     .chart-title {
+        font-size: 1rem;
         font-weight: 700;
         color: var(--slate-900);
-        margin-bottom: 12px;
+        margin-bottom: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    /* Action Buttons */
+    .action-btn {
+        background: var(--slate-950);
+        color: white;
+        padding: 14px 28px;
+        border-radius: 12px;
+        font-weight: 600;
+        border: none;
+        transition: 0.3s;
+        display: inline-block;
+    }
+
+    .action-btn:hover {
+        background: var(--indigo-600);
+        box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3);
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    .action-btn-outline {
+        border: 2px solid var(--slate-200);
+        padding: 12px 28px;
+        border-radius: 12px;
+        font-weight: 600;
+        color: var(--slate-900);
+        transition: 0.3s;
+        background: transparent;
+    }
+
+    .action-btn-outline:hover {
+        border-color: var(--slate-900);
+        background: var(--slate-50);
     }
 </style>
 
@@ -185,103 +207,67 @@ $adminName = $_SESSION['admin_name'] ?? 'Admin';
         <div class="container-fluid">
 
             <div class="greeting-header">
-                <h1>Welcome, <?= htmlspecialchars($adminName) ?></h1>
-                <p>System performance and management overview.</p>
+                <h1>Hi, <?= htmlspecialchars($adminName) ?> 👋</h1>
+                <p class="mb-0">Here's what's happening with your lending platform today.</p>
             </div>
 
             <div class="dashboard-grid">
+                <?php
+                $cards = [
+                    ['label' => 'Service Categories', 'val' => $categoryCount, 'link' => 'category.php'],
+                    ['label' => 'Loan Products', 'val' => $serviceCount, 'link' => 'services.php'],
+                    ['label' => 'Total Customers', 'val' => $customerCount, 'link' => 'customers.php'],
+                    ['label' => 'Active Staff', 'val' => $staffCount, 'link' => 'staff_list.php'],
+                    ['label' => 'Total Enquiries', 'val' => $enquiryCount, 'link' => 'enquiries.php'],
+                    ['label' => 'Loan Applications', 'val' => $loanCount, 'link' => 'loan_applications.php'],
+                ];
 
-                <a href="category.php" class="stat-card-link">
+                foreach($cards as $c): ?>
+                <a href="<?= $c['link'] ?>" class="stat-card-link">
                     <div class="stat-card">
-                        <span class="label">Total Categories</span>
-                        <span class="value"><?= $categoryCount ?></span>
-                        <div class="footer-link">View all categories →</div>
+                        <div class="stat-card-content">
+                            <span class="label"><?= $c['label'] ?></span>
+                            <span class="value"><?= $c['val'] ?></span>
+                        </div>
                     </div>
                 </a>
-
-                <a href="subcategory.php" class="stat-card-link">
-                    <div class="stat-card">
-                        <span class="label">Sub Categories</span>
-                        <span class="value"><?= $subCategoryCount ?></span>
-                        <div class="footer-link">View subcategories →</div>
-                    </div>
-                </a>
-
-                <a href="services.php" class="stat-card-link">
-                    <div class="stat-card">
-                        <span class="label">Total Services</span>
-                        <span class="value"><?= $serviceCount ?></span>
-                        <div class="footer-link">Manage services →</div>
-                    </div>
-                </a>
-
-                <a href="departments.php" class="stat-card-link">
-                    <div class="stat-card">
-                        <span class="label">Total Departments</span>
-                        <span class="value"><?= $departmentCount ?></span>
-                        <div class="footer-link">Manage Departments →</div>
-                    </div>
-                </a>
-
-                <a href="enquiries.php" class="stat-card-link">
-                    <div class="stat-card">
-                        <span class="label">Total Enquiries</span>
-                        <span class="value"><?= $enquiryCount ?></span>
-                        <div class="footer-link">View enquiries →</div>
-                    </div>
-                </a>
-
-                <a href="customers.php" class="stat-card-link">
-                    <div class="stat-card">
-                        <span class="label">Total Customers</span>
-                        <span class="value"><?= $customerCount ?></span>
-                        <div class="footer-link">View customers →</div>
-                    </div>
-                </a>
-
-                <a href="staff_list.php" class="stat-card-link">
-                    <div class="stat-card">
-                        <span class="label">Total Staff</span>
-                        <span class="value"><?= $staffCount ?></span>
-                        <div class="footer-link">View staff →</div>
-                    </div>
-                </a>
-
-                <a href="loan_applications.php" class="stat-card-link">
-                    <div class="stat-card">
-                        <span class="label">Total Loans</span>
-                        <span class="value"><?= $loanCount ?></span>
-                        <div class="footer-link">View loans →</div>
-                    </div>
-                </a>
-
+                <?php endforeach; ?>
             </div>
 
             <div class="row mt-4 g-4">
-                <div class="col-lg-8">
+                <div class="col-lg-12">
                     <div class="chart-card">
-                        <div class="chart-title">7-Day Activity</div>
-                        <canvas id="trendChart" height="110"></canvas>
+                        <div class="chart-title">
+                            <span>Growth Trend</span>
+                            <span class="badge bg-indigo-soft text-indigo small">Last 7 Days</span>
+                        </div>
+                        <canvas id="trendChart" height="80"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-4 g-4">
+                <div class="col-lg-4">
+                    <div class="chart-card">
+                        <div class="chart-title">Loan Pipeline</div>
+                        <canvas id="loanPie" height="250"></canvas>
                     </div>
                 </div>
                 <div class="col-lg-4">
                     <div class="chart-card">
-                        <div class="chart-title">Loan Status</div>
-                        <canvas id="loanPie" height="220"></canvas>
+                        <div class="chart-title">Enquiry Volume</div>
+                        <canvas id="enquiryPie" height="250"></canvas>
                     </div>
                 </div>
                 <div class="col-lg-4">
-                    <div class="chart-card">
-                        <div class="chart-title">Enquiry Status</div>
-                        <canvas id="enquiryPie" height="220"></canvas>
-                    </div>
-                </div>
-                <div class="col-lg-8">
-                    <div class="p-4 bg-white rounded-4 border h-100">
-                        <h5 class="fw-bold mb-4">Control Panel</h5>
-                        <div class="d-flex gap-3">
-                            <a href="category_add.php" class="action-btn">Add Category</a>
-                            <a href="service_add.php" class="action-btn-outline">New Service Entry</a>
+                    <div class="chart-card h-100 d-flex flex-column justify-content-center align-items-center text-center">
+                        <div class="mb-4">
+                            <h5 class="fw-bold">Administrative Tasks</h5>
+                            <p class="text-muted small">Quickly manage system configurations.</p>
+                        </div>
+                        <div class="d-grid gap-2 w-100 px-3">
+                            <a href="category_add.php" class="action-btn">Add New Category</a>
+                            <a href="service_add.php" class="action-btn-outline">Register New Service</a>
                         </div>
                     </div>
                 </div>
@@ -290,29 +276,58 @@ $adminName = $_SESSION['admin_name'] ?? 'Admin';
         </div>
     </div>
 </div>
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script>
-const trendLabels = <?= json_encode($trendLabels) ?>;
-const trendCustomers = <?= json_encode($trendCustomers) ?>;
-const trendLoans = <?= json_encode($trendLoans) ?>;
-const trendEnquiries = <?= json_encode($trendEnquiries) ?>;
+const ctxTrend = document.getElementById('trendChart').getContext('2d');
+const gradientBlue = ctxTrend.createLinearGradient(0, 0, 0, 400);
+gradientBlue.addColorStop(0, 'rgba(37, 99, 235, 0.2)');
+gradientBlue.addColorStop(1, 'rgba(37, 99, 235, 0)');
 
-new Chart(document.getElementById('trendChart'), {
+new Chart(ctxTrend, {
     type: 'line',
     data: {
-        labels: trendLabels,
+        labels: <?= json_encode($trendLabels) ?>,
         datasets: [
-            { label: 'Customers', data: trendCustomers, borderColor: '#2563eb', backgroundColor: 'rgba(37,99,235,0.15)', tension: 0.35, fill: true },
-            { label: 'Loans', data: trendLoans, borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,0.15)', tension: 0.35, fill: true },
-            { label: 'Enquiries', data: trendEnquiries, borderColor: '#f59e0b', backgroundColor: 'rgba(245,158,11,0.15)', tension: 0.35, fill: true }
+            { 
+                label: 'Customers', 
+                data: <?= json_encode($trendCustomers) ?>, 
+                borderColor: '#2563eb', 
+                borderWidth: 3,
+                backgroundColor: gradientBlue,
+                tension: 0.4, 
+                fill: true,
+                pointRadius: 4,
+                pointBackgroundColor: '#fff',
+                pointBorderWidth: 2
+            },
+            { 
+                label: 'Loans', 
+                data: <?= json_encode($trendLoans) ?>, 
+                borderColor: '#10b981', 
+                borderWidth: 3,
+                tension: 0.4,
+                pointRadius: 0
+            }
         ]
     },
     options: {
         responsive: true,
-        plugins: { legend: { position: 'bottom' } },
-        scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
+        plugins: { legend: { display: true, position: 'top', align: 'end' } },
+        scales: {
+            x: { grid: { display: false } },
+            y: { border: { dash: [5, 5] }, grid: { color: '#e2e8f0' } }
+        }
     }
 });
+
+// Pie Chart Options
+const pieOptions = {
+    cutout: '70%',
+    plugins: {
+        legend: { position: 'bottom', labels: { usePointStyle: true, padding: 20 } }
+    }
+};
 
 new Chart(document.getElementById('loanPie'), {
     type: 'doughnut',
@@ -320,10 +335,11 @@ new Chart(document.getElementById('loanPie'), {
         labels: ['Pending', 'Approved', 'Rejected', 'Disbursed'],
         datasets: [{
             data: [<?= $loanPending ?>, <?= $loanApproved ?>, <?= $loanRejected ?>, <?= $loanDisbursed ?>],
-            backgroundColor: ['#fbbf24', '#34d399', '#f87171', '#60a5fa']
+            backgroundColor: ['#f59e0b', '#10b981', '#ef4444', '#3b82f6'],
+            borderWidth: 0
         }]
     },
-    options: { plugins: { legend: { position: 'bottom' } } }
+    options: pieOptions
 });
 
 new Chart(document.getElementById('enquiryPie'), {
@@ -332,10 +348,11 @@ new Chart(document.getElementById('enquiryPie'), {
         labels: ['New', 'Assigned', 'Conversation', 'Converted', 'Closed'],
         datasets: [{
             data: [<?= $enquiryNew ?>, <?= $enquiryAssigned ?>, <?= $enquiryConversation ?>, <?= $enquiryConverted ?>, <?= $enquiryClosed ?>],
-            backgroundColor: ['#a5b4fc', '#fbbf24', '#38bdf8', '#34d399', '#94a3b8']
+            backgroundColor: ['#6366f1', '#f59e0b', '#06b6d4', '#10b981', '#64748b'],
+            borderWidth: 0
         }]
     },
-    options: { plugins: { legend: { position: 'bottom' } } }
+    options: pieOptions
 });
 </script>
 <?php include 'footer.php'; ?>

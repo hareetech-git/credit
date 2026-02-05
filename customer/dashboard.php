@@ -20,6 +20,10 @@ $docStats = [
     'pending_docs' => 0,
     'rejected_docs' => 0
 ];
+$enquiryStats = [
+    'total' => 0,
+    'open' => 0
+];
 
 if ($customer_id) {
     $loanRes = mysqli_query($conn, "
@@ -46,6 +50,17 @@ if ($customer_id) {
     ");
     if ($docRes) {
         $docStats = mysqli_fetch_assoc($docRes);
+    }
+
+    $enqRes = mysqli_query($conn, "
+        SELECT 
+            COUNT(*) AS total,
+            SUM(status IN ('new','assigned','conversation')) AS open
+        FROM enquiries
+        WHERE customer_id = $customer_id
+    ");
+    if ($enqRes) {
+        $enquiryStats = mysqli_fetch_assoc($enqRes);
     }
 }
 ?>
@@ -228,6 +243,30 @@ if ($customer_id) {
                             <span class="value"><?= (int)$docStats['rejected_docs'] ?></span>
                             <div class="footer-link">
                                 Fix documents <i class="ri-arrow-right-line"></i>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="col-md-3 mb-4">
+                    <a href="enquiries.php" class="stat-card-link">
+                        <div class="stat-card">
+                            <span class="label">Total Enquiries</span>
+                            <span class="value"><?= (int)$enquiryStats['total'] ?></span>
+                            <div class="footer-link">
+                                View enquiries <i class="ri-arrow-right-line"></i>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="col-md-3 mb-4">
+                    <a href="enquiries.php" class="stat-card-link">
+                        <div class="stat-card">
+                            <span class="label">Open Enquiries</span>
+                            <span class="value"><?= (int)$enquiryStats['open'] ?></span>
+                            <div class="footer-link">
+                                Need response <i class="ri-arrow-right-line"></i>
                             </div>
                         </div>
                     </a>

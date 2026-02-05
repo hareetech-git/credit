@@ -207,7 +207,7 @@ $staff_active = in_array($current_page, [
                 <ul class="side-nav-second-level">
                     <li><a href="service_add.php" class="side-nav-link"><i class="fas fa-plus"></i> Create</a></li>
                     <li><a href="services.php" class="side-nav-link"><i class="fas fa-eye"></i> View</a></li>
-                    <li><a href="plan-work.php" class="side-nav-link"><i class="fas fa-file-alt"></i> Plan Work Format</a></li>
+                    <!-- <li><a href="plan-work.php" class="side-nav-link"><i class="fas fa-file-alt"></i> Plan Work Format</a></li> -->
                 </ul>
             </li>
 

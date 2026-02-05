@@ -124,12 +124,12 @@ $service_active  = in_array($current_page, ['services.php', 'service_details.php
             <li class="side-nav-title">Reference</li>
 
             <?php if (hasAccess($conn, 'service_read') || hasAccess($conn, 'cust_read')): ?>
-            <li class="side-nav-item <?= $service_active ? 'active' : '' ?>">
+            <!-- <li class="side-nav-item <?= $service_active ? 'active' : '' ?>">
                 <a href="services.php" class="side-nav-link">
                     <i class="ri-customer-service-2-line"></i>
                     <span>Products/Services</span>
                 </a>
-            </li>
+            </li> -->
             <?php endif; ?>
 
             <li class="side-nav-item">

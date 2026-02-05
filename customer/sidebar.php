@@ -147,21 +147,14 @@ $current_page = basename($_SERVER['PHP_SELF']);
                 </a>
             </li>
 
-            <li class="side-nav-item <?= ($current_page == 'repayments.php') ? 'active' : '' ?>">
-                <a href="repayments.php" class="side-nav-link">
-                    <i class="ri-history-line"></i>
-                    <span>Active & Repay</span>
-                </a>
-            </li>
-
-            <li class="side-nav-title">System</li>
-
-            <li class="side-nav-item">
+         <li class="side-nav-item">
                 <a href="db/auth-logout.php" class="side-nav-link" style="color: #ef4444 !important;">
                     <i class="ri-shut-down-line" style="color: #ef4444 !important;"></i>
                     <span>Logout</span>
                 </a>
             </li>
+
+
 
         </ul>
     </div>
