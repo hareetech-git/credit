@@ -1,6 +1,11 @@
 <?php
 include 'db/config.php';
 include 'header.php';
+
+if (!hasAccess($conn, 'cust_read')) {
+    echo "<script>alert('Access Denied: You do not have permission to view profile details.'); window.location='dashboard.php';</script>";
+    exit();
+}
 // Ensure FontAwesome is loaded
 echo '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">';
 include 'topbar.php';

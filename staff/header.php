@@ -16,16 +16,23 @@ if (!isset($_SESSION['staff_id'])) {
  */
 function hasAccess($conn, $perm_key) {
     if (!isset($_SESSION['staff_id'])) return false;
-
     $staff_id = (int)$_SESSION['staff_id'];
-    
-    // JOIN query to verify permission for this SPECIFIC user
-    $query = "SELECT p.id FROM permissions p 
-              INNER JOIN staff_permissions sp ON p.id = sp.permission_id 
-              WHERE sp.staff_id = $staff_id AND p.perm_key = '$perm_key'";
-              
+
+    $query = "
+     
+        SELECT p.id FROM permissions p 
+        INNER JOIN role_permissions rp ON p.id = rp.permission_id 
+        INNER JOIN staff s ON s.role_id = rp.role_id
+        WHERE s.id = $staff_id AND p.perm_key = '$perm_key'
+        
+        UNION
+       
+        SELECT p.id FROM permissions p
+        INNER JOIN staff_permissions sp ON p.id = sp.permission_id
+        WHERE sp.staff_id = $staff_id AND p.perm_key = '$perm_key'
+    ";
+
     $result = mysqli_query($conn, $query);
-    
     return (mysqli_num_rows($result) > 0);
 }
 ?>

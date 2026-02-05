@@ -157,8 +157,8 @@ if ($id) {
                                 <?php } ?>
 
                                 <div class="mb-3">
-                                    <label class="form-label">Aadhaar Number</label>
-                                    <input type="text" name="aadhaar_number" class="form-control" placeholder="12-digit UID" value="<?= $customer['aadhaar_number'] ?? '' ?>">
+                                    <label class="form-label">Identity  Number</label>
+                                    <input type="text" name="aadhaar_number" class="form-control" placeholder="12-digit ..." value="<?= $customer['aadhaar_number'] ?? '' ?>">
                                 </div>
 
                                 <div class="mb-0">

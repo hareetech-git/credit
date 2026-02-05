@@ -2,26 +2,29 @@
 include 'db/config.php';
 include 'header.php';
 
-// 1. Fetch all staff for the dropdown
-$staff_res = mysqli_query($conn, "SELECT id, name, email FROM staff ORDER BY name ASC");
-
-// 2. Identify if we are in "Bulk" or "Individual" mode
 $mode = $_GET['mode'] ?? 'individual'; 
 $selected_id = isset($_GET['staff_id']) ? (int)$_GET['staff_id'] : 0;
-
 $current_perms = [];
 
-// 3. If individual mode, fetch their specific current permissions
-if ($mode == 'individual' && $selected_id > 0) {
-    $res = mysqli_query($conn, "SELECT permission_id FROM staff_permissions WHERE staff_id = $selected_id");
+if ($mode == 'bulk') {
+    // Mode Bulk: Fetch permissions linked to Role ID 1 (All Staff)
+    $res = mysqli_query($conn, "SELECT permission_id FROM role_permissions WHERE role_id = 1");
     while ($row = mysqli_fetch_assoc($res)) {
         $current_perms[] = $row['permission_id'];
+    }
+} else {
+    // Mode Individual: Fetch permissions linked directly to specific user
+    if ($selected_id > 0) {
+        $res = mysqli_query($conn, "SELECT permission_id FROM staff_permissions WHERE staff_id = $selected_id");
+        while ($row = mysqli_fetch_assoc($res)) {
+            $current_perms[] = $row['permission_id'];
+        }
     }
 }
 
 $all_perms = mysqli_query($conn, "SELECT id, perm_key, description FROM permissions ORDER BY description ASC");
+$staff_res = mysqli_query($conn, "SELECT id, name, email FROM staff ORDER BY name ASC");
 ?>
-
 <?php include 'topbar.php'; ?>
 <?php include 'sidebar.php'; ?>
 
