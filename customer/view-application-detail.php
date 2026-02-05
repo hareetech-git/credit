@@ -10,7 +10,7 @@ $loan_id = (int)$_GET['id'];
 $customer_id = $_SESSION['customer_id'];
 
 // Fetch Main Application Detail (Security check included in WHERE)
-$query = "SELECT la.*, s.service_name FROM loan_applications la 
+$query = "SELECT la.*, s.service_name, s.sub_category_id FROM loan_applications la 
           JOIN services s ON la.service_id = s.id 
           WHERE la.id = $loan_id AND la.customer_id = $customer_id";
 $res = mysqli_query($conn, $query);
@@ -58,6 +58,9 @@ include 'sidebar.php';
                             ?>
                             <div class="status-badge-<?= $statusClass ?> d-inline-block px-4 py-2 fw-bold">
                                 STATUS: <?= strtoupper($loan['status']) ?>
+                            </div>
+                            <div class="mt-2">
+                                <a href="enquiry_add.php?loan_type=<?= (int)$loan['sub_category_id'] ?>" class="btn btn-sm btn-dark">Raise Enquiry</a>
                             </div>
                         </div>
                     </div>

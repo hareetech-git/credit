@@ -14,6 +14,11 @@ $loan_active = in_array($current_page, [
     'loan_view.php'
 ]);
 
+$enquiry_active = in_array($current_page, [
+    'enquiries.php',
+    'enquiry_view.php'
+]);
+
 // 3. Category & Service Active Logic
 $cat_active      = in_array($current_page, ['category.php']);
 $service_active  = in_array($current_page, ['services.php', 'service_details.php']);
@@ -104,6 +109,15 @@ $service_active  = in_array($current_page, ['services.php', 'service_details.php
                 <ul class="side-nav-second-level">
                     <li><a href="loan_applications.php" class="side-nav-link"><i class="fas fa-file-invoice-dollar"></i> Assigned Applications</a></li>
                 </ul>
+            </li>
+            <?php endif; ?>
+
+            <?php if (hasAccess($conn, 'enquiry_view_assigned') || hasAccess($conn, 'enquiry_view_all')): ?>
+            <li class="side-nav-item <?= $enquiry_active ? 'active' : '' ?>">
+                <a href="enquiries.php" class="side-nav-link">
+                    <i class="ri-question-answer-line"></i>
+                    <span>Enquiries</span>
+                </a>
             </li>
             <?php endif; ?>
 

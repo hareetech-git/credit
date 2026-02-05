@@ -10,7 +10,7 @@ if (!isset($_SESSION['customer_id'])) {
 $customer_id = $_SESSION['customer_id'];
 
 // Fetch all applications for the logged-in customer
-$query = "SELECT la.*, s.service_name 
+$query = "SELECT la.*, s.service_name, s.sub_category_id
           FROM loan_applications la 
           JOIN services s ON la.service_id = s.id 
           WHERE la.customer_id = $customer_id 
@@ -66,7 +66,8 @@ include 'sidebar.php';
                                             <span>Tenure:</span>
                                             <span class="text-dark fw-semibold"><?= $row['tenure_years'] ?> Years</span>
                                         </div>
-                                        <a href="view-application-detail.php?id=<?= $row['id'] ?>" class="btn btn-outline-dark btn-sm w-100 fw-bold rounded-pill">View Full Status</a>
+                                        <a href="view-application-detail.php?id=<?= $row['id'] ?>" class="btn btn-outline-dark btn-sm w-100 fw-bold rounded-pill mb-2">View Full Status</a>
+                                        <a href="enquiry_add.php?loan_type=<?= (int)$row['sub_category_id'] ?>" class="btn btn-dark btn-sm w-100 fw-bold rounded-pill">Raise Enquiry</a>
                                     </div>
                                 </div>
                             </div>

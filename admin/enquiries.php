@@ -10,22 +10,40 @@ include 'sidebar.php';
 $search_query = $_GET['search'] ?? '';
 $sort_by      = $_GET['sort_by'] ?? 'id';
 $sort_order   = $_GET['order'] ?? 'DESC';
+$status_filter = $_GET['status'] ?? '';
 $next_order   = ($sort_order === 'ASC') ? 'DESC' : 'ASC';
 
 // Build Query
-$query = "SELECT * FROM enquiries WHERE 1=1";
+$query = "SELECT e.*, s.name AS assigned_staff_name, s.email AS assigned_staff_email 
+          FROM enquiries e
+          LEFT JOIN staff s ON e.assigned_staff_id = s.id
+          WHERE 1=1";
 
 if (!empty($search_query)) {
     $search_safe = mysqli_real_escape_string($conn, $search_query);
-    $query .= " AND (full_name LIKE '%$search_safe%' OR email LIKE '%$search_safe%' OR phone LIKE '%$search_safe%' OR loan_type_name LIKE '%$search_safe%')";
+    $query .= " AND (e.full_name LIKE '%$search_safe%' OR e.email LIKE '%$search_safe%' OR e.phone LIKE '%$search_safe%' OR e.loan_type_name LIKE '%$search_safe%')";
 }
 
 // Validate Sort Column
-$allowed_sorts = ['id', 'full_name', 'loan_type_name', 'created_at'];
+$allowed_sorts = ['id', 'full_name', 'loan_type_name', 'created_at', 'status'];
 if (!in_array($sort_by, $allowed_sorts)) $sort_by = 'id';
 
-$query .= " ORDER BY $sort_by $sort_order";
+$allowed_status = ['new','assigned','conversation','converted','closed'];
+if (!empty($status_filter) && in_array($status_filter, $allowed_status, true)) {
+    $status_safe = mysqli_real_escape_string($conn, $status_filter);
+    $query .= " AND e.status = '$status_safe'";
+}
+
+$query .= " ORDER BY e.$sort_by $sort_order";
 $result = mysqli_query($conn, $query);
+
+$staff_list = [];
+$staff_res = mysqli_query($conn, "SELECT id, name, email FROM staff WHERE status = 'active' ORDER BY name ASC");
+if ($staff_res) {
+    while ($s = mysqli_fetch_assoc($staff_res)) {
+        $staff_list[] = $s;
+    }
+}
 ?>
 
 <style>
@@ -126,14 +144,23 @@ $result = mysqli_query($conn, $query);
             <div class="card card-modern mb-4">
                 <div class="card-body p-3">
                     <form method="GET" class="row g-3 align-items-end">
-                        <div class="col-md-8">
+                        <div class="col-md-6">
                             <label class="form-label text-muted small fw-bold">Quick Search</label>
                             <div class="input-group input-group-sm">
                                 <span class="input-group-text bg-white border-end-0 text-muted"><i class="fas fa-search"></i></span>
                                 <input type="text" name="search" class="form-control border-start-0" placeholder="Search by name, email, phone or loan type..." value="<?= htmlspecialchars($search_query) ?>">
                             </div>
                         </div>
-                        <div class="col-md-4 d-flex gap-2">
+                        <div class="col-md-3">
+                            <label class="form-label text-muted small fw-bold">Status</label>
+                            <select name="status" class="form-select form-select-sm">
+                                <option value="">All</option>
+                                <?php foreach (['new','assigned','conversation','converted','closed'] as $s): ?>
+                                    <option value="<?= $s ?>" <?= ($status_filter === $s) ? 'selected' : '' ?>><?= ucfirst($s) ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <div class="col-md-3 d-flex gap-2">
                             <button class="btn btn-sm btn-dark w-100"><i class="fas fa-filter me-1"></i> Apply Filter</button>
                             <a href="enquiries.php" class="btn btn-sm btn-outline-secondary w-50">Reset</a>
                         </div>
@@ -148,18 +175,20 @@ $result = mysqli_query($conn, $query);
                             <thead>
                                 <tr>
                                     <th width="80">
-                                        <a href="?sort_by=id&order=<?= $next_order ?>&search=<?= $search_query ?>">ID <i class="fas fa-sort float-end"></i></a>
+                                        <a href="?sort_by=id&order=<?= $next_order ?>&search=<?= $search_query ?>&status=<?= $status_filter ?>">ID <i class="fas fa-sort float-end"></i></a>
                                     </th>
                                     <th>
-                                        <a href="?sort_by=full_name&order=<?= $next_order ?>&search=<?= $search_query ?>">Applicant <i class="fas fa-sort float-end"></i></a>
+                                        <a href="?sort_by=full_name&order=<?= $next_order ?>&search=<?= $search_query ?>&status=<?= $status_filter ?>">Applicant <i class="fas fa-sort float-end"></i></a>
                                     </th>
                                     <th>Contact Info</th>
                                     <th>
-                                        <a href="?sort_by=loan_type_name&order=<?= $next_order ?>&search=<?= $search_query ?>">Loan Type <i class="fas fa-sort float-end"></i></a>
+                                        <a href="?sort_by=loan_type_name&order=<?= $next_order ?>&search=<?= $search_query ?>&status=<?= $status_filter ?>">Loan Type <i class="fas fa-sort float-end"></i></a>
                                     </th>
                                     <th>Message</th>
+                                    <th>Status</th>
+                                    <th>Assigned</th>
                                     <th>
-                                        <a href="?sort_by=created_at&order=<?= $next_order ?>&search=<?= $search_query ?>">Date <i class="fas fa-sort float-end"></i></a>
+                                        <a href="?sort_by=created_at&order=<?= $next_order ?>&search=<?= $search_query ?>&status=<?= $status_filter ?>">Date <i class="fas fa-sort float-end"></i></a>
                                     </th>
                                     <th width="120" class="text-center">Action</th>
                                 </tr>
@@ -187,6 +216,30 @@ $result = mysqli_query($conn, $query);
                                                 </span>
                                             </td>
 
+                                            <td>
+                                                <span class="badge-soft"><?= ucfirst($row['status'] ?? 'new') ?></span>
+                                            </td>
+
+                                            <td>
+                                                <div class="small fw-bold"><?= htmlspecialchars($row['assigned_staff_name'] ?: 'Unassigned') ?></div>
+                                                <div class="text-muted small"><?= htmlspecialchars($row['assigned_staff_email'] ?: '') ?></div>
+                                                <form method="POST" action="db/enquiry_assign.php" class="mt-2">
+                                                    <input type="hidden" name="enquiry_id" value="<?= $row['id'] ?>">
+                                                    <input type="hidden" name="redirect" value="../enquiries.php">
+                                                    <div class="input-group input-group-sm">
+                                                        <select name="staff_id" class="form-select form-select-sm">
+                                                            <option value="0">Unassigned</option>
+                                                            <?php foreach ($staff_list as $s): ?>
+                                                                <option value="<?= $s['id'] ?>" <?= ((int)$row['assigned_staff_id'] === (int)$s['id']) ? 'selected' : '' ?>>
+                                                                    <?= htmlspecialchars($s['name']) ?>
+                                                                </option>
+                                                            <?php endforeach; ?>
+                                                        </select>
+                                                        <button class="btn btn-sm btn-dark" type="submit">Assign</button>
+                                                    </div>
+                                                </form>
+                                            </td>
+
                                             <td class="text-muted small">
                                                 <?= date('M d, Y', strtotime($row['created_at'])) ?><br>
                                                 <span class="text-light-emphasis"><?= date('h:i A', strtotime($row['created_at'])) ?></span>
@@ -194,13 +247,26 @@ $result = mysqli_query($conn, $query);
                                             
                                             <td class="text-center">
                                                 <div class="d-flex justify-content-center gap-2">
-                                                    <a href="mailto:<?= $row['email'] ?>" class="btn-action btn-mail" title="Reply via Email">
+                                                    <a href="enquiry_view.php?id=<?= $row['id'] ?>" class="btn-action" title="Open Conversation">
+                                                        <i class="fas fa-comments"></i>
+                                                    </a>
+                                                    <a href="enquiry_email.php?id=<?= $row['id'] ?>" class="btn-action btn-mail" title="Send Email">
                                                         <i class="fas fa-envelope"></i>
                                                     </a>
+                                                    <?php
+                                                        $wa_phone = preg_replace('/\\D+/', '', $row['phone'] ?? '');
+                                                        $wa_text = rawurlencode("Hello {$row['full_name']}, can you provide more information about your enquiry #{$row['id']}?");
+                                                        $wa_link = "https://api.whatsapp.com/send/?phone={$wa_phone}&text={$wa_text}&type=phone_number&app_absent=0";
+                                                    ?>
+                                                    <?php if (!empty($wa_phone)): ?>
+                                                        <a href="<?= $wa_link ?>" target="_blank" class="btn-action" title="WhatsApp">
+                                                            <i class="fab fa-whatsapp"></i>
+                                                        </a>
+                                                    <?php endif; ?>
                                                     
                                                     <a href="db/delete/enquiry_delete.php?id=<?= $row['id'] ?>" 
                                                        class="btn-action btn-delete-pro" 
-                                                       onclick="return confirm('Archive this enquiry?');"
+                                                       onclick="return confirm('Delete this enquiry permanently?');"
                                                        title="Delete">
                                                         <i class="fas fa-trash"></i>
                                                     </a>
@@ -210,7 +276,7 @@ $result = mysqli_query($conn, $query);
                                     <?php }
                                 } else { ?>
                                     <tr>
-                                        <td colspan="7" class="text-center py-5 text-muted">
+                                        <td colspan="9" class="text-center py-5 text-muted">
                                             <div class="mb-2"><i class="fas fa-inbox fa-2x text-light"></i></div>
                                             No enquiries found.
                                         </td>

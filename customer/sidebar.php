@@ -133,6 +133,20 @@ $current_page = basename($_SERVER['PHP_SELF']);
                 </a>
             </li>
 
+            <li class="side-nav-item <?= ($current_page == 'enquiries.php' || $current_page == 'enquiry_view.php') ? 'active' : '' ?>">
+                <a href="enquiries.php" class="side-nav-link">
+                    <i class="ri-question-answer-line"></i>
+                    <span>My Enquiries</span>
+                </a>
+            </li>
+
+            <li class="side-nav-item <?= ($current_page == 'enquiry_add.php') ? 'active' : '' ?>">
+                <a href="enquiry_add.php" class="side-nav-link">
+                    <i class="ri-chat-new-line"></i>
+                    <span>New Enquiry</span>
+                </a>
+            </li>
+
             <li class="side-nav-item <?= ($current_page == 'repayments.php') ? 'active' : '' ?>">
                 <a href="repayments.php" class="side-nav-link">
                     <i class="ri-history-line"></i>

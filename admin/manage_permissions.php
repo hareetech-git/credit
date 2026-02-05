@@ -24,6 +24,22 @@ if ($mode == 'bulk') {
 
 $all_perms = mysqli_query($conn, "SELECT id, perm_key, description FROM permissions ORDER BY description ASC");
 $staff_res = mysqli_query($conn, "SELECT id, name, email FROM staff ORDER BY name ASC");
+
+function permissionGroup($perm_key) {
+    if (strpos($perm_key, 'cust_') === 0) return 'Customers';
+    if (strpos($perm_key, 'loan_') === 0) return 'Loans';
+    if (strpos($perm_key, 'enquiry_') === 0) return 'Enquiries';
+    if (strpos($perm_key, 'service_') === 0) return 'Services';
+    return 'Other';
+}
+
+$perm_groups = [];
+mysqli_data_seek($all_perms, 0);
+while ($p = mysqli_fetch_assoc($all_perms)) {
+    $group = permissionGroup($p['perm_key']);
+    if (!isset($perm_groups[$group])) $perm_groups[$group] = [];
+    $perm_groups[$group][] = $p;
+}
 ?>
 <?php include 'topbar.php'; ?>
 <?php include 'sidebar.php'; ?>
@@ -33,7 +49,7 @@ $staff_res = mysqli_query($conn, "SELECT id, name, email FROM staff ORDER BY nam
         <div class="container-fluid pt-4">
             <div class="mb-4">
                 <h2 class="fw-bold text-dark">Access Control Center</h2>
-                <p class="text-muted">Manage permissions globally or for specific individuals.</p>
+                <p class="text-muted">Manage permissions globally or for specific individuals. Each permission has a plain‑English meaning.</p>
             </div>
 
             <div class="row mb-4">
@@ -65,6 +81,21 @@ $staff_res = mysqli_query($conn, "SELECT id, name, email FROM staff ORDER BY nam
                 <input type="hidden" name="update_type" value="<?= $mode ?>">
                 <input type="hidden" name="staff_id" value="<?= $selected_id ?>">
 
+                <style>
+                    .perm-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
+                    .perm-item {
+                        border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px 14px;
+                        display: flex; gap: 10px; align-items: flex-start; background: #fff;
+                    }
+                    .perm-item:hover { border-color: #94a3b8; }
+                    .perm-group {
+                        border: 1px solid #e2e8f0; border-radius: 14px; padding: 16px; margin-bottom: 18px; background: #f8fafc;
+                    }
+                    .perm-group h6 { margin: 0 0 12px; font-weight: 800; color: #0f172a; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.08em; }
+                    .perm-help { font-size: 0.75rem; color: #64748b; margin-top: 4px; }
+                    .perm-code { font-size: 0.65rem; color: #2563eb; background: #eff6ff; padding: 2px 6px; border-radius: 6px; display: inline-block; }
+                </style>
+
                 <div class="card card-modern p-4 <?= $mode == 'bulk' ? 'border-danger' : '' ?>">
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <h5 class="fw-bold"><?= $mode == 'bulk' ? 'Global Permissions (Affects Everyone)' : 'User Permissions' ?></h5>
@@ -74,17 +105,23 @@ $staff_res = mysqli_query($conn, "SELECT id, name, email FROM staff ORDER BY nam
                         </div>
                     </div>
 
-                    <div class="perm-grid">
-                        <?php mysqli_data_seek($all_perms, 0); while($p = mysqli_fetch_assoc($all_perms)): ?>
-                            <label class="perm-item">
-                                <input type="checkbox" name="perms[]" value="<?= $p['id'] ?>" class="form-check-input perm-check" <?= in_array($p['id'], $current_perms) ? 'checked' : '' ?>>
-                                <div>
-                                    <div class="fw-bold text-dark small"><?= $p['description'] ?></div>
-                                    <code class="text-primary" style="font-size: 0.6rem;"><?= $p['perm_key'] ?></code>
-                                </div>
-                            </label>
-                        <?php endwhile; ?>
-                    </div>
+                    <?php foreach ($perm_groups as $group_name => $perms): ?>
+                        <div class="perm-group">
+                            <h6><?= htmlspecialchars($group_name) ?></h6>
+                            <div class="perm-grid">
+                                <?php foreach ($perms as $p): ?>
+                                    <label class="perm-item">
+                                        <input type="checkbox" name="perms[]" value="<?= $p['id'] ?>" class="form-check-input perm-check" <?= in_array($p['id'], $current_perms) ? 'checked' : '' ?>>
+                                        <div>
+                                            <div class="fw-bold text-dark small"><?= htmlspecialchars($p['description']) ?></div>
+                                            <div class="perm-help">Controls: <?= str_replace('_', ' ', $p['perm_key']) ?></div>
+                                            <span class="perm-code"><?= htmlspecialchars($p['perm_key']) ?></span>
+                                        </div>
+                                    </label>
+                                <?php endforeach; ?>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
 
                     <div class="mt-5 text-end">
                         <button type="submit" name="save_perms" class="btn <?= $mode == 'bulk' ? 'btn-danger' : 'btn-submit-pro' ?> btn-lg px-5">

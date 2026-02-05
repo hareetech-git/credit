@@ -15,6 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_enquiry'])) {
     $email = trim($_POST['email'] ?? '');
     $loan_type_id = $_POST['loan_type'] ?? '';
     $query_message = trim($_POST['query_message'] ?? '');
+    $customer_id = isset($_SESSION['customer_id']) ? (int)$_SESSION['customer_id'] : null;
     
     // Validation
     if (empty($full_name)) {
@@ -61,10 +62,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_enquiry'])) {
         }
         
         // Insert enquiry
+        $customer_id_sql = $customer_id ? $customer_id : "NULL";
         $insert_query = "INSERT INTO enquiries 
-                        (full_name, phone, email, loan_type_id, loan_type_name, query_message) 
+                        (customer_id, full_name, phone, email, loan_type_id, loan_type_name, query_message) 
                         VALUES 
-                        ('$full_name_clean', '$phone_clean', '$email_clean', $loan_type_id_clean, '$loan_type_name', '$query_message_clean')";
+                        ($customer_id_sql, '$full_name_clean', '$phone_clean', '$email_clean', $loan_type_id_clean, '$loan_type_name', '$query_message_clean')";
         
         if (mysqli_query($conn, $insert_query)) {
             // Store success message in session

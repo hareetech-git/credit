@@ -1,5 +1,5 @@
 <?php
-
+include 'header.php';
 
 /* ------------------------------
    Static Values (No DB)
@@ -9,10 +9,21 @@ $categoryCount    = 12;
 $subCategoryCount = 34;
 $serviceCount     = 18;
 $departmentCount  = 5;
-$enquiryCount     = 27;
+
+$staff_id = (int)$_SESSION['staff_id'];
+if (hasAccess($conn, 'enquiry_view_all')) {
+    $count_res = mysqli_query($conn, "SELECT COUNT(*) AS total FROM enquiries");
+} elseif (hasAccess($conn, 'enquiry_view_assigned')) {
+    $count_res = mysqli_query($conn, "SELECT COUNT(*) AS total FROM enquiries WHERE assigned_staff_id = $staff_id");
+} else {
+    $count_res = false;
+}
+$enquiryCount = 0;
+if ($count_res && ($row = mysqli_fetch_assoc($count_res))) {
+    $enquiryCount = (int)$row['total'];
+}
 ?>
 
-<?php include 'header.php'; ?>
 <?php include 'topbar.php'; ?>
 <?php include 'sidebar.php'; ?>
 
