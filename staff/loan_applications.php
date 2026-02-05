@@ -4,19 +4,18 @@ include 'header.php';
 include 'topbar.php';
 include 'sidebar.php';
 
-// Staff list
-$staff_list = [];
-$staff_res = mysqli_query($conn, "SELECT id, name FROM staff WHERE status='active' ORDER BY name");
-while ($s = mysqli_fetch_assoc($staff_res)) {
-    $staff_list[] = $s;
+if (!hasAccess($conn, 'loan_view')) {
+    header('Location: dashboard.php?err=Access denied');
+    exit();
 }
 
-// Fetch Loans with Customer Name & Service Name
-$query = "SELECT l.*, c.full_name, c.phone, s.service_name, st.name AS staff_name
+$staff_id = (int)$_SESSION['staff_id'];
+
+$query = "SELECT l.*, c.full_name, c.phone, s.service_name 
           FROM loan_applications l
           JOIN customers c ON l.customer_id = c.id
           JOIN services s ON l.service_id = s.id
-          LEFT JOIN staff st ON l.assigned_staff_id = st.id
+          WHERE l.assigned_staff_id = $staff_id
           ORDER BY l.created_at DESC";
 $result = mysqli_query($conn, $query);
 ?>
@@ -24,7 +23,7 @@ $result = mysqli_query($conn, $query);
 <div class="content-page">
     <div class="content">
         <div class="container-fluid pt-4">
-            <h4 class="mb-4">Loan Applications</h4>
+            <h4 class="mb-4">Assigned Loan Applications</h4>
 
             <div class="card">
                 <div class="card-body p-0">
@@ -37,12 +36,16 @@ $result = mysqli_query($conn, $query);
                                 <th>Amount</th>
                                 <th>Interest Rate (p.a.)</th>
                                 <th>Status</th>
-                                <th>Assigned To</th>
                                 <th>Date</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
+                            <?php if (mysqli_num_rows($result) == 0) { ?>
+                                <tr>
+                                    <td colspan="7" class="text-center text-muted p-4">No assigned loans yet.</td>
+                                </tr>
+                            <?php } ?>
                             <?php while ($row = mysqli_fetch_assoc($result)) { ?>
                                 <tr>
                                     <td>#L-<?= $row['id'] ?></td>
@@ -63,24 +66,6 @@ $result = mysqli_query($conn, $query);
                                         ];
                                         ?>
                                         <span class="badge <?= $badges[$row['status']] ?>"><?= ucfirst($row['status']) ?></span>
-                                    </td>
-                                    <td>
-                                        <form action="db/loan_handler.php" method="POST" class="d-flex gap-2 align-items-center">
-                                            <input type="hidden" name="action" value="assign_staff">
-                                            <input type="hidden" name="loan_id" value="<?= $row['id'] ?>">
-                                            <select name="staff_id" class="form-select form-select-sm">
-                                                <option value="0">Unassigned</option>
-                                                <?php foreach ($staff_list as $staff) { ?>
-                                                    <option value="<?= $staff['id'] ?>" <?= ($row['assigned_staff_id'] == $staff['id']) ? 'selected' : '' ?>>
-                                                        <?= htmlspecialchars($staff['name']) ?>
-                                                    </option>
-                                                <?php } ?>
-                                            </select>
-                                            <button class="btn btn-sm btn-outline-primary">Assign</button>
-                                        </form>
-                                        <?php if (!empty($row['assigned_at'])) { ?>
-                                            <small class="text-muted">Since <?= date('d M, Y', strtotime($row['assigned_at'])) ?></small>
-                                        <?php } ?>
                                     </td>
                                     <td><?= date('d M, Y', strtotime($row['created_at'])) ?></td>
                                     <td>

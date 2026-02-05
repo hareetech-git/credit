@@ -4,30 +4,29 @@ include 'header.php';
 include 'topbar.php';
 include 'sidebar.php';
 
+if (!hasAccess($conn, 'loan_view')) {
+    header('Location: dashboard.php?err=Access denied');
+    exit();
+}
+
 $loan_id = (int)$_GET['id'];
 if (!$loan_id) die("Invalid Loan ID");
 
-// Staff list
-$staff_list = [];
-$staff_res = mysqli_query($conn, "SELECT id, name FROM staff WHERE status='active' ORDER BY name");
-while ($s = mysqli_fetch_assoc($staff_res)) {
-    $staff_list[] = $s;
-}
+$staff_id = (int)$_SESSION['staff_id'];
+$can_process = hasAccess($conn, 'loan_process');
 
-// Fetch Loan Details
-$loan_sql = "SELECT l.*, c.full_name, c.email, c.phone, s.service_name, st.name AS staff_name
+$loan_sql = "SELECT l.*, c.full_name, c.email, c.phone, s.service_name 
              FROM loan_applications l
              JOIN customers c ON l.customer_id = c.id
              JOIN services s ON l.service_id = s.id
-             LEFT JOIN staff st ON l.assigned_staff_id = st.id
-             WHERE l.id = $loan_id";
+             WHERE l.id = $loan_id AND l.assigned_staff_id = $staff_id";
 $loan = mysqli_fetch_assoc(mysqli_query($conn, $loan_sql));
 
 if (!$loan) {
-    die("Loan not found.");
+    header('Location: loan_applications.php?err=Loan not assigned to you');
+    exit();
 }
 
-// Fetch Documents
 $docs_res = mysqli_query($conn, "SELECT * FROM loan_application_docs WHERE loan_application_id = $loan_id");
 ?>
 
@@ -55,65 +54,49 @@ $docs_res = mysqli_query($conn, "SELECT * FROM loan_application_docs WHERE loan_
                             <div class="d-flex justify-content-between mb-2">
                                 <span>Interest Rate (p.a.):</span> <strong><?= number_format((float)$loan['interest_rate'], 2) ?>%</strong>
                             </div>
-                            <div class="d-flex justify-content-between mb-2">
-                                <span>Assigned To:</span>
-                                <strong><?= $loan['staff_name'] ? htmlspecialchars($loan['staff_name']) : 'Unassigned' ?></strong>
-                            </div>
-                            
+
                             <hr>
-                            <form action="db/loan_handler.php" method="POST" class="mb-3">
-                                <input type="hidden" name="action" value="assign_staff">
-                                <input type="hidden" name="loan_id" value="<?= $loan_id ?>">
-                                <label class="form-label fw-bold">Assign Staff</label>
-                                <div class="d-flex gap-2">
-                                    <select name="staff_id" class="form-select">
-                                        <option value="0">Unassigned</option>
-                                        <?php foreach ($staff_list as $staff) { ?>
-                                            <option value="<?= $staff['id'] ?>" <?= ($loan['assigned_staff_id'] == $staff['id']) ? 'selected' : '' ?>>
-                                                <?= htmlspecialchars($staff['name']) ?>
-                                            </option>
-                                        <?php } ?>
-                                    </select>
-                                    <button class="btn btn-outline-primary">Assign</button>
-                                </div>
-                            </form>
 
-                            <form action="db/loan_handler.php" method="POST">
-                                <input type="hidden" name="loan_id" value="<?= $loan_id ?>">
-                                <input type="hidden" name="action" value="update_loan_status">
-                                
-                                <div class="mb-3">
-                                    <label class="form-label fw-bold">Update Status</label>
-                                    <select name="status" class="form-select" required>
-                                        <option value="pending" <?= $loan['status']=='pending'?'selected':'' ?>>Pending</option>
-                                        <option value="approved" <?= $loan['status']=='approved'?'selected':'' ?>>Approved</option>
-                                        <option value="rejected" <?= $loan['status']=='rejected'?'selected':'' ?>>Rejected</option>
-                                        <option value="disbursed" <?= $loan['status']=='disbursed'?'selected':'' ?>>Disbursed</option>
-                                    </select>
-                                </div>
+                            <?php if ($can_process) { ?>
+                                <form action="db/loan_handler.php" method="POST">
+                                    <input type="hidden" name="loan_id" value="<?= $loan_id ?>">
+                                    <input type="hidden" name="action" value="update_loan_status">
+                                    
+                                    <div class="mb-3">
+                                        <label class="form-label fw-bold">Update Status</label>
+                                        <select name="status" class="form-select" required>
+                                            <option value="pending" <?= $loan['status']=='pending'?'selected':'' ?>>Pending</option>
+                                            <option value="approved" <?= $loan['status']=='approved'?'selected':'' ?>>Approved</option>
+                                            <option value="rejected" <?= $loan['status']=='rejected'?'selected':'' ?>>Rejected</option>
+                                            <option value="disbursed" <?= $loan['status']=='disbursed'?'selected':'' ?>>Disbursed</option>
+                                        </select>
+                                    </div>
 
-                                <div class="row mb-3">
-                                    <div class="col-6">
-                                        <label class="form-label fw-bold small">Final Tenure (Yrs)</label>
-                                        <input type="number" name="tenure_years" class="form-control" value="<?= $loan['tenure_years'] ?>">
+                                    <div class="row mb-3">
+                                        <div class="col-6">
+                                            <label class="form-label fw-bold small">Final Tenure (Yrs)</label>
+                                            <input type="number" name="tenure_years" class="form-control" value="<?= $loan['tenure_years'] ?>">
+                                        </div>
+                                        <div class="col-6">
+                                            <label class="form-label fw-bold small">Monthly EMI (&#8377;)</label>
+                                            <input type="number" name="emi_amount" class="form-control" value="<?= $loan['emi_amount'] ?>">
+                                        </div>
                                     </div>
-                                    <div class="col-6">
-                                        <label class="form-label fw-bold small">Monthly EMI (&#8377;)</label>
-                                        <input type="number" name="emi_amount" class="form-control" value="<?= $loan['emi_amount'] ?>">
+                                    <div class="mb-3">
+                                        <label class="form-label fw-bold small">Interest Rate (p.a.)</label>
+                                        <input type="number" step="0.01" name="interest_rate" class="form-control" value="<?= htmlspecialchars($loan['interest_rate']) ?>">
                                     </div>
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label fw-bold small">Interest Rate (p.a.)</label>
-                                    <input type="number" step="0.01" name="interest_rate" class="form-control" value="<?= htmlspecialchars($loan['interest_rate']) ?>">
-                                </div>
-                                
-                                <div class="mb-3">
-                                    <label class="form-label fw-bold">Admin Note</label>
-                                    <textarea name="note" class="form-control" placeholder="Rejection reason or approval details..." rows="2"><?= $loan['rejection_note'] ?></textarea>
-                                </div>
-                                
-                                <button type="submit" class="btn btn-dark w-100">Update Application</button>
-                            </form>
+                                    
+                                    <div class="mb-3">
+                                        <label class="form-label fw-bold">Note</label>
+                                        <textarea name="note" class="form-control" placeholder="Rejection reason or approval details..." rows="2"><?= $loan['rejection_note'] ?></textarea>
+                                    </div>
+                                    
+                                    <button type="submit" class="btn btn-dark w-100">Update Application</button>
+                                </form>
+                            <?php } else { ?>
+                                <p class="text-muted small">You do not have permission to process loans.</p>
+                            <?php } ?>
                         </div>
                     </div>
                 </div>
@@ -122,24 +105,26 @@ $docs_res = mysqli_query($conn, "SELECT * FROM loan_application_docs WHERE loan_
                     <div class="card">
                         <div class="card-header fw-bold">Submitted Documents</div>
                         <div class="card-body">
-                            <form action="db/loan_handler.php" method="POST" enctype="multipart/form-data" class="mb-3">
-                                <input type="hidden" name="action" value="upload_doc">
-                                <input type="hidden" name="loan_id" value="<?= $loan_id ?>">
-                                <div class="row g-2 align-items-end">
-                                    <div class="col-md-5">
-                                        <label class="form-label small fw-bold">Document Name</label>
-                                        <input type="text" name="doc_name" class="form-control form-control-sm" placeholder="e.g. Bank Statement" required>
+                            <?php if ($can_process) { ?>
+                                <form action="db/loan_handler.php" method="POST" enctype="multipart/form-data" class="mb-3">
+                                    <input type="hidden" name="action" value="upload_doc">
+                                    <input type="hidden" name="loan_id" value="<?= $loan_id ?>">
+                                    <div class="row g-2 align-items-end">
+                                        <div class="col-md-5">
+                                            <label class="form-label small fw-bold">Document Name</label>
+                                            <input type="text" name="doc_name" class="form-control form-control-sm" placeholder="e.g. Bank Statement" required>
+                                        </div>
+                                        <div class="col-md-5">
+                                            <label class="form-label small fw-bold">Select File</label>
+                                            <input type="file" name="doc_file" class="form-control form-control-sm" required>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <button type="submit" class="btn btn-sm btn-primary w-100">Upload</button>
+                                        </div>
                                     </div>
-                                    <div class="col-md-5">
-                                        <label class="form-label small fw-bold">Select File</label>
-                                        <input type="file" name="doc_file" class="form-control form-control-sm" required>
-                                    </div>
-                                    <div class="col-md-2">
-                                        <button type="submit" class="btn btn-sm btn-primary w-100">Upload</button>
-                                    </div>
-                                </div>
-                                <div class="small text-muted mt-1">Allowed: PDF, JPG, JPEG, PNG, JFIF</div>
-                            </form>
+                                    <div class="small text-muted mt-1">Allowed: PDF, JPG, JPEG, PNG, JFIF</div>
+                                </form>
+                            <?php } ?>
                             <div class="table-responsive">
                                 <table class="table table-bordered">
                                     <thead>
@@ -163,9 +148,13 @@ $docs_res = mysqli_query($conn, "SELECT * FROM loan_application_docs WHERE loan_
                                                           else echo '<span class="badge bg-warning">Pending</span>'; ?>
                                                 </td>
                                                 <td>
-                                                    <button class="btn btn-sm btn-outline-dark" data-bs-toggle="modal" data-bs-target="#docModal<?= $doc['id'] ?>">
-                                                        Verify / Reject
-                                                    </button>
+                                                    <?php if ($can_process) { ?>
+                                                        <button class="btn btn-sm btn-outline-dark" data-bs-toggle="modal" data-bs-target="#docModal<?= $doc['id'] ?>">
+                                                            Verify / Reject
+                                                        </button>
+                                                    <?php } else { ?>
+                                                        <button class="btn btn-sm btn-outline-dark access-locked" disabled>Verify / Reject</button>
+                                                    <?php } ?>
 
                                                     <div class="modal fade" id="docModal<?= $doc['id'] ?>" tabindex="-1">
                                                         <div class="modal-dialog">

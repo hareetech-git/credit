@@ -102,7 +102,7 @@ $service_active  = in_array($current_page, ['services.php', 'service_details.php
                     <span>Loan Management</span>
                 </a>
                 <ul class="side-nav-second-level">
-                    <li><a href="loan_applications.php" class="side-nav-link"><i class="fas fa-file-invoice-dollar"></i> Applications</a></li>
+                    <li><a href="loan_applications.php" class="side-nav-link"><i class="fas fa-file-invoice-dollar"></i> Assigned Applications</a></li>
                 </ul>
             </li>
             <?php endif; ?>

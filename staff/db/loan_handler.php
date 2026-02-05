@@ -2,48 +2,53 @@
 session_start();
 include 'config.php';
 
+if (!isset($_SESSION['staff_id'])) {
+    header('Location: ../index.php');
+    exit();
+}
+
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     die("Invalid access.");
 }
 
-$action = $_POST['action'];
+$staff_id = (int)$_SESSION['staff_id'];
+$action = $_POST['action'] ?? '';
 
-if ($action == 'assign_staff') {
-    $loan_id = (int)$_POST['loan_id'];
-    $staff_id = (int)$_POST['staff_id'];
-    $admin_id = isset($_SESSION['admin_id']) ? (int)$_SESSION['admin_id'] : null;
+function staffHasAccess($conn, $perm_key, $staff_id) {
+    $query = "
+        SELECT p.id FROM permissions p 
+        INNER JOIN role_permissions rp ON p.id = rp.permission_id 
+        INNER JOIN staff s ON s.role_id = rp.role_id
+        WHERE s.id = $staff_id AND p.perm_key = '$perm_key'
+        UNION
+        SELECT p.id FROM permissions p
+        INNER JOIN staff_permissions sp ON p.id = sp.permission_id
+        WHERE sp.staff_id = $staff_id AND p.perm_key = '$perm_key'
+    ";
+    $result = mysqli_query($conn, $query);
+    return (mysqli_num_rows($result) > 0);
+}
 
-    if ($staff_id > 0) {
-        $sql = "UPDATE loan_applications
-                SET assigned_staff_id = $staff_id,
-                    assigned_by = " . ($admin_id ?: "NULL") . ",
-                    assigned_at = NOW()
-                WHERE id = $loan_id";
-    } else {
-        $sql = "UPDATE loan_applications
-                SET assigned_staff_id = NULL,
-                    assigned_by = NULL,
-                    assigned_at = NULL
-                WHERE id = $loan_id";
-    }
-
-    if (mysqli_query($conn, $sql)) {
-        header("Location: ../loan_applications.php?msg=Loan assigned successfully");
-    } else {
-        header("Location: ../loan_applications.php?err=Assignment failed");
-    }
-    exit;
+if (!staffHasAccess($conn, 'loan_process', $staff_id)) {
+    header("Location: ../loan_applications.php?err=No permission");
+    exit();
 }
 
 if ($action == 'update_loan_status') {
     $loan_id = (int)$_POST['loan_id'];
+
+    $check = mysqli_query($conn, "SELECT id FROM loan_applications WHERE id=$loan_id AND assigned_staff_id=$staff_id");
+    if (mysqli_num_rows($check) == 0) {
+        header("Location: ../loan_applications.php?err=Not assigned to you");
+        exit();
+    }
+
     $status = mysqli_real_escape_string($conn, $_POST['status']);
     $note = mysqli_real_escape_string($conn, $_POST['note']);
     $tenure = (int)$_POST['tenure_years'];
     $emi = (float)$_POST['emi_amount'];
     $interest_rate = isset($_POST['interest_rate']) ? (float)$_POST['interest_rate'] : 0.0;
 
-    // Update with extra fields
     $sql = "UPDATE loan_applications SET 
             status='$status', 
             rejection_note='$note', 
@@ -51,7 +56,7 @@ if ($action == 'update_loan_status') {
             emi_amount=$emi,
             interest_rate=$interest_rate
             WHERE id=$loan_id";
-            
+
     if (mysqli_query($conn, $sql)) {
         header("Location: ../loan_view.php?id=$loan_id&msg=Loan Status Updated Successfully");
     } else {
@@ -63,6 +68,17 @@ if ($action == 'update_loan_status') {
 if ($action == 'verify_doc') {
     $doc_id = (int)$_POST['doc_id'];
     $loan_id = (int)$_POST['loan_id'];
+
+    $check = mysqli_query($conn, "
+        SELECT d.id FROM loan_application_docs d
+        JOIN loan_applications l ON l.id = d.loan_application_id
+        WHERE d.id = $doc_id AND l.assigned_staff_id = $staff_id
+    ");
+    if (mysqli_num_rows($check) == 0) {
+        header("Location: ../loan_applications.php?err=Not assigned to you");
+        exit();
+    }
+
     $status = mysqli_real_escape_string($conn, $_POST['status']);
     $reason = mysqli_real_escape_string($conn, $_POST['reason']);
 
@@ -70,7 +86,7 @@ if ($action == 'verify_doc') {
             status='$status', 
             rejection_reason='$reason' 
             WHERE id=$doc_id";
-            
+
     if (mysqli_query($conn, $sql)) {
         header("Location: ../loan_view.php?id=$loan_id&msg=Document Status Updated");
     } else {
@@ -85,6 +101,12 @@ if ($action == 'upload_doc') {
 
     if ($loan_id <= 0 || $doc_name === '' || empty($_FILES['doc_file']['name'])) {
         header("Location: ../loan_view.php?id=$loan_id&err=Missing document data");
+        exit;
+    }
+
+    $check = mysqli_query($conn, "SELECT id FROM loan_applications WHERE id=$loan_id AND assigned_staff_id=$staff_id");
+    if (mysqli_num_rows($check) == 0) {
+        header("Location: ../loan_applications.php?err=Not assigned to you");
         exit;
     }
 
