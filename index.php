@@ -470,6 +470,119 @@ unset($_SESSION['success_message']);
         transform: scale(1.1);
     }
     
+    /* EMI Calculator */
+    .emi-section .emi-card {
+        border: 1px solid #f1f5f9;
+    }
+
+    .emi-input-card {
+        background: #f8fafc;
+        border-radius: 18px;
+        padding: 22px;
+        border: 1px solid #e2e8f0;
+    }
+
+    .emi-result-card {
+        background: #f9fafb;
+        border-radius: 18px;
+        padding: 22px;
+        border: 1px solid #e5e7eb;
+    }
+
+    .emi-highlight {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        color: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 10px 25px rgba(200, 16, 46, 0.25);
+    }
+
+    .emi-section .form-range::-webkit-slider-thumb {
+        background: var(--primary-color);
+    }
+
+    .emi-section .form-range::-moz-range-thumb {
+        background: var(--primary-color);
+        border: none;
+    }
+
+    .emi-section .form-range::-webkit-slider-runnable-track {
+        height: 6px;
+        background: #e5e7eb;
+        border-radius: 999px;
+    }
+
+    .emi-section .form-range::-moz-range-track {
+        height: 6px;
+        background: #e5e7eb;
+        border-radius: 999px;
+    }
+
+    .emi-section .form-range::-webkit-slider-thumb {
+        margin-top: -5px;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    }
+
+    .emi-section .form-range::-moz-range-thumb {
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Interactive Plans */
+    .plans-section .plan-card {
+        border: 1px solid #f1f5f9;
+        border-radius: 18px;
+        transition: all 0.25s ease;
+        background: #ffffff;
+    }
+
+    .plans-section .plan-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 18px 40px rgba(0, 0, 0, 0.08);
+        border-color: rgba(200, 16, 46, 0.2);
+    }
+
+    .plan-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 12px;
+        border-radius: 999px;
+        background: rgba(200, 16, 46, 0.1);
+        color: var(--primary-color);
+        font-weight: 600;
+        font-size: 0.8rem;
+    }
+
+    .plan-cta {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        color: #ffffff;
+        border: none;
+        border-radius: 999px;
+        padding: 10px 18px;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    /* FAQ */
+    .faq-section .accordion-button {
+        font-weight: 600;
+    }
+
+    .faq-section .accordion-button:not(.collapsed) {
+        color: var(--primary-color);
+        background: rgba(200, 16, 46, 0.08);
+        box-shadow: none;
+    }
+
+
     /* Mobile Responsive */
     @media (max-width: 768px) {
         .why-choose-section {
@@ -539,6 +652,108 @@ unset($_SESSION['success_message']);
         .stat-number {
             font-size: 1.8rem;
         }
+    }
+
+    /* CTA Section */
+    .cta-section {
+        position: relative;
+        background: #ffffff;
+        overflow: hidden;
+    }
+
+    .cta-section::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background:
+            radial-gradient(300px 180px at 10% 20%, rgba(200, 16, 46, 0.12), transparent),
+            radial-gradient(260px 160px at 90% 80%, rgba(200, 16, 46, 0.08), transparent),
+            repeating-linear-gradient(45deg, rgba(200, 16, 46, 0.04) 0 2px, transparent 2px 10px);
+        opacity: 0.6;
+        pointer-events: none;
+    }
+
+    .cta-card {
+        position: relative;
+        z-index: 1;
+        background: #ffffff;
+        border: 1px solid #f1f5f9;
+        border-radius: 24px;
+        padding: 44px;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.08);
+    }
+
+    .cta-title {
+        font-size: 2.1rem;
+        font-weight: 700;
+        margin-bottom: 10px;
+        color: #111827;
+    }
+
+    .cta-subtitle {
+        font-size: 1.05rem;
+        color: #6b7280;
+        margin-bottom: 0;
+    }
+
+    .cta-btn {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        color: #ffffff;
+        border: none;
+        padding: 12px 26px;
+        font-weight: 700;
+        border-radius: 999px;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        box-shadow: 0 12px 24px rgba(200, 16, 46, 0.25);
+    }
+
+    .cta-btn:hover {
+        transform: translateY(-2px);
+        color: #ffffff;
+        box-shadow: 0 16px 30px rgba(200, 16, 46, 0.35);
+    }
+
+    .cta-outline {
+        border: 2px solid rgba(200, 16, 46, 0.3);
+        color: var(--primary-color);
+        padding: 10px 22px;
+        border-radius: 999px;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 600;
+        margin-left: 10px;
+    }
+
+    .cta-float {
+        position: absolute;
+        z-index: 0;
+        opacity: 0.18;
+        color: var(--primary-color);
+        animation: floatY 6s ease-in-out infinite;
+    }
+
+    .cta-float.float-1 {
+        top: 20%;
+        left: 6%;
+        font-size: 48px;
+    }
+
+    .cta-float.float-2 {
+        bottom: 18%;
+        right: 8%;
+        font-size: 56px;
+        animation-delay: 1.5s;
+    }
+
+    @keyframes floatY {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
     }
 </style>
 
@@ -669,6 +884,131 @@ unset($_SESSION['success_message']);
                             <i class="fas fa-lock me-1"></i> Your information is 256-bit SSL encrypted
                         </div>
                     </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Interactive Plans Section -->
+<section class="py-5 bg-white plans-section">
+    <div class="container">
+        <div class="text-center mb-5">
+            <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill mb-3">
+                <i class="fas fa-bolt me-2"></i> Quick Plans
+            </span>
+            <h2 class="fw-bold mb-3">Pick a Plan, See Your EMI Instantly</h2>
+            <p class="text-muted">Click a plan to auto-fill the EMI calculator with real numbers.</p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="plan-card p-4 h-100">
+                    <div class="plan-badge mb-3"><i class="fas fa-briefcase"></i> Business Boost</div>
+                    <h5 class="fw-bold mb-2">&#8377;7,50,000</h5>
+                    <p class="text-muted mb-3">Ideal for inventory, expansion, or cash flow.</p>
+                    <div class="d-flex justify-content-between small text-muted mb-3">
+                        <span>Rate: 12.5%</span>
+                        <span>Tenure: 4 Years</span>
+                    </div>
+                    <button class="plan-cta w-100 justify-content-center quick-plan"
+                            data-amount="750000" data-rate="12.5" data-years="4">
+                        <i class="fas fa-magic"></i> Apply This Plan
+                    </button>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="plan-card p-4 h-100">
+                    <div class="plan-badge mb-3"><i class="fas fa-home"></i> Home Upgrade</div>
+                    <h5 class="fw-bold mb-2">&#8377;12,00,000</h5>
+                    <p class="text-muted mb-3">Renovation, interiors, and appliance upgrades.</p>
+                    <div class="d-flex justify-content-between small text-muted mb-3">
+                        <span>Rate: 10.9%</span>
+                        <span>Tenure: 7 Years</span>
+                    </div>
+                    <button class="plan-cta w-100 justify-content-center quick-plan"
+                            data-amount="1200000" data-rate="10.9" data-years="7">
+                        <i class="fas fa-magic"></i> Apply This Plan
+                    </button>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="plan-card p-4 h-100">
+                    <div class="plan-badge mb-3"><i class="fas fa-user-graduate"></i> Education Plus</div>
+                    <h5 class="fw-bold mb-2">&#8377;6,00,000</h5>
+                    <p class="text-muted mb-3">Tuition, coaching, or career upskilling.</p>
+                    <div class="d-flex justify-content-between small text-muted mb-3">
+                        <span>Rate: 11.2%</span>
+                        <span>Tenure: 5 Years</span>
+                    </div>
+                    <button class="plan-cta w-100 justify-content-center quick-plan"
+                            data-amount="600000" data-rate="11.2" data-years="5">
+                        <i class="fas fa-magic"></i> Apply This Plan
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FAQ Section -->
+<section class="py-5 bg-white faq-section">
+    <div class="container">
+        <div class="text-center mb-5">
+            <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill mb-3">
+                <i class="fas fa-circle-question me-2"></i> FAQs
+            </span>
+            <h2 class="fw-bold mb-3">Questions? We have answers.</h2>
+            <p class="text-muted">Clear, quick responses to common loan queries.</p>
+        </div>
+
+        <div class="accordion" id="faqAccordion">
+            <div class="accordion-item border-0 shadow-sm rounded-3 mb-3">
+                <h2 class="accordion-header" id="faqOne">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#faqOneContent" aria-expanded="true" aria-controls="faqOneContent">
+                        How fast can I get my loan approved?
+                    </button>
+                </h2>
+                <div id="faqOneContent" class="accordion-collapse collapse show" aria-labelledby="faqOne"
+                     data-bs-parent="#faqAccordion">
+                    <div class="accordion-body text-muted">
+                        Most applications are processed within minutes after document verification, and disbursal
+                        can happen the same day for eligible profiles.
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item border-0 shadow-sm rounded-3 mb-3">
+                <h2 class="accordion-header" id="faqTwo">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#faqTwoContent" aria-expanded="false" aria-controls="faqTwoContent">
+                        What documents do I need?
+                    </button>
+                </h2>
+                <div id="faqTwoContent" class="accordion-collapse collapse" aria-labelledby="faqTwo"
+                     data-bs-parent="#faqAccordion">
+                    <div class="accordion-body text-muted">
+                        Typically Aadhaar, PAN, bank statement, and income proof. The exact list may vary by loan type.
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item border-0 shadow-sm rounded-3">
+                <h2 class="accordion-header" id="faqThree">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#faqThreeContent" aria-expanded="false" aria-controls="faqThreeContent">
+                        Can I prepay my loan?
+                    </button>
+                </h2>
+                <div id="faqThreeContent" class="accordion-collapse collapse" aria-labelledby="faqThree"
+                     data-bs-parent="#faqAccordion">
+                    <div class="accordion-body text-muted">
+                        Yes, you can prepay. Some loan products may have a small prepayment charge, which we
+                        always disclose upfront.
+                    </div>
                 </div>
             </div>
         </div>
@@ -969,129 +1309,114 @@ unset($_SESSION['success_message']);
 
 <hr class="my-5 mx-auto" style="max-width: 1200px; border-top: 2px solid #131416;">
 
-<!-- Simple Interest Based EMI Calculator -->
-<section class="py-5 bg-white">
+<!-- Modern EMI Calculator -->
+<section class="py-5 bg-white emi-section">
     <div class="container">
         <div class="row justify-content-center">
-            <div class="col-lg-8">
+            <div class="col-lg-10">
                 <div class="text-center mb-5">
                     <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill mb-3">
-                        <i class="fas fa-calculator me-2"></i> Simple EMI Calculator
+                        <i class="fas fa-calculator me-2"></i> Smart EMI Calculator
                     </span>
-                    <h2 class="fw-bold mb-3">Calculate Your Loan EMI</h2>
-                    <p class="text-muted">Enter loan details to see your monthly payments</p>
+                    <h2 class="fw-bold mb-3">Calculate Your Monthly EMI</h2>
+                    <p class="text-muted">Quickly estimate your EMI using a standard reducing-balance formula.</p>
                 </div>
                 
-                <div class="card border-0 shadow-sm rounded-4">
-                    <div class="card-body p-4">
-                        <div class="row g-4">
+                <div class="card border-0 shadow-sm rounded-4 emi-card">
+                    <div class="card-body p-4 p-lg-5">
+                        <div class="row g-4 align-items-stretch">
                             <!-- Input Section -->
                             <div class="col-md-6">
-                                <div class="mb-4">
-                                    <label class="form-label fw-bold">Loan Amount (₹)</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text bg-light">
-                                            ₹
-                                        </span>
-                                        <input type="number" class="form-control"
-                                                id="loanAmountInput"
-                                                placeholder="e.g., 500000"
-                                               value="500000">
+                                <div class="emi-input-card">
+                                    <div class="mb-4">
+                                        <label class="form-label fw-bold">Loan Amount</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-light">&#8377;</span>
+                                            <input type="number" class="form-control" id="loanAmountInput"
+                                                   placeholder="e.g., 500000" value="500000" min="50000" step="1000">
+                                        </div>
+                                        <input type="range" class="form-range mt-3" id="loanAmountRange"
+                                               min="50000" max="2500000" step="10000" value="500000">
+                                        <small class="text-muted">Choose between &#8377;50,000 and &#8377;25,00,000</small>
                                     </div>
-                                    <small class="text-muted">Enter amount you want to borrow</small>
-                                </div>
-                                
-                                <div class="mb-4">
-                                    <label class="form-label fw-bold">Interest Rate (% per year)</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text bg-light">
-                                            %
-                                        </span>
-                                        <input type="number" class="form-control"
-                                                id="interestRateInput"
-                                                placeholder="e.g., 10.5"
-                                               value="10.5"
-                                               step="0.1">
+                                    
+                                    <div class="mb-4">
+                                        <label class="form-label fw-bold">Interest Rate (per year)</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-light">%</span>
+                                            <input type="number" class="form-control" id="interestRateInput"
+                                                   placeholder="e.g., 10.5" value="10.5" step="0.1" min="6" max="30">
+                                        </div>
+                                        <input type="range" class="form-range mt-3" id="interestRateRange"
+                                               min="6" max="30" step="0.1" value="10.5">
+                                        <small class="text-muted">Typical range: 6% to 30%</small>
                                     </div>
-                                    <small class="text-muted">Yearly interest rate</small>
-                                </div>
-                                
-                                <div class="mb-4">
-                                    <label class="form-label fw-bold">Loan Period (Years)</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text bg-light">
-                                            <i class="fas fa-calendar"></i>
-                                        </span>
-                                        <input type="number" class="form-control"
-                                                id="loanPeriodInput"
-                                                placeholder="e.g., 5"
-                                               value="5">
+                                    
+                                    <div class="mb-4">
+                                        <label class="form-label fw-bold">Loan Tenure (years)</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-light">
+                                                <i class="fas fa-calendar"></i>
+                                            </span>
+                                            <input type="number" class="form-control" id="loanPeriodInput"
+                                                   placeholder="e.g., 5" value="5" min="1" max="20" step="1">
+                                        </div>
+                                        <input type="range" class="form-range mt-3" id="loanPeriodRange"
+                                               min="1" max="20" step="1" value="5">
+                                        <small class="text-muted">Choose between 1 and 20 years</small>
                                     </div>
-                                    <small class="text-muted">Loan duration in years</small>
+                                    
+                                    <button class="btn btn-primary w-100 py-3 fw-bold" id="calculateBtn">
+                                        <i class="fas fa-bolt me-2"></i> Calculate EMI
+                                    </button>
                                 </div>
-                                
-                                <button class="btn btn-primary w-100 py-3 fw-bold" onclick="calculateEMI()">
-                                    <i class="fas fa-calculator me-2"></i> Calculate Now
-                                </button>
                             </div>
                             
                             <!-- Result Section -->
                             <div class="col-md-6">
-                                <div class="bg-light rounded-3 p-4 h-100">
-                                    <h5 class="fw-bold mb-4 text-center border-bottom pb-3">Your Loan Summary</h5>
-                                    
-                                    <!-- Loan Details -->
-                                    <div class="mb-4">
-                                        <div class="d-flex justify-content-between align-items-center mb-3">
-                                            <div>
-                                                <small class="text-muted d-block">Loan Amount</small>
-                                                <h4 class="fw-bold mb-0 text-primary" id="displayLoanAmount">₹5,00,000</h4>
-                                            </div>
-                                            <div class="text-end">
-                                                <small class="text-muted d-block">For</small>
-                                                <h5 class="fw-bold mb-0" id="displayLoanPeriod">5 Years</h5>
-                                            </div>
+                                <div class="emi-result-card h-100">
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <div>
+                                            <small class="text-muted d-block">Loan Amount</small>
+                                            <h4 class="fw-bold mb-0 text-primary" id="displayLoanAmount">&#8377;5,00,000</h4>
                                         </div>
-                                        
-                                        <div class="text-center bg-white rounded-3 p-3 mb-3">
-                                            <small class="text-muted d-block mb-1">at</small>
-                                            <h3 class="fw-bold text-success mb-0" id="displayInterestRate">10.5% Interest</h3>
+                                        <div class="text-end">
+                                            <small class="text-muted d-block">Tenure</small>
+                                            <h5 class="fw-bold mb-0" id="displayLoanPeriod">5 Years</h5>
                                         </div>
                                     </div>
                                     
-                                    <!-- EMI Result -->
-                                    <div class="text-center bg-primary text-white rounded-3 p-4 mb-4">
+                                    <div class="text-center bg-white rounded-3 p-3 mb-3 border">
+                                        <small class="text-muted d-block mb-1">Interest Rate</small>
+                                        <h3 class="fw-bold text-success mb-0" id="displayInterestRate">10.5% p.a.</h3>
+                                    </div>
+                                    
+                                    <div class="text-center emi-highlight p-4 mb-4">
                                         <small class="opacity-90 d-block mb-1">Your Monthly EMI</small>
-                                        <h1 class="fw-bold mb-2" id="displayEMI">₹10,417</h1>
+                                        <h1 class="fw-bold mb-2" id="displayEMI">&#8377;10,750</h1>
                                         <small class="opacity-90">Per month for <span id="displayMonths">60</span> months</small>
                                     </div>
-                                    
-                                    <!-- Breakdown -->
-                                    <div class="bg-white rounded-3 p-3">
+
+                                    <div class="bg-white rounded-3 p-3 border">
                                         <h6 class="fw-bold mb-3">Payment Breakdown</h6>
-                                        
                                         <div class="d-flex justify-content-between mb-2">
-                                            <span>Principal Amount:</span>
-                                            <span class="fw-bold" id="displayPrincipal">₹5,00,000</span>
+                                            <span>Principal</span>
+                                            <span class="fw-bold" id="displayPrincipal">&#8377;5,00,000</span>
                                         </div>
-                                        
                                         <div class="d-flex justify-content-between mb-2">
-                                            <span>Total Interest:</span>
-                                            <span class="fw-bold text-danger" id="displayTotalInterest">₹2,62,500</span>
+                                            <span>Total Interest</span>
+                                            <span class="fw-bold text-danger" id="displayTotalInterest">&#8377;1,45,000</span>
                                         </div>
-                                        
                                         <hr class="my-3">
-                                        
                                         <div class="d-flex justify-content-between">
-                                            <span class="fw-bold">Total Payable:</span>
-                                            <span class="fw-bold text-success" id="displayTotalPayable">₹7,62,500</span>
+                                            <span class="fw-bold">Total Payable</span>
+                                            <span class="fw-bold text-success" id="displayTotalPayable">&#8377;6,45,000</span>
                                         </div>
                                     </div>
                                     
-                                    <!-- CTA -->
                                     <div class="text-center mt-4">
                                         <a href="#loanForm" class="btn btn-success w-100 py-2">
-                                            <i class="fas fa-paper-plane me-2"></i> Apply for This Loan
+                                            <i class="fas fa-paper-plane me-2"></i> Apply with These Details
                                         </a>
                                     </div>
                                 </div>
@@ -1103,76 +1428,136 @@ unset($_SESSION['success_message']);
         </div>
     </div>
 </section>
+<!-- CTA Section -->
+<section class="cta-section py-5">
+    <i class="fas fa-coins cta-float float-1"></i>
+    <i class="fas fa-shield-alt cta-float float-2"></i>
+    <div class="container py-3 position-relative">
+        <div class="cta-card">
+            <div class="row align-items-center g-4">
+                <div class="col-lg-7">
+                    <h2 class="cta-title">Ready to unlock your next big move?</h2>
+                    <p class="cta-subtitle">
+                        Apply in minutes with instant eligibility checks and transparent pricing &mdash; no surprises.
+                    </p>
+                </div>
+                <div class="col-lg-5 text-lg-end">
+                    <a href="#loanForm" class="cta-btn">
+                        <i class="fas fa-bolt"></i> Get Instant Quote
+                    </a>
+                    <a href="contact.php" class="cta-outline">
+                        <i class="fas fa-headset"></i> Talk to Expert
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 
 <script>
     // Format currency in Indian Rupees
     function formatCurrency(amount) {
-        return '₹' + amount.toLocaleString('en-IN');
+        return '\u20B9' + Number(amount).toLocaleString('en-IN');
     }
     
-    // Calculate EMI using Simple Interest
+    // Calculate EMI using reducing-balance formula
     function calculateEMI() {
-        // Get input values
-        const principal = parseFloat(document.getElementById('loanAmountInput').value) || 500000;
-        const rate = parseFloat(document.getElementById('interestRateInput').value) || 10.5;
-        const years = parseFloat(document.getElementById('loanPeriodInput').value) || 5;
-        
-        // Validate inputs
-        if (!principal || principal <= 0) {
-            alert('Please enter a valid loan amount');
+        const principalInput = document.getElementById('loanAmountInput');
+        const rateInput = document.getElementById('interestRateInput');
+        const yearsInput = document.getElementById('loanPeriodInput');
+
+        const principal = parseFloat(principalInput.value) || 0;
+        const annualRate = parseFloat(rateInput.value) || 0;
+        const years = parseFloat(yearsInput.value) || 0;
+
+        if (principal <= 0 || annualRate <= 0 || years <= 0) {
             return;
         }
-        
-        if (!rate || rate <= 0) {
-            alert('Please enter a valid interest rate');
-            return;
+
+        const months = Math.round(years * 12);
+        const monthlyRate = (annualRate / 12) / 100;
+        let emi = 0;
+
+        if (monthlyRate === 0) {
+            emi = principal / months;
+        } else {
+            const factor = Math.pow(1 + monthlyRate, months);
+            emi = (principal * monthlyRate * factor) / (factor - 1);
         }
-        
-        if (!years || years <= 0) {
-            alert('Please enter a valid loan period');
-            return;
-        }
-        
-        // Calculate Simple Interest
-        const simpleInterest = (principal * rate * years) / 100;
-        
-        // Calculate Total Amount
-        const totalAmount = principal + simpleInterest;
-        
-        // Calculate Monthly EMI (Total Amount divided by total months)
-        const months = years * 12;
-        const monthlyEMI = totalAmount / months;
-        
-        // Update display values
+
+        const totalPayable = emi * months;
+        const totalInterest = totalPayable - principal;
+
         document.getElementById('displayLoanAmount').textContent = formatCurrency(principal);
         document.getElementById('displayLoanPeriod').textContent = years + ' Year' + (years > 1 ? 's' : '');
-        document.getElementById('displayInterestRate').textContent = rate + '% Interest';
+        document.getElementById('displayInterestRate').textContent = annualRate + '% p.a.';
         document.getElementById('displayMonths').textContent = months;
-        
-        document.getElementById('displayEMI').textContent = formatCurrency(Math.round(monthlyEMI));
+
+        document.getElementById('displayEMI').textContent = formatCurrency(Math.round(emi));
         document.getElementById('displayPrincipal').textContent = formatCurrency(principal);
-        document.getElementById('displayTotalInterest').textContent = formatCurrency(Math.round(simpleInterest));
-        document.getElementById('displayTotalPayable').textContent = formatCurrency(Math.round(totalAmount));
+        document.getElementById('displayTotalInterest').textContent = formatCurrency(Math.round(totalInterest));
+        document.getElementById('displayTotalPayable').textContent = formatCurrency(Math.round(totalPayable));
+
+    }
+
+    function syncInputs() {
+        const amountInput = document.getElementById('loanAmountInput');
+        const amountRange = document.getElementById('loanAmountRange');
+        const rateInput = document.getElementById('interestRateInput');
+        const rateRange = document.getElementById('interestRateRange');
+        const yearsInput = document.getElementById('loanPeriodInput');
+        const yearsRange = document.getElementById('loanPeriodRange');
+
+        amountRange.value = amountInput.value || amountRange.value;
+        rateRange.value = rateInput.value || rateRange.value;
+        yearsRange.value = yearsInput.value || yearsRange.value;
     }
     
     // Initialize with default values
     document.addEventListener('DOMContentLoaded', function() {
-        calculateEMI();
-        
-        // Calculate on Enter key press
-        const inputs = document.querySelectorAll('#loanAmountInput, #interestRateInput, #loanPeriodInput');
-        inputs.forEach(input => {
-            input.addEventListener('keyup', function(e) {
-                if (e.key === 'Enter') {
-                    calculateEMI();
-                }
+        const amountInput = document.getElementById('loanAmountInput');
+        const amountRange = document.getElementById('loanAmountRange');
+        const rateInput = document.getElementById('interestRateInput');
+        const rateRange = document.getElementById('interestRateRange');
+        const yearsInput = document.getElementById('loanPeriodInput');
+        const yearsRange = document.getElementById('loanPeriodRange');
+        const calculateBtn = document.getElementById('calculateBtn');
+
+        const inputPairs = [
+            { input: amountInput, range: amountRange },
+            { input: rateInput, range: rateRange },
+            { input: yearsInput, range: yearsRange }
+        ];
+
+        inputPairs.forEach(pair => {
+            pair.input.addEventListener('input', () => {
+                pair.range.value = pair.input.value;
+                calculateEMI();
+            });
+
+            pair.range.addEventListener('input', () => {
+                pair.input.value = pair.range.value;
+                calculateEMI();
             });
         });
-        
-        // Auto-calculate when inputs change
-        inputs.forEach(input => {
-            input.addEventListener('input', function() {
+
+        calculateBtn?.addEventListener('click', calculateEMI);
+
+        syncInputs();
+        calculateEMI();
+
+        const quickPlans = document.querySelectorAll('.quick-plan');
+        quickPlans.forEach(btn => {
+            btn.addEventListener('click', () => {
+                amountInput.value = btn.dataset.amount;
+                rateInput.value = btn.dataset.rate;
+                yearsInput.value = btn.dataset.years;
+                syncInputs();
                 calculateEMI();
+                document.getElementById('loanAmountInput')?.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'center'
+                });
             });
         });
     });
