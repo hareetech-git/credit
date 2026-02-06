@@ -29,9 +29,18 @@ include 'includes/header.php';
     :root {
         --service-primary: #130c3b;
         --service-accent: #00a08e;
-        --service-bg: #f9fafb;
+        --service-bg: #f6f7fb;
         --service-text: #4b5563;
         --service-border: #e5e7eb;
+        --service-ink: #0f172a;
+    }
+
+    body {
+        background: var(--service-bg);
+    }
+
+    .service-page {
+        background: var(--service-bg);
     }
 
     /* === ANIMATIONS === */
@@ -39,6 +48,18 @@ include 'includes/header.php';
         animation: fadeInUp 0.8s ease-out forwards;
         opacity: 0;
         transform: translateY(30px);
+    }
+
+    .fade-in-left {
+        animation: fadeInLeft 0.8s ease-out forwards;
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+
+    .fade-in-right {
+        animation: fadeInRight 0.8s ease-out forwards;
+        opacity: 0;
+        transform: translateX(30px);
     }
 
     .delay-100 {
@@ -65,15 +86,76 @@ include 'includes/header.php';
         }
     }
 
+    @keyframes fadeInLeft {
+        from { opacity: 0; transform: translateX(-30px); }
+        to { opacity: 1; transform: translateX(0); }
+    }
+
+    @keyframes fadeInRight {
+        from { opacity: 0; transform: translateX(30px); }
+        to { opacity: 1; transform: translateX(0); }
+    }
+
     /* === HERO SECTION === */
     .service-hero-section {
-        padding: 80px 0;
+        padding: 90px 0;
+        background:
+            radial-gradient(600px 300px at 10% 10%, rgba(0, 160, 142, 0.12), transparent),
+            radial-gradient(500px 260px at 90% 70%, rgba(19, 12, 59, 0.12), transparent),
+            linear-gradient(135deg, #f0fdfa 0%, #ffffff 100%);
+        position: relative;
+        overflow: hidden;
+    }
 
-        background: linear-gradient(135deg, #f0fdfa 0%, #fff 100%);
+    .hero-orb {
+        position: absolute;
+        width: 180px;
+        height: 180px;
+        border-radius: 50%;
+        background: radial-gradient(circle at 30% 30%, rgba(0, 160, 142, 0.35), rgba(0, 160, 142, 0.05));
+        filter: blur(2px);
+        opacity: 0.7;
+    }
+
+    .hero-orb.orb-1 { top: 10%; left: -40px; }
+    .hero-orb.orb-2 { bottom: 10%; right: -50px; }
+
+    .parallax-img {
+        transform: translateY(0);
+        transition: transform 0.1s linear;
+        will-change: transform;
+    }
+
+    .service-hero-card {
+        background: rgba(255, 255, 255, 0.85);
+        border: 1px solid rgba(229, 231, 235, 0.9);
+        border-radius: 20px;
+        padding: 28px;
+        box-shadow: 0 24px 60px rgba(15, 23, 42, 0.08);
+        backdrop-filter: blur(6px);
+    }
+
+    .service-hero-badges {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 16px;
+    }
+
+    .service-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 12px;
+        border-radius: 999px;
+        background: rgba(0, 160, 142, 0.12);
+        color: var(--service-primary);
+        font-weight: 600;
+        font-size: 0.8rem;
     }
 
     .service-hero-title {
-        font-size: 3rem;
+        font-size: 3.2rem;
         font-weight: 800;
         color: var(--service-primary);
         line-height: 1.2;
@@ -101,7 +183,7 @@ include 'includes/header.php';
 
     /* === SECTIONS COMMON === */
     .section-padding {
-        padding: 80px 0;
+        padding: 90px 0;
     }
 
     .bg-light {
@@ -114,9 +196,9 @@ include 'includes/header.php';
 
     .section-title {
         color: var(--service-primary);
-        font-weight: 700;
-        font-size: 2.2rem;
-        margin-bottom: 15px;
+        font-weight: 800;
+        font-size: 2.3rem;
+        margin-bottom: 10px;
         position: relative;
         display: inline-block;
     }
@@ -140,7 +222,7 @@ include 'includes/header.php';
 
     /* === OVERVIEW (TABLE) === */
     .overview-text {
-        font-size: 1.6rem;
+        font-size: 1.2rem;
         line-height: 1.8;
         color: var(--service-text);
         margin-bottom: 40px;
@@ -152,9 +234,10 @@ include 'includes/header.php';
         border-collapse: separate;
         border-spacing: 0;
         border: 1px solid var(--service-border);
-        border-radius: 12px;
+        border-radius: 16px;
         overflow: hidden;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.06);
+        background: #ffffff;
     }
 
     .overview-table td {
@@ -179,13 +262,17 @@ include 'includes/header.php';
     .feature-item {
         background: white;
         padding: 30px;
-        border-radius: 15px;
-        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+        border-radius: 18px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
         transition: transform 0.3s;
         display: flex;
         align-items: flex-start;
         height: 100%;
-        border: 1px solid transparent;
+        border: 1px solid #eef2f7;
+    }
+
+    .feature-item:hover .feature-icon {
+        transform: scale(1.08) rotate(-2deg);
     }
 
     .feature-item:hover {
@@ -212,9 +299,10 @@ include 'includes/header.php';
         text-align: center;
         padding: 35px 25px;
         background: white;
-        border-radius: 16px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        border-radius: 18px;
+        box-shadow: 0 12px 36px rgba(0, 0, 0, 0.06);
         transition: all 0.3s;
+        border: 1px solid #eef2f7;
     }
 
     .wc-card:hover {
@@ -232,9 +320,93 @@ include 'includes/header.php';
     .custom-table {
         width: 100%;
         border: 1px solid var(--service-border);
-        border-radius: 10px;
+        border-radius: 16px;
         overflow: hidden;
-        font-size: 1.2rem;
+        font-size: 1.05rem;
+        background: #ffffff;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    }
+
+    /* === BANKS GRID === */
+    .bank-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 18px;
+    }
+
+    .bank-card {
+        background: #ffffff;
+        border: 1px solid #eef2f7;
+        border-radius: 16px;
+        padding: 18px;
+        display: grid;
+        grid-template-columns: 64px 1fr;
+        gap: 14px;
+        align-items: center;
+        box-shadow: 0 10px 24px rgba(0, 0, 0, 0.04);
+        transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+    }
+
+    .bank-card:hover {
+        transform: translateY(-6px);
+        border-color: rgba(0, 160, 142, 0.25);
+        box-shadow: 0 16px 30px rgba(0, 0, 0, 0.08);
+    }
+
+    .bank-logo {
+        width: 64px;
+        height: 64px;
+        border-radius: 12px;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+    }
+
+    .bank-logo img {
+        max-width: 52px;
+        max-height: 52px;
+        object-fit: contain;
+    }
+
+    .bank-name {
+        font-weight: 700;
+        color: var(--service-primary);
+        margin-bottom: 4px;
+    }
+
+    .bank-meta {
+        color: var(--service-text);
+        font-size: 0.95rem;
+    }
+
+    /* === REPAYMENT TIMELINE === */
+    .repayment-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 18px;
+    }
+
+    .repayment-card {
+        background: white;
+        padding: 26px;
+        border-radius: 16px;
+        border: 1px solid #eef2f7;
+        transition: 0.3s;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .repayment-card::after {
+        content: '';
+        position: absolute;
+        inset: auto -40px -40px auto;
+        width: 120px;
+        height: 120px;
+        background: rgba(0, 160, 142, 0.08);
+        border-radius: 50%;
     }
 
     .custom-table td {
@@ -253,9 +425,30 @@ include 'includes/header.php';
     .repayment-card {
         background: white;
         padding: 30px;
-        border-radius: 12px;
-        border: 1px solid #eee;
+        border-radius: 16px;
+        border: 1px solid #eef2f7;
         transition: 0.3s;
+    }
+
+    .repayment-card:hover {
+        transform: translateY(-6px);
+    }
+
+    .reveal {
+        opacity: 0;
+        transform: translateY(26px);
+        transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+
+    .reveal.is-visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .section-divider {
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(19, 12, 59, 0.2), transparent);
+        margin: 20px 0 0;
     }
 
     .repayment-card:hover {
@@ -319,9 +512,9 @@ include 'includes/header.php';
 
 </style>
 
-<main>
+<main class="service-page">
     <?php if (isset($error) && !empty($error) && $service === null): ?>
-        <div class="container py-5 mt-5 text-center fade-in-up">
+        <div class="container  mt-5 text-center fade-in-up">
             <h2 class="text-danger">Oops!</h2>
             <p class="text-muted"><?php echo htmlspecialchars($error); ?></p>
             <a href="index.php" class="btn btn-primary rounded-pill">Back to Home</a>
@@ -329,22 +522,31 @@ include 'includes/header.php';
     <?php elseif ($service): ?>
 
         <section class="service-hero-section fade-in-up">
+            <div class="hero-orb orb-1"></div>
+            <div class="hero-orb orb-2"></div>
             <div class="container">
                 <div class="row align-items-center">
-                    <div class="col-lg-6">
-                        <span class="badge bg-light text-primary mb-3 px-3 py-2 border">Financial Services</span>
-                        <h1 class="service-hero-title"><?php echo htmlspecialchars($service['title']); ?></h1>
-                        <div class="mb-4 text-muted fs-5">
-                            <?php if (!empty($service['short_description'])): ?>
-                                <p><?php echo htmlspecialchars($service['short_description']); ?></p>
-                            <?php else: ?>
-                                <p>Apply for financial services online at low rates through Udhar Capital.</p>
-                            <?php endif; ?>
+                    <div class="col-lg-6 fade-in-left">
+                        <div class="service-hero-card">
+                            <span class="badge bg-light text-primary mb-3 px-3 py-2 border">Financial Services</span>
+                            <h1 class="service-hero-title"><?php echo htmlspecialchars($service['title']); ?></h1>
+                            <div class="mb-4 text-muted fs-5">
+                                <?php if (!empty($service['short_description'])): ?>
+                                    <p><?php echo htmlspecialchars($service['short_description']); ?></p>
+                                <?php else: ?>
+                                    <p>Apply for financial services online at low rates through Udhar Capital.</p>
+                                <?php endif; ?>
+                            </div>
+                            <a href="apply-loan.php?slug=<?php echo $slug?>" class="service-btn-custom">Apply Now <i
+                                    class="fas fa-arrow-right ms-2"></i></a>
+                            <div class="service-hero-badges">
+                                <span class="service-pill"><i class="fas fa-bolt"></i> Fast Approval</span>
+                                <span class="service-pill"><i class="fas fa-shield-alt"></i> Secure</span>
+                                <span class="service-pill"><i class="fas fa-percent"></i> Low Rates</span>
+                            </div>
                         </div>
-                        <a href="apply-loan.php?slug=<?php echo $slug?>" class="service-btn-custom">Apply Now <i
-                                class="fas fa-arrow-right ms-2"></i></a>
                     </div>
-                    <div class="col-lg-6 text-center mt-5 mt-lg-0">
+                    <div class="col-lg-6 text-center mt-5 mt-lg-0 fade-in-right">
                        <?php
 $heroImg = !empty($service['hero_image'])
     ? htmlspecialchars($service['hero_image'])
@@ -353,7 +555,7 @@ $heroImg = !empty($service['hero_image'])
 
 <img src="<?= $heroImg ?>"
      alt="<?= htmlspecialchars($service['title']) ?>"
-     class="img-fluid"
+     class="img-fluid parallax-img"
      style="max-height: 500px; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.1));">
 
                     </div>
@@ -361,7 +563,7 @@ $heroImg = !empty($service['hero_image'])
             </div>
         </section>
 
-        <section class="section-padding bg-white">
+        <section class="section-padding bg-white reveal">
             <div class="container">
                 <div class="text-center mb-5 fade-in-up">
                     <h2 class="section-title">Overview</h2>
@@ -395,11 +597,11 @@ $heroImg = !empty($service['hero_image'])
             </div>
         </section>
 
-        <section class="section-padding bg-light">
+        <section class="section-padding bg-light reveal">
             <div class="container">
                 <div class="row justify-content-center">
                     <div class="col-lg-10 fade-in-up">
-                        <div class=" p-5 rounded-4 border shadow-sm" style="background-color: #1a1241;">
+                        <div class="p-5 rounded-4 border shadow-sm" style="background: linear-gradient(135deg, #1a1241 0%, #0f0b2c 100%);">
                             <h3 class="fw-bold mb-4" style="color: white;text-align:center;">Detailed Information</h3>
                           <div class="fs-5" style="line-height: 1.8; color: #e5e7eb;">
 
@@ -417,7 +619,7 @@ $heroImg = !empty($service['hero_image'])
             </div>
         </section>
 
-        <section class="section-padding bg-white">
+        <section class="section-padding bg-white reveal">
             <div class="container">
                 <div class="text-center mb-5 fade-in-up">
                     <h2 class="section-title">Features & Benefits</h2>
@@ -454,7 +656,7 @@ $heroImg = !empty($service['hero_image'])
 
        
 
-        <section class="section-padding bg-white">
+        <section class="section-padding bg-white reveal">
             <div class="container">
                 <div class="row align-items-center">
                     <div class="col-lg-7 fade-in-up">
@@ -485,7 +687,7 @@ $heroImg = !empty($service['hero_image'])
                 </div>
             </div>
         </section>
- <section class="section-padding bg-light">
+ <section class="section-padding bg-light reveal">
             <div class="container">
                 <div class="text-center mb-5 fade-in-up">
                     <h2 class="section-title">Why Choose Udhar Capital?</h2>
@@ -520,7 +722,7 @@ $heroImg = !empty($service['hero_image'])
                 </div>
             </div>
         </section>
-<section class="section-padding bg-light">
+<section class="section-padding bg-light reveal">
     <div class="container">
         <div class="row align-items-center g-5">
 
@@ -576,7 +778,7 @@ $heroImg = !empty($service['hero_image'])
     </div>
 </section>
 
-        <section class="section-padding bg-white">
+        <section class="section-padding bg-white reveal">
             <div class="container">
                 <div class="text-center mb-5 fade-in-up">
                     <h2 class="section-title">Fees & Charges</h2>
@@ -598,77 +800,58 @@ $heroImg = !empty($service['hero_image'])
             </div>
         </section>
 
-        <section class="section-padding bg-light">
+        <section class="section-padding bg-light reveal">
             <div class="container">
                 <div class="text-center mb-5 fade-in-up">
                     <h2 class="section-title">Partner Banks</h2>
+                    <p class="section-subtitle">Trusted institutions powering our approvals and disbursals.</p>
                 </div>
-                <div class="row justify-content-center fade-in-up">
-                    <div class="col-lg-8">
-                      <table class="table table-bordered table-hover align-middle bg-white">
-    <thead class="table-dark">
+                <div class="bank-grid fade-in-up">
+                    <?php
+                    $bank_data = (count($banks) > 0) 
+                        ? $banks 
+                        : [['bank_key' => 'HDFC Bank', 'bank_value' => 'Partner', 'bank_image' => '']];
 
-    </thead>
-    <tbody>
-        <?php
-        $bank_data = (count($banks) > 0) 
-            ? $banks 
-            : [['bank_key' => 'HDFC Bank', 'bank_value' => 'Partner', 'bank_image' => '']];
-
-        foreach ($bank_data as $row) {
-            ?>
-            <tr>
-                <!-- LOGO -->
-                <td class="text-center">
-                    <?php if (!empty($row['bank_image'])): ?>
-                        <img src="<?= htmlspecialchars($row['bank_image']) ?>"
-                             alt="<?= htmlspecialchars($row['bank_key']) ?>"
-                             class="img-fluid"
-                             style="max-height:70px;">
-                    <?php else: ?>
-                        <span class="text-muted small">No Logo</span>
-                    <?php endif; ?>
-                </td>
-
-                <!-- BANK NAME -->
-                <td class="fw-semibold">
-                    <?= htmlspecialchars($row['bank_key']) ?>
-                </td>
-
-                <!-- CONTENT -->
-                <td class="text-muted">
-                    <?= htmlspecialchars($row['bank_value']) ?>
-                </td>
-            </tr>
-            <?php
-        }
-        ?>
-    </tbody>
-</table>
-
-                    </div>
+                    foreach ($bank_data as $row) {
+                        ?>
+                        <div class="bank-card">
+                            <div class="bank-logo">
+                                <?php if (!empty($row['bank_image'])): ?>
+                                    <img src="<?= htmlspecialchars($row['bank_image']) ?>"
+                                         alt="<?= htmlspecialchars($row['bank_key']) ?>">
+                                <?php else: ?>
+                                    <span class="text-muted small">Logo</span>
+                                <?php endif; ?>
+                            </div>
+                            <div>
+                                <div class="bank-name"><?= htmlspecialchars($row['bank_key']) ?></div>
+                                <div class="bank-meta"><?= htmlspecialchars($row['bank_value']) ?></div>
+                            </div>
+                        </div>
+                        <?php
+                    }
+                    ?>
                 </div>
             </div>
         </section>
 
-        <section class="section-padding bg-white">
+        <section class="section-padding bg-white reveal">
             <div class="container">
                 <div class="text-center mb-5 fade-in-up">
                     <h2 class="section-title">Different Forms of Loan Repayments</h2>
+                    <p class="section-subtitle">Choose the repayment style that fits your cash flow.</p>
                 </div>
-                <div class="row g-4">
+                <div class="repayment-grid">
                     <?php
                     $repay_data = (count($repayments) > 0) ? $repayments : [
                         ['title' => 'Standard EMI', 'description' => 'Fixed monthly payments.']
                     ];
                     foreach ($repay_data as $repay) {
                         ?>
-                        <div class="col-md-4 fade-in-up">
-                            <div class="repayment-card h-100">
-                                <div class="mb-3 text-primary fs-2"><i class="fas fa-wallet"></i></div>
-                                <h4 class="fw-bold"><?php echo htmlspecialchars($repay['title']); ?></h4>
-                                <p class="text-muted mb-0"><?php echo htmlspecialchars($repay['description']); ?></p>
-                            </div>
+                        <div class="repayment-card fade-in-up">
+                            <div class="mb-3 text-primary fs-2"><i class="fas fa-wallet"></i></div>
+                            <h4 class="fw-bold"><?php echo htmlspecialchars($repay['title']); ?></h4>
+                            <p class="text-muted mb-0"><?php echo htmlspecialchars($repay['description']); ?></p>
                         </div>
                         <?php
                     }
@@ -696,6 +879,30 @@ $heroImg = !empty($service['hero_image'])
             el.style.animationPlayState = "paused"; // Pause initially
             observer.observe(el);
         });
+
+        document.querySelectorAll('.fade-in-left, .fade-in-right').forEach(el => {
+            el.style.animationPlayState = "paused";
+            observer.observe(el);
+        });
+
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('is-visible');
+                    revealObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.15 });
+
+        document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+        const parallaxImg = document.querySelector('.parallax-img');
+        if (parallaxImg) {
+            window.addEventListener('scroll', () => {
+                const scrollY = window.scrollY || window.pageYOffset;
+                parallaxImg.style.transform = `translateY(${scrollY * 0.08}px)`;
+            });
+        }
     });
 </script>
 
