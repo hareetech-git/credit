@@ -544,7 +544,89 @@ unset($_SESSION['success_message']);
     }
 
     /* FAQ */
+    .faq-section {
+        position: relative;
+        background: #ffffff;
+        overflow: hidden;
+    }
+
+    .faq-section::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background:
+            radial-gradient(360px 220px at 12% 20%, rgba(200, 16, 46, 0.08), transparent),
+            radial-gradient(320px 200px at 88% 80%, rgba(200, 16, 46, 0.06), transparent),
+            repeating-linear-gradient(135deg, rgba(15, 23, 42, 0.03) 0 1px, transparent 1px 10px);
+        opacity: 0.6;
+        pointer-events: none;
+    }
+
+    .faq-panel {
+        position: relative;
+        z-index: 1;
+        border: 1px solid #e2e8f0;
+        border-radius: 20px;
+        background: #ffffff;
+        padding: 28px;
+        box-shadow: 0 20px 45px rgba(0, 0, 0, 0.08);
+    }
+
+    .faq-kicker {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 12px;
+        border-radius: 999px;
+        background: rgba(200, 16, 46, 0.1);
+        color: var(--primary-color);
+        font-weight: 700;
+        font-size: 0.78rem;
+    }
+
+    .faq-stats {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+        margin-top: 18px;
+    }
+
+    .faq-stat {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        padding: 14px;
+        text-align: left;
+    }
+
+    .faq-stat h5 {
+        margin: 0 0 4px 0;
+        font-weight: 800;
+        color: #0f172a;
+    }
+
+    .faq-stat span {
+        font-size: 0.85rem;
+        color: #64748b;
+    }
+
+    .faq-section .accordion-item {
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        overflow: hidden;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        background: #ffffff;
+    }
+
+    .faq-section .accordion-item:hover {
+        border-color: rgba(200, 16, 46, 0.25);
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.06);
+    }
+
     .faq-section .accordion-button {
+        padding: 18px 22px;
+        position: relative;
+        background: #ffffff;
         font-weight: 600;
     }
 
@@ -552,6 +634,28 @@ unset($_SESSION['success_message']);
         color: var(--primary-color);
         background: rgba(200, 16, 46, 0.08);
         box-shadow: none;
+    }
+
+    .faq-section .accordion-button::after {
+        background-image: none;
+        content: '+';
+        font-weight: 800;
+        color: var(--primary-color);
+        font-size: 1.2rem;
+        position: absolute;
+        right: 20px;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+
+    .faq-section .accordion-button:not(.collapsed)::after {
+        content: '–';
+    }
+
+    .faq-section .accordion-body {
+        background: #fafafa;
+        border-top: 1px solid #eef2f7;
+        padding: 18px 22px;
     }
 
 
@@ -1279,41 +1383,70 @@ unset($_SESSION['success_message']);
 <!-- FAQ Section -->
 <section class="py-5 bg-white faq-section">
     <div class="container">
-        <div class="text-center mb-5">
-            <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill mb-3">
-                <i class="fas fa-circle-question me-2"></i> FAQs
-            </span>
-            <h2 class="fw-bold mb-3">Questions? We have answers.</h2>
-            <p class="text-muted">Clear, quick responses to common loan queries.</p>
-        </div>
+        <div class="row g-4 align-items-start">
+            <div class="col-lg-4">
+                <div class="faq-panel">
+                    <div class="faq-kicker mb-3">
+                        <i class="fas fa-circle-question"></i> FAQs
+                    </div>
+                    <h2 class="fw-bold mb-2">Questions? We have answers.</h2>
+                    <p class="text-muted mb-4">Clear, quick responses to common loan queries.</p>
 
-        <?php if (!empty($faq_items)): ?>
-            <div class="accordion" id="faqAccordion">
-                <?php foreach ($faq_items as $index => $faq): 
-                    $collapse_id = 'faqItem' . (int)$faq['id'];
-                    $heading_id = 'heading' . (int)$faq['id'];
-                    $is_first = $index === 0;
-                ?>
-                <div class="accordion-item border-0 shadow-sm rounded-3 mb-3">
-                    <h2 class="accordion-header" id="<?= $heading_id ?>">
-                        <button class="accordion-button <?= $is_first ? '' : 'collapsed' ?>" type="button"
-                                data-bs-toggle="collapse" data-bs-target="#<?= $collapse_id ?>"
-                                aria-expanded="<?= $is_first ? 'true' : 'false' ?>" aria-controls="<?= $collapse_id ?>">
-                            <?= htmlspecialchars($faq['question']) ?>
-                        </button>
-                    </h2>
-                    <div id="<?= $collapse_id ?>" class="accordion-collapse collapse <?= $is_first ? 'show' : '' ?>"
-                         aria-labelledby="<?= $heading_id ?>" data-bs-parent="#faqAccordion">
-                        <div class="accordion-body text-muted">
-                            <?= nl2br(htmlspecialchars($faq['answer'])) ?>
+                    <div class="faq-stats">
+                        <div class="faq-stat">
+                            <h5>10 min</h5>
+                            <span>Fast approvals</span>
+                        </div>
+                        <div class="faq-stat">
+                            <h5>24x7</h5>
+                            <span>Support access</span>
+                        </div>
+                        <div class="faq-stat">
+                            <h5>₹25L</h5>
+                            <span>Max amount</span>
+                        </div>
+                        <div class="faq-stat">
+                            <h5>10.5%</h5>
+                            <span>Rates from</span>
                         </div>
                     </div>
+
+                    <a href="contact.php" class="btn btn-outline-primary w-100 rounded-pill mt-4">
+                        <i class="fas fa-headset me-2"></i> Talk to an Expert
+                    </a>
                 </div>
-                <?php endforeach; ?>
             </div>
-        <?php else: ?>
-            <div class="text-center text-muted">FAQs will be available soon.</div>
-        <?php endif; ?>
+
+            <div class="col-lg-8">
+                <?php if (!empty($faq_items)): ?>
+                    <div class="accordion faq-accordion" id="faqAccordion">
+                        <?php foreach ($faq_items as $index => $faq): 
+                            $collapse_id = 'faqItem' . (int)$faq['id'];
+                            $heading_id = 'heading' . (int)$faq['id'];
+                            $is_first = $index === 0;
+                        ?>
+                        <div class="accordion-item shadow-sm rounded-3 mb-3">
+                            <h2 class="accordion-header" id="<?= $heading_id ?>">
+                                <button class="accordion-button <?= $is_first ? '' : 'collapsed' ?>" type="button"
+                                        data-bs-toggle="collapse" data-bs-target="#<?= $collapse_id ?>"
+                                        aria-expanded="<?= $is_first ? 'true' : 'false' ?>" aria-controls="<?= $collapse_id ?>">
+                                    <?= htmlspecialchars($faq['question']) ?>
+                                </button>
+                            </h2>
+                            <div id="<?= $collapse_id ?>" class="accordion-collapse collapse <?= $is_first ? 'show' : '' ?>"
+                                 aria-labelledby="<?= $heading_id ?>" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body text-muted">
+                                    <?= nl2br(htmlspecialchars($faq['answer'])) ?>
+                                </div>
+                            </div>
+                        </div>
+                        <?php endforeach; ?>
+                    </div>
+                <?php else: ?>
+                    <div class="text-center text-muted">FAQs will be available soon.</div>
+                <?php endif; ?>
+            </div>
+        </div>
     </div>
 </section>
 <!-- CTA Section -->
