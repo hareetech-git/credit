@@ -109,7 +109,11 @@ include 'includes/header.php';
                         <div class="tab d-none" id="tab1">
                             <h4 class="section-title">Step 2: Profile & KYC</h4>
                             <div class="row g-4">
-                                <div class="col-md-4"><label class="form-label">PAN Number</label><input type="text" name="pan_number" class="form-control" style="text-transform:uppercase" required pattern="[A-Z]{5}[0-9]{4}[A-Z]{1}"></div>
+                                <div class="col-md-4">
+                                    <label class="form-label">PAN Number</label>
+                                    <input type="text" name="pan_number" id="pan_number" class="form-control" style="text-transform:uppercase" required pattern="[A-Z]{5}[0-9]{4}[A-Z]{1}">
+                                    <div class="invalid-feedback">Enter a valid PAN (e.g., ABCDE1234F).</div>
+                                </div>
                                 <div class="col-md-4">
                                     <label class="form-label">Employment</label>
                                     <select name="employee_type" id="employee_type" class="form-select" onchange="toggleCompany(this.value)">
@@ -290,6 +294,12 @@ include 'includes/header.php';
         let inputs = tabs[currentTab].querySelectorAll("input[required], select[required]");
         let valid = true;
         inputs.forEach(i => {
+            if (i.name === 'pan_number') {
+                const pan = (i.value || '').toUpperCase();
+                i.value = pan;
+                const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]$/;
+                i.setCustomValidity(panRegex.test(pan) ? '' : 'Invalid PAN');
+            }
             if(!i.checkValidity()) { 
                 i.classList.add("is-invalid"); 
                 valid = false; 
@@ -359,6 +369,18 @@ include 'includes/header.php';
 
     // Initialize on page load
     document.addEventListener('DOMContentLoaded', () => {
+        const panInput = document.getElementById('pan_number');
+        if (panInput) {
+            panInput.addEventListener('input', () => {
+                panInput.value = panInput.value.toUpperCase();
+                const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]$/;
+                panInput.setCustomValidity(panRegex.test(panInput.value) ? '' : 'Invalid PAN');
+                if (panInput.classList.contains('is-invalid')) {
+                    panInput.classList.toggle('is-invalid', !panRegex.test(panInput.value));
+                }
+            });
+        }
+
         // For Step 3, if a service is already selected (via slug), fetch docs immediately
         const serviceSelect = document.getElementById('service_select');
         if(serviceSelect && serviceSelect.value) {

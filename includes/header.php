@@ -16,12 +16,8 @@ include 'includes/connection.php';
 
 $current_page = basename($_SERVER['PHP_SELF']);
 
-// Show enquiry popup once per session (guest only)
-$showEnquiryPopup = false;
-if (!$isCustomerLoggedIn && empty($_SESSION['enquiry_popup_shown'])) {
-    $showEnquiryPopup = true;
-    $_SESSION['enquiry_popup_shown'] = true;
-}
+// Show enquiry popup on every visit to homepage for guests
+$showEnquiryPopup = (!$isCustomerLoggedIn && $current_page === 'index.php');
 
 // Fetch loan types for popup if needed
 $popup_loan_types = [];
