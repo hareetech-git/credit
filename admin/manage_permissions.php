@@ -30,6 +30,7 @@ function permissionGroup($perm_key) {
     if (strpos($perm_key, 'loan_') === 0) return 'Loans';
     if (strpos($perm_key, 'enquiry_') === 0) return 'Enquiries';
     if (strpos($perm_key, 'service_') === 0) return 'Services';
+    if (strpos($perm_key, 'faq_') === 0) return 'FAQs';
     return 'Other';
 }
 

@@ -35,6 +35,17 @@ if (isset($conn)) {
     }
 }
 
+// Fetch FAQs
+$faq_items = [];
+if (isset($conn)) {
+    $faq_res = mysqli_query($conn, "SELECT id, question, answer FROM faqs WHERE status = 1 ORDER BY id DESC LIMIT 8");
+    if ($faq_res && mysqli_num_rows($faq_res) > 0) {
+        while ($row = mysqli_fetch_assoc($faq_res)) {
+            $faq_items[] = $row;
+        }
+    }
+}
+
 // Check for session messages
 $errors = isset($_SESSION['errors']) ? $_SESSION['errors'] : [];
 $success_message = isset($_SESSION['success_message']) ? $_SESSION['success_message'] : '';
@@ -532,45 +543,6 @@ unset($_SESSION['success_message']);
         box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
     }
 
-    /* Interactive Plans */
-    .plans-section .plan-card {
-        border: 1px solid #f1f5f9;
-        border-radius: 18px;
-        transition: all 0.25s ease;
-        background: #ffffff;
-    }
-
-    .plans-section .plan-card:hover {
-        transform: translateY(-6px);
-        box-shadow: 0 18px 40px rgba(0, 0, 0, 0.08);
-        border-color: rgba(200, 16, 46, 0.2);
-    }
-
-    .plan-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        padding: 6px 12px;
-        border-radius: 999px;
-        background: rgba(200, 16, 46, 0.1);
-        color: var(--primary-color);
-        font-weight: 600;
-        font-size: 0.8rem;
-    }
-
-    .plan-cta {
-        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
-        color: #ffffff;
-        border: none;
-        border-radius: 999px;
-        padding: 10px 18px;
-        font-weight: 600;
-        text-decoration: none;
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-    }
-
     /* FAQ */
     .faq-section .accordion-button {
         font-weight: 600;
@@ -884,131 +856,6 @@ unset($_SESSION['success_message']);
                             <i class="fas fa-lock me-1"></i> Your information is 256-bit SSL encrypted
                         </div>
                     </form>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Interactive Plans Section -->
-<section class="py-5 bg-white plans-section">
-    <div class="container">
-        <div class="text-center mb-5">
-            <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill mb-3">
-                <i class="fas fa-bolt me-2"></i> Quick Plans
-            </span>
-            <h2 class="fw-bold mb-3">Pick a Plan, See Your EMI Instantly</h2>
-            <p class="text-muted">Click a plan to auto-fill the EMI calculator with real numbers.</p>
-        </div>
-
-        <div class="row g-4">
-            <div class="col-md-4">
-                <div class="plan-card p-4 h-100">
-                    <div class="plan-badge mb-3"><i class="fas fa-briefcase"></i> Business Boost</div>
-                    <h5 class="fw-bold mb-2">&#8377;7,50,000</h5>
-                    <p class="text-muted mb-3">Ideal for inventory, expansion, or cash flow.</p>
-                    <div class="d-flex justify-content-between small text-muted mb-3">
-                        <span>Rate: 12.5%</span>
-                        <span>Tenure: 4 Years</span>
-                    </div>
-                    <button class="plan-cta w-100 justify-content-center quick-plan"
-                            data-amount="750000" data-rate="12.5" data-years="4">
-                        <i class="fas fa-magic"></i> Apply This Plan
-                    </button>
-                </div>
-            </div>
-
-            <div class="col-md-4">
-                <div class="plan-card p-4 h-100">
-                    <div class="plan-badge mb-3"><i class="fas fa-home"></i> Home Upgrade</div>
-                    <h5 class="fw-bold mb-2">&#8377;12,00,000</h5>
-                    <p class="text-muted mb-3">Renovation, interiors, and appliance upgrades.</p>
-                    <div class="d-flex justify-content-between small text-muted mb-3">
-                        <span>Rate: 10.9%</span>
-                        <span>Tenure: 7 Years</span>
-                    </div>
-                    <button class="plan-cta w-100 justify-content-center quick-plan"
-                            data-amount="1200000" data-rate="10.9" data-years="7">
-                        <i class="fas fa-magic"></i> Apply This Plan
-                    </button>
-                </div>
-            </div>
-
-            <div class="col-md-4">
-                <div class="plan-card p-4 h-100">
-                    <div class="plan-badge mb-3"><i class="fas fa-user-graduate"></i> Education Plus</div>
-                    <h5 class="fw-bold mb-2">&#8377;6,00,000</h5>
-                    <p class="text-muted mb-3">Tuition, coaching, or career upskilling.</p>
-                    <div class="d-flex justify-content-between small text-muted mb-3">
-                        <span>Rate: 11.2%</span>
-                        <span>Tenure: 5 Years</span>
-                    </div>
-                    <button class="plan-cta w-100 justify-content-center quick-plan"
-                            data-amount="600000" data-rate="11.2" data-years="5">
-                        <i class="fas fa-magic"></i> Apply This Plan
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- FAQ Section -->
-<section class="py-5 bg-white faq-section">
-    <div class="container">
-        <div class="text-center mb-5">
-            <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill mb-3">
-                <i class="fas fa-circle-question me-2"></i> FAQs
-            </span>
-            <h2 class="fw-bold mb-3">Questions? We have answers.</h2>
-            <p class="text-muted">Clear, quick responses to common loan queries.</p>
-        </div>
-
-        <div class="accordion" id="faqAccordion">
-            <div class="accordion-item border-0 shadow-sm rounded-3 mb-3">
-                <h2 class="accordion-header" id="faqOne">
-                    <button class="accordion-button" type="button" data-bs-toggle="collapse"
-                            data-bs-target="#faqOneContent" aria-expanded="true" aria-controls="faqOneContent">
-                        How fast can I get my loan approved?
-                    </button>
-                </h2>
-                <div id="faqOneContent" class="accordion-collapse collapse show" aria-labelledby="faqOne"
-                     data-bs-parent="#faqAccordion">
-                    <div class="accordion-body text-muted">
-                        Most applications are processed within minutes after document verification, and disbursal
-                        can happen the same day for eligible profiles.
-                    </div>
-                </div>
-            </div>
-
-            <div class="accordion-item border-0 shadow-sm rounded-3 mb-3">
-                <h2 class="accordion-header" id="faqTwo">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                            data-bs-target="#faqTwoContent" aria-expanded="false" aria-controls="faqTwoContent">
-                        What documents do I need?
-                    </button>
-                </h2>
-                <div id="faqTwoContent" class="accordion-collapse collapse" aria-labelledby="faqTwo"
-                     data-bs-parent="#faqAccordion">
-                    <div class="accordion-body text-muted">
-                        Typically Aadhaar, PAN, bank statement, and income proof. The exact list may vary by loan type.
-                    </div>
-                </div>
-            </div>
-
-            <div class="accordion-item border-0 shadow-sm rounded-3">
-                <h2 class="accordion-header" id="faqThree">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                            data-bs-target="#faqThreeContent" aria-expanded="false" aria-controls="faqThreeContent">
-                        Can I prepay my loan?
-                    </button>
-                </h2>
-                <div id="faqThreeContent" class="accordion-collapse collapse" aria-labelledby="faqThree"
-                     data-bs-parent="#faqAccordion">
-                    <div class="accordion-body text-muted">
-                        Yes, you can prepay. Some loan products may have a small prepayment charge, which we
-                        always disclose upfront.
-                    </div>
                 </div>
             </div>
         </div>
@@ -1428,6 +1275,47 @@ unset($_SESSION['success_message']);
         </div>
     </div>
 </section>
+
+<!-- FAQ Section -->
+<section class="py-5 bg-white faq-section">
+    <div class="container">
+        <div class="text-center mb-5">
+            <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill mb-3">
+                <i class="fas fa-circle-question me-2"></i> FAQs
+            </span>
+            <h2 class="fw-bold mb-3">Questions? We have answers.</h2>
+            <p class="text-muted">Clear, quick responses to common loan queries.</p>
+        </div>
+
+        <?php if (!empty($faq_items)): ?>
+            <div class="accordion" id="faqAccordion">
+                <?php foreach ($faq_items as $index => $faq): 
+                    $collapse_id = 'faqItem' . (int)$faq['id'];
+                    $heading_id = 'heading' . (int)$faq['id'];
+                    $is_first = $index === 0;
+                ?>
+                <div class="accordion-item border-0 shadow-sm rounded-3 mb-3">
+                    <h2 class="accordion-header" id="<?= $heading_id ?>">
+                        <button class="accordion-button <?= $is_first ? '' : 'collapsed' ?>" type="button"
+                                data-bs-toggle="collapse" data-bs-target="#<?= $collapse_id ?>"
+                                aria-expanded="<?= $is_first ? 'true' : 'false' ?>" aria-controls="<?= $collapse_id ?>">
+                            <?= htmlspecialchars($faq['question']) ?>
+                        </button>
+                    </h2>
+                    <div id="<?= $collapse_id ?>" class="accordion-collapse collapse <?= $is_first ? 'show' : '' ?>"
+                         aria-labelledby="<?= $heading_id ?>" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body text-muted">
+                            <?= nl2br(htmlspecialchars($faq['answer'])) ?>
+                        </div>
+                    </div>
+                </div>
+                <?php endforeach; ?>
+            </div>
+        <?php else: ?>
+            <div class="text-center text-muted">FAQs will be available soon.</div>
+        <?php endif; ?>
+    </div>
+</section>
 <!-- CTA Section -->
 <section class="cta-section py-5">
     <i class="fas fa-coins cta-float float-1"></i>
@@ -1546,20 +1434,6 @@ unset($_SESSION['success_message']);
         syncInputs();
         calculateEMI();
 
-        const quickPlans = document.querySelectorAll('.quick-plan');
-        quickPlans.forEach(btn => {
-            btn.addEventListener('click', () => {
-                amountInput.value = btn.dataset.amount;
-                rateInput.value = btn.dataset.rate;
-                yearsInput.value = btn.dataset.years;
-                syncInputs();
-                calculateEMI();
-                document.getElementById('loanAmountInput')?.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'center'
-                });
-            });
-        });
     });
     
     // Form validation

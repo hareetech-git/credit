@@ -22,6 +22,7 @@ $enquiry_active = in_array($current_page, [
 // 3. Category & Service Active Logic
 $cat_active      = in_array($current_page, ['category.php']);
 $service_active  = in_array($current_page, ['services.php', 'service_details.php']);
+$faq_active = ($current_page == 'faqs.php');
 ?>
 
 <style>
@@ -117,6 +118,15 @@ $service_active  = in_array($current_page, ['services.php', 'service_details.php
                 <a href="enquiries.php" class="side-nav-link">
                     <i class="ri-question-answer-line"></i>
                     <span>Enquiries</span>
+                </a>
+            </li>
+            <?php endif; ?>
+
+            <?php if (hasAccess($conn, 'faq_create') || hasAccess($conn, 'faq_delete')): ?>
+            <li class="side-nav-item <?= $faq_active ? 'active' : '' ?>">
+                <a href="faqs.php" class="side-nav-link">
+                    <i class="ri-question-line"></i>
+                    <span>FAQs</span>
                 </a>
             </li>
             <?php endif; ?>
