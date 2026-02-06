@@ -1,5 +1,12 @@
 <?php
 if (session_status() === PHP_SESSION_NONE) {
+    // Make session cookie expire when browser/tab closes
+    session_set_cookie_params([
+        'lifetime' => 0,
+        'path' => '/',
+        'httponly' => true,
+        'samesite' => 'Lax'
+    ]);
     session_start();
 }
 $isCustomerLoggedIn = isset($_SESSION['customer_id']);
@@ -8,6 +15,28 @@ $customerName = $_SESSION['customer_name'] ?? '';
 include 'includes/connection.php'; 
 
 $current_page = basename($_SERVER['PHP_SELF']);
+
+// Show enquiry popup once per session (guest only)
+$showEnquiryPopup = false;
+if (!$isCustomerLoggedIn && empty($_SESSION['enquiry_popup_shown'])) {
+    $showEnquiryPopup = true;
+    $_SESSION['enquiry_popup_shown'] = true;
+}
+
+// Fetch loan types for popup if needed
+$popup_loan_types = [];
+if ($showEnquiryPopup && isset($conn)) {
+    $popup_query = "SELECT id, sub_category_name 
+                    FROM services_subcategories 
+                    WHERE status = 'active' AND live = 1 
+                    ORDER BY sequence ASC";
+    $popup_result = mysqli_query($conn, $popup_query);
+    if ($popup_result && mysqli_num_rows($popup_result) > 0) {
+        while ($row = mysqli_fetch_assoc($popup_result)) {
+            $popup_loan_types[] = $row;
+        }
+    }
+}
 
 // --- 1. FETCH MENU STRUCTURE (UPDATED) ---
 // Changed JOIN to LEFT JOIN to show Categories even if they have no services yet.
@@ -65,8 +94,59 @@ while ($row = mysqli_fetch_assoc($menu_res)) {
     <title>Udhar Capital</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"> -->
+     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"> 
    <link rel="stylesheet" href="includes/css/header.css">
+   
+   <style>
+       body,
+p,
+span,
+a,
+label,
+small,
+strong,
+em,
+b,
+u,
+del,
+ins,
+mark,
+blockquote,
+q,
+cite,
+pre,
+code,
+kbd,
+samp,
+var,
+abbr,
+address,
+time,
+summary,
+details,
+figcaption,
+caption,
+legend,
+li,
+dt,
+dd,
+th,
+td,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+button,
+input,
+textarea,
+select,
+option, marquee, div {
+    font-family: "Plus Jakarta Sans", sans-serif !important;
+}
+   </style>
+   
 </head>
 <body>
 

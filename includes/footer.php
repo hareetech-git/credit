@@ -1,7 +1,7 @@
 </main>
 
     <!-- Footer -->
-    <footer class="border-top" style="background-color:#0f172a; border-color:#1e293b !important;">
+    <footer class="" style="background-color:#0f172a; ">
 
         <!-- Wave Divider -->
         <div class="wave-divider">
@@ -64,9 +64,9 @@
 
                 <!-- Right: Links -->
                 <div class="col-lg-4 text-lg-end text-center">
-                    <a href="#" class="footer-top-link text-decoration-none fw-semibold me-3" style="transition: color 0.3s ease;">Media</a>
+                    <a href="terms.php" class="footer-top-link text-decoration-none fw-semibold me-3" style="transition: color 0.3s ease;">Terms</a>
                     <span style="color: #334155;">|</span>
-                    <a href="#" class="footer-top-link text-decoration-none fw-semibold ms-3" style="transition: color 0.3s ease;">FAQs</a>
+                    <a href="privacy.php" class="footer-top-link text-decoration-none fw-semibold ms-3" style="transition: color 0.3s ease;">Privacy</a>
                 </div>
             </div>
 
@@ -81,7 +81,8 @@
             <li class="mb-2"><a href="about.php" class="footer-quick-link text-decoration-none"><i class="fas fa-angle-right me-2"></i>About Us</a></li>
             <li class="mb-2"><a href="services.php" class="footer-quick-link text-decoration-none"><i class="fas fa-angle-right me-2"></i>Our Services</a></li>
             <li class="mb-2"><a href="contact.php" class="footer-quick-link text-decoration-none"><i class="fas fa-angle-right me-2"></i>Contact Us</a></li>
-            <li class="mb-2"><a href="careers.php" class="footer-quick-link text-decoration-none"><i class="fas fa-angle-right me-2"></i>Careers</a></li>
+            <li class="mb-2"><a href="terms.php" class="footer-quick-link text-decoration-none"><i class="fas fa-angle-right me-2"></i>Terms & Conditions</a></li>
+            <li class="mb-2"><a href="privacy.php" class="footer-quick-link text-decoration-none"><i class="fas fa-angle-right me-2"></i>Privacy Policy</a></li>
         </ul>
     </div>
 
@@ -149,6 +150,78 @@
         </div>
     
     </footer>
+
+    <?php if (!empty($showEnquiryPopup)): ?>
+    <div class="modal fade" id="enquiryModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content border-0" style="border-radius: 18px; overflow: hidden;">
+                <div class="modal-header" style="background: linear-gradient(135deg, #0f172a, #1f2937); color: #fff;">
+                    <div>
+                        <h5 class="modal-title fw-bold mb-1">Start Your Loan Enquiry</h5>
+                        <small class="opacity-75">Quick form, fast response</small>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" style="background: #f8fafc;">
+                    <?php
+                    $popup_loan_types_local = $popup_loan_types ?? [];
+                    if (empty($popup_loan_types_local) && isset($conn)) {
+                        $popup_query = "SELECT id, sub_category_name 
+                                        FROM services_subcategories 
+                                        WHERE status = 'active' AND live = 1 
+                                        ORDER BY sequence ASC";
+                        $popup_result = mysqli_query($conn, $popup_query);
+                        if ($popup_result && mysqli_num_rows($popup_result) > 0) {
+                            while ($row = mysqli_fetch_assoc($popup_result)) {
+                                $popup_loan_types_local[] = $row;
+                            }
+                        }
+                    }
+                    ?>
+                    <form method="POST" action="insert/enquiry_form.php" class="needs-validation" novalidate>
+                        <input type="hidden" name="redirect_to" value="<?php echo htmlspecialchars($_SERVER['REQUEST_URI'] ?? 'index.php'); ?>">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Full name *</label>
+                                <input type="text" name="full_name" class="form-control" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Phone number *</label>
+                                <input type="tel" name="phone" class="form-control" pattern="[0-9]{10}" maxlength="10" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Email *</label>
+                                <input type="email" name="email" class="form-control" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Loan type *</label>
+                                <select name="loan_type" class="form-control" required>
+                                    <option value="">-- Select loan type --</option>
+                                    <?php if (!empty($popup_loan_types_local)): ?>
+                                        <?php foreach ($popup_loan_types_local as $loan): ?>
+                                            <option value="<?php echo htmlspecialchars($loan['id']); ?>">
+                                                <?php echo htmlspecialchars($loan['sub_category_name']); ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    <?php endif; ?>
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label fw-semibold">Your query/message *</label>
+                                <textarea name="query_message" class="form-control" rows="3" required></textarea>
+                            </div>
+                            <div class="col-12 d-grid">
+                                <button type="submit" name="submit_enquiry" class="btn btn-primary rounded-pill fw-semibold">
+                                    <i class="fas fa-paper-plane me-2"></i> Submit enquiry
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <?php endif; ?>
 
    
 
@@ -433,6 +506,28 @@
     </style>
 
     <!-- Bootstrap JS -->
+    <?php if (!empty($showEnquiryPopup)): ?>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const modalEl = document.getElementById('enquiryModal');
+            if (modalEl && typeof bootstrap !== 'undefined') {
+                const modal = new bootstrap.Modal(modalEl);
+                modal.show();
+            }
+
+            const forms = modalEl ? modalEl.querySelectorAll('.needs-validation') : [];
+            Array.from(forms).forEach(form => {
+                form.addEventListener('submit', event => {
+                    if (!form.checkValidity()) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        });
+    </script>
+    <?php endif; ?>
 
 </body>
 </html>

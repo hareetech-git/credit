@@ -978,68 +978,65 @@ unset($_SESSION['success_message']);
         
         <div class="row g-4">
             <?php
-            $service_cards = [];
-            if (isset($conn)) {
-                $svc_query = "SELECT service_name, slug, short_description FROM services WHERE slug IS NOT NULL AND slug != '' ORDER BY id DESC LIMIT 6";
-                $svc_result = mysqli_query($conn, $svc_query);
-                if ($svc_result && mysqli_num_rows($svc_result) > 0) {
-                    while ($row = mysqli_fetch_assoc($svc_result)) {
-                        $service_cards[] = $row;
-                    }
-                }
-            }
-
-            $icons = ['fa-user', 'fa-briefcase', 'fa-user-md', 'fa-home', 'fa-credit-card', 'fa-car'];
-            $colors = ['primary', 'success', 'info', 'warning', 'danger', 'secondary'];
-
-            if (!empty($service_cards)):
-                foreach ($service_cards as $index => $service):
-                    $icon = $icons[$index % count($icons)];
-                    $color = $colors[$index % count($colors)];
-                    $title = $service['service_name'] ?? 'Loan Service';
-                    $desc = $service['short_description'] ?? 'Flexible loan options tailored to your needs.';
-                    $slug = $service['slug'] ?? '';
-                    $link = !empty($slug) ? 'services.php?slug=' . urlencode($slug) : 'apply-loan.php';
+            $loan_products = [
+                [
+                    'icon' => 'fa-user', 
+                    'name' => 'Personal Loan', 
+                    'desc' => 'Up to ₹25 Lakhs', 
+                    'rate' => '10.5% p.a.', 
+                    'color' => 'primary',
+                    'image' => 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&q=80&w=600'
+                ],
+                [
+                    'icon' => 'fa-briefcase', 
+                    'name' => 'Business Loan', 
+                    'desc' => 'Up to ₹2 Crores', 
+                    'rate' => '12% p.a.', 
+                    'color' => 'success',
+                    'image' => 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=600'
+                ],
+                [
+                    'icon' => 'fa-user-md', 
+                    'name' => 'Professional Loan', 
+                    'desc' => 'For Doctors & CAs', 
+                    'rate' => '11% p.a.', 
+                    'color' => 'info',
+                    'image' => 'https://images.unsplash.com/photo-1505751172876-fa1923c5c528?auto=format&fit=crop&q=80&w=600'
+                ],
+                [
+                    'icon' => 'fa-home', 
+                    'name' => 'Home Loan', 
+                    'desc' => 'Up to ₹5 Crores', 
+                    'rate' => '8.5% p.a.', 
+                    'color' => 'warning',
+                    'image' => 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&q=80&w=600'
+                ],
+                [
+                    'icon' => 'fa-credit-card', 
+                    'name' => 'Credit Card', 
+                    'desc' => 'Lifetime Free', 
+                    'rate' => '0% Joining', 
+                    'color' => 'danger',
+                    'image' => 'https://images.unsplash.com/photo-1556742502-ec7c0e9f34b1?auto=format&fit=crop&q=80&w=600'
+                ],
+                [
+                    'icon' => 'fa-car', 
+                    'name' => 'Vehicle Loan', 
+                    'desc' => '100% Finance', 
+                    'rate' => '9.5% p.a.', 
+                    'color' => 'secondary',
+                    'image' => 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&q=80&w=600'
+                ]
+            ];
+            
+            foreach ($loan_products as $index => $product):
             ?>
             <div class="col-lg-4 col-md-6">
-                <div class="card bg-white border-0 shadow-sm h-100 card-hover rounded-4">
-                    <div class="card-body p-4">
-                        <div class="d-flex align-items-start mb-3">
-                            <div class="bg-<?php echo $color; ?> bg-opacity-10 rounded-3 p-3 me-3">
-                                <i class="fas <?php echo $icon; ?> fs-4 text-<?php echo $color; ?>"></i>
-                            </div>
-                            <div class="flex-grow-1">
-                                <h5 class="fw-bold mb-1"><?php echo htmlspecialchars($title); ?></h5>
-                                <p class="text-muted small mb-0"><?php echo htmlspecialchars(limitWords($desc, 10)); ?></p>
-                            </div>
-                        </div>
-                        <div class="d-flex justify-content-between align-items-center pt-3 border-top border-light">
-                            <div>
-                                <small class="text-muted d-block" style="font-size: 0.7rem;">Explore</small>
-                                <span class="text-<?php echo $color; ?> fw-bold">View details</span>
-                            </div>
-                            <a href="<?php echo $link; ?>" class="btn btn-sm btn-outline-<?php echo $color; ?> rounded-pill px-3">
-                                View Eligibility
-                            </a>
-                        </div>
+                <div class="card bg-white border-0 shadow-sm h-100 card-hover rounded-4 overflow-hidden">
+                    <div style="height: 200px; overflow: hidden;">
+                        <img src="<?php echo $product['image']; ?>" class="w-100 h-100" style="object-fit: cover;" alt="<?php echo $product['name']; ?>">
                     </div>
-                </div>
-            </div>
-            <?php endforeach; else:
-                $loan_products = [
-                    ['icon' => 'fa-user', 'name' => 'Personal Loan', 'desc' => 'Flexible options with quick approvals', 'color' => 'primary', 'slug' => ''],
-                    ['icon' => 'fa-briefcase', 'name' => 'Business Loan', 'desc' => 'Capital support for growing businesses', 'color' => 'success', 'slug' => ''],
-                    ['icon' => 'fa-user-md', 'name' => 'Professional Loan', 'desc' => 'Plans for doctors and professionals', 'color' => 'info', 'slug' => ''],
-                    ['icon' => 'fa-home', 'name' => 'Home Loan', 'desc' => 'Affordable housing finance options', 'color' => 'warning', 'slug' => ''],
-                    ['icon' => 'fa-credit-card', 'name' => 'Credit Card', 'desc' => 'Rewards and lifestyle benefits', 'color' => 'danger', 'slug' => ''],
-                    ['icon' => 'fa-car', 'name' => 'Vehicle Loan', 'desc' => 'Drive your dream car sooner', 'color' => 'secondary', 'slug' => '']
-                ];
-
-                foreach ($loan_products as $product):
-                    $link = !empty($product['slug']) ? 'services.php?slug=' . urlencode($product['slug']) : 'apply-loan.php';
-            ?>
-            <div class="col-lg-4 col-md-6">
-                <div class="card bg-white border-0 shadow-sm h-100 card-hover rounded-4">
+                    
                     <div class="card-body p-4">
                         <div class="d-flex align-items-start mb-3">
                             <div class="bg-<?php echo $product['color']; ?> bg-opacity-10 rounded-3 p-3 me-3">
@@ -1047,22 +1044,22 @@ unset($_SESSION['success_message']);
                             </div>
                             <div class="flex-grow-1">
                                 <h5 class="fw-bold mb-1"><?php echo $product['name']; ?></h5>
-                                <p class="text-muted small mb-0"><?php echo htmlspecialchars(limitWords($product['desc'], 10)); ?></p>
+                                <p class="text-muted small mb-0"><?php echo $product['desc']; ?></p>
                             </div>
                         </div>
                         <div class="d-flex justify-content-between align-items-center pt-3 border-top border-light">
                             <div>
-                                <small class="text-muted d-block" style="font-size: 0.7rem;">Explore</small>
-                                <span class="text-<?php echo $product['color']; ?> fw-bold">View details</span>
+                                <small class="text-muted d-block" style="font-size: 0.7rem;">Starting at</small>
+                                <span class="text-<?php echo $product['color']; ?> fw-bold"><?php echo $product['rate']; ?></span>
                             </div>
-                            <a href="<?php echo $link; ?>" class="btn btn-sm btn-outline-<?php echo $product['color']; ?> rounded-pill px-3">
-                                View Eligibility
+                            <a href="services.php" class="btn btn-sm btn-outline-<?php echo $product['color']; ?> rounded-pill px-3">
+                                Check Eligibility
                             </a>
                         </div>
                     </div>
                 </div>
             </div>
-            <?php endforeach; endif; ?>
+            <?php endforeach; ?>
         </div>
     </div>
 </section>

@@ -18,6 +18,17 @@ if (isset($conn)) {
 $errors = isset($_SESSION['errors']) ? $_SESSION['errors'] : [];
 $success_message = isset($_SESSION['success_message']) ? $_SESSION['success_message'] : '';
 unset($_SESSION['errors'], $_SESSION['success_message']);
+
+// Fetch FAQs
+$faq_items = [];
+if (isset($conn)) {
+    $faq_res = mysqli_query($conn, "SELECT id, question, answer FROM faqs WHERE status = 1 ORDER BY id DESC LIMIT 6");
+    if ($faq_res && mysqli_num_rows($faq_res) > 0) {
+        while ($row = mysqli_fetch_assoc($faq_res)) {
+            $faq_items[] = $row;
+        }
+    }
+}
 ?>
 
 <style>
@@ -421,27 +432,50 @@ unset($_SESSION['errors'], $_SESSION['success_message']);
 
     .faq-list {
         display: grid;
-        gap: 16px;
+        gap: 12px;
     }
 
     .faq-item {
-        padding: 16px 18px;
         border-radius: 14px;
         border: 1px solid rgba(15, 23, 42, 0.08);
         background: rgba(248, 250, 252, 0.8);
+        overflow: hidden;
     }
 
-    .faq-item h4 {
-        margin: 0 0 6px;
+    .faq-item button {
+        width: 100%;
+        background: transparent;
+        border: none;
+        text-align: left;
+        padding: 14px 16px;
         font-size: 1rem;
         font-weight: 700;
         color: var(--contact-ink);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
     }
 
-    .faq-item p {
-        margin: 0;
+    .faq-item button::after {
+        content: '+';
+        font-weight: 800;
+        color: var(--contact-accent);
+    }
+
+    .faq-item button[aria-expanded="true"]::after {
+        content: '–';
+    }
+
+    .faq-item .faq-body {
+        padding: 0 16px 14px;
         color: var(--contact-muted);
         font-size: 0.92rem;
+        display: none;
+    }
+
+    .faq-item .faq-body.show {
+        display: block;
     }
 
     .hours-card {
@@ -776,18 +810,26 @@ unset($_SESSION['errors'], $_SESSION['success_message']);
             <div>
                 <h3 class="mb-3">Frequently asked questions</h3>
                 <div class="faq-list">
-                    <div class="faq-item">
-                        <h4>How soon will I receive a call back?</h4>
-                        <p>We typically respond within 2 hours during working days.</p>
-                    </div>
-                    <div class="faq-item">
-                        <h4>Do I need to visit the office?</h4>
-                        <p>No. Most applications can be completed online with digital documents.</p>
-                    </div>
-                    <div class="faq-item">
-                        <h4>What documents are required?</h4>
-                        <p>Common requirements include PAN, Aadhaar, and income proof.</p>
-                    </div>
+                    <?php if (!empty($faq_items)): ?>
+                        <?php foreach ($faq_items as $index => $faq): 
+                            $faq_id = 'contactFaq' . (int)$faq['id'];
+                            $is_open = $index === 0;
+                        ?>
+                            <div class="faq-item">
+                                <button type="button"
+                                        class="faq-toggle"
+                                        aria-expanded="<?= $is_open ? 'true' : 'false' ?>"
+                                        aria-controls="<?= $faq_id ?>">
+                                    <span><?= htmlspecialchars($faq['question']) ?></span>
+                                </button>
+                                <div id="<?= $faq_id ?>" class="faq-body <?= $is_open ? 'show' : '' ?>">
+                                    <?= nl2br(htmlspecialchars($faq['answer'])) ?>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <div class="text-muted">FAQs will be available soon.</div>
+                    <?php endif; ?>
                 </div>
             </div>
             <div class="hours-card">
@@ -838,6 +880,25 @@ unset($_SESSION['errors'], $_SESSION['success_message']);
                 }
                 form.classList.add('was-validated');
             }, false);
+        });
+
+        document.querySelectorAll('.faq-toggle').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const bodyId = btn.getAttribute('aria-controls');
+                const body = document.getElementById(bodyId);
+                const isOpen = btn.getAttribute('aria-expanded') === 'true';
+
+                document.querySelectorAll('.faq-toggle').forEach(otherBtn => {
+                    otherBtn.setAttribute('aria-expanded', 'false');
+                    const otherBody = document.getElementById(otherBtn.getAttribute('aria-controls'));
+                    if (otherBody) otherBody.classList.remove('show');
+                });
+
+                btn.setAttribute('aria-expanded', isOpen ? 'false' : 'true');
+                if (body) {
+                    body.classList.toggle('show', !isOpen);
+                }
+            });
         });
     })();
 </script>
