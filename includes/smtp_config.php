@@ -3,11 +3,12 @@
 // Prefer environment variables. You can also hardcode values here if needed.
 
 return [
-    'host' => 'smtp.gmail.com',
+    'host' => 'smtp.hostinger.com',
     'port' => 587,
-    'username' => 'srivastavasanyam8052@gmail.com',
-    'password' => 'qsthenwyyjfhrber',
+    'username' => 'sanayam@hareetech.com',
+    'password' => 'Hareetech@San25',
     'encryption' => 'tls',
-    'from_address' => 'srivastavasanyam8052@gmail.com',
+    'from_address' => 'sanayam@hareetech.com',
     'from_name' => 'Udhaar Capital',
 ];
+
