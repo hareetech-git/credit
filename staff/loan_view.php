@@ -30,6 +30,10 @@ if (!$loan) {
     header('Location: loan_applications.php?err=Loan not assigned to you');
     exit();
 }
+$loan_interest_type = strtolower((string)($loan['interest_type'] ?? 'year'));
+if ($loan_interest_type !== 'month') {
+    $loan_interest_type = 'year';
+}
 
 $docs_res = mysqli_query($conn, "SELECT * FROM loan_application_docs WHERE loan_application_id = $loan_id");
 ?>
@@ -131,11 +135,11 @@ $docs_res = mysqli_query($conn, "SELECT * FROM loan_application_docs WHERE loan_
                         </div>
                         <div class="col-4">
                             <span class="opacity-75 x-small d-block text-uppercase">Tenure</span>
-                            <span class="h4 fw-bold mb-0"><?= $loan['tenure_years'] ?>Y</span>
+                            <span class="h4 fw-bold mb-0"><?= (int)$loan['tenure_years'] ?>M</span>
                         </div>
                         <div class="col-4">
                             <span class="opacity-75 x-small d-block text-uppercase">Interest</span>
-                            <span class="h4 fw-bold mb-0"><?= number_format((float)$loan['interest_rate'], 2) ?>%</span>
+                            <span class="h4 fw-bold mb-0"><?= number_format((float)$loan['interest_rate'], 2) ?>% (<?= strtoupper($loan_interest_type) ?>)</span>
                         </div>
                     </div>
                 </div>
@@ -162,14 +166,33 @@ $docs_res = mysqli_query($conn, "SELECT * FROM loan_application_docs WHERE loan_
                                 </select>
                             </div>
 
+                            <div class="mb-4">
+                                <label class="form-label">Approved Amount (Rs)</label>
+                                <input type="number" min="0" step="0.01" name="requested_amount" id="staff_requested_amount" class="form-control" value="<?= htmlspecialchars($loan['requested_amount']) ?>" required>
+                            </div>
+
                             <div class="row g-3 mb-4">
                                 <div class="col-6">
-                                    <label class="form-label">Adjust Tenure</label>
-                                    <input type="number" name="tenure_years" class="form-control" value="<?= $loan['tenure_years'] ?>">
+                                    <label class="form-label">Tenure (Months)</label>
+                                    <input type="number" min="1" name="tenure_months" id="staff_tenure_months" class="form-control" value="<?= (int)$loan['tenure_years'] ?>" required>
                                 </div>
                                 <div class="col-6">
-                                    <label class="form-label">Adjust Rate %</label>
-                                    <input type="number" step="0.01" name="interest_rate" class="form-control" value="<?= $loan['interest_rate'] ?>">
+                                    <label class="form-label">EMI (Rs)</label>
+                                    <input type="number" min="0" step="0.01" name="emi_amount" id="staff_emi_amount" class="form-control" value="<?= htmlspecialchars($loan['emi_amount']) ?>" readonly>
+                                </div>
+                            </div>
+
+                            <div class="row g-3 mb-4">
+                                <div class="col-6">
+                                    <label class="form-label">Interest Rate</label>
+                                    <input type="number" min="0" step="0.01" name="interest_rate" id="staff_interest_rate" class="form-control" value="<?= htmlspecialchars($loan['interest_rate']) ?>" required>
+                                </div>
+                                <div class="col-6">
+                                    <label class="form-label">Interest Type</label>
+                                    <select name="interest_type" id="staff_interest_type" class="form-select" required>
+                                        <option value="year" <?= $loan_interest_type === 'year' ? 'selected' : '' ?>>Yearly</option>
+                                        <option value="month" <?= $loan_interest_type === 'month' ? 'selected' : '' ?>>Monthly</option>
+                                    </select>
                                 </div>
                             </div>
 
@@ -251,5 +274,47 @@ $docs_res = mysqli_query($conn, "SELECT * FROM loan_application_docs WHERE loan_
 
     </div>
 </div>
+
+<script>
+(function () {
+    var amountEl = document.getElementById('staff_requested_amount');
+    var tenureEl = document.getElementById('staff_tenure_months');
+    var rateEl = document.getElementById('staff_interest_rate');
+    var typeEl = document.getElementById('staff_interest_type');
+    var emiEl = document.getElementById('staff_emi_amount');
+
+    if (!amountEl || !tenureEl || !rateEl || !typeEl || !emiEl) return;
+
+    function calcEmi() {
+        var p = parseFloat(amountEl.value) || 0;
+        var n = parseInt(tenureEl.value, 10) || 0;
+        var r = parseFloat(rateEl.value) || 0;
+        var type = typeEl.value === 'month' ? 'month' : 'year';
+
+        if (p <= 0 || n <= 0) {
+            emiEl.value = '';
+            return;
+        }
+
+        var monthlyRate = type === 'year' ? (r / 1200) : (r / 100);
+        var emi = 0;
+
+        if (monthlyRate <= 0) {
+            emi = p / n;
+        } else {
+            var factor = Math.pow(1 + monthlyRate, n);
+            emi = (p * monthlyRate * factor) / (factor - 1);
+        }
+
+        emiEl.value = isFinite(emi) ? emi.toFixed(2) : '';
+    }
+
+    amountEl.addEventListener('input', calcEmi);
+    tenureEl.addEventListener('input', calcEmi);
+    rateEl.addEventListener('input', calcEmi);
+    typeEl.addEventListener('change', calcEmi);
+    calcEmi();
+})();
+</script>
 
 <?php include 'footer.php'; ?>

@@ -27,6 +27,10 @@ $loan_sql = "SELECT l.*, c.full_name, c.email, c.phone, s.service_name, st.name 
 $loan = mysqli_fetch_assoc(mysqli_query($conn, $loan_sql));
 
 if (!$loan) die("Loan not found.");
+$loan_interest_type = strtolower((string)($loan['interest_type'] ?? 'year'));
+if ($loan_interest_type !== 'month') {
+    $loan_interest_type = 'year';
+}
 
 // Fetch Documents
 $docs_res = mysqli_query($conn, "SELECT * FROM loan_application_docs WHERE loan_application_id = $loan_id");
@@ -106,8 +110,8 @@ $docs_res = mysqli_query($conn, "SELECT * FROM loan_application_docs WHERE loan_
                             </div>
 
                             <div class="data-item"><span class="data-label">Requested Amount</span><span class="data-value">₹<?= number_format($loan['requested_amount']) ?></span></div>
-                            <div class="data-item"><span class="data-label">Tenure</span><span class="data-value"><?= $loan['tenure_years'] ?> Years</span></div>
-                            <div class="data-item"><span class="data-label">Interest Rate</span><span class="data-value"><?= number_format((float)$loan['interest_rate'], 2) ?>%</span></div>
+                            <div class="data-item"><span class="data-label">Tenure</span><span class="data-value"><?= (int)$loan['tenure_years'] ?> Months</span></div>
+                            <div class="data-item"><span class="data-label">Interest Rate</span><span class="data-value"><?= number_format((float)$loan['interest_rate'], 2) ?>% (<?= strtoupper($loan_interest_type) ?>)</span></div>
                             <div class="data-item">
                                 <span class="data-label">Current Status</span>
                                 <span class="badge-status bg-dark text-white"><?= strtoupper($loan['status']) ?></span>
@@ -133,20 +137,34 @@ $docs_res = mysqli_query($conn, "SELECT * FROM loan_application_docs WHERE loan_
                                     </select>
                                 </div>
 
+                                <div class="mb-3">
+                                    <label class="form-label">Approved Amount (Rs)</label>
+                                    <input type="number" min="0" step="0.01" name="requested_amount" id="admin_requested_amount" class="form-control form-control-sm" value="<?= htmlspecialchars($loan['requested_amount']) ?>" required>
+                                </div>
+
                                 <div class="row g-2 mb-3">
                                     <div class="col-6">
-                                        <label class="form-label">Tenure (Yrs)</label>
-                                        <input type="number" name="tenure_years" class="form-control form-control-sm" value="<?= $loan['tenure_years'] ?>">
+                                        <label class="form-label">Tenure (Months)</label>
+                                        <input type="number" min="1" name="tenure_months" id="admin_tenure_months" class="form-control form-control-sm" value="<?= (int)$loan['tenure_years'] ?>" required>
                                     </div>
                                     <div class="col-6">
-                                        <label class="form-label">EMI (₹)</label>
-                                        <input type="number" name="emi_amount" class="form-control form-control-sm" value="<?= $loan['emi_amount'] ?>">
+                                        <label class="form-label">EMI (Rs)</label>
+                                        <input type="number" min="0" step="0.01" name="emi_amount" id="admin_emi_amount" class="form-control form-control-sm" value="<?= htmlspecialchars($loan['emi_amount']) ?>" readonly>
                                     </div>
                                 </div>
 
-                                <div class="mb-3">
-                                    <label class="form-label">Approved Interest Rate (% p.a.)</label>
-                                    <input type="number" step="0.01" name="interest_rate" class="form-control form-control-sm" value="<?= htmlspecialchars($loan['interest_rate']) ?>">
+                                <div class="row g-2 mb-3">
+                                    <div class="col-6">
+                                        <label class="form-label">Interest Rate</label>
+                                        <input type="number" min="0" step="0.01" name="interest_rate" id="admin_interest_rate" class="form-control form-control-sm" value="<?= htmlspecialchars($loan['interest_rate']) ?>" required>
+                                    </div>
+                                    <div class="col-6">
+                                        <label class="form-label">Interest Type</label>
+                                        <select name="interest_type" id="admin_interest_type" class="form-select form-select-sm" required>
+                                            <option value="year" <?= $loan_interest_type === 'year' ? 'selected' : '' ?>>Yearly</option>
+                                            <option value="month" <?= $loan_interest_type === 'month' ? 'selected' : '' ?>>Monthly</option>
+                                        </select>
+                                    </div>
                                 </div>
 
                                 <div class="mb-3">
@@ -282,5 +300,47 @@ $docs_res = mysqli_query($conn, "SELECT * FROM loan_application_docs WHERE loan_
         </div>
     </div>
 </div>
+
+<script>
+(function () {
+    var amountEl = document.getElementById('admin_requested_amount');
+    var tenureEl = document.getElementById('admin_tenure_months');
+    var rateEl = document.getElementById('admin_interest_rate');
+    var typeEl = document.getElementById('admin_interest_type');
+    var emiEl = document.getElementById('admin_emi_amount');
+
+    if (!amountEl || !tenureEl || !rateEl || !typeEl || !emiEl) return;
+
+    function calcEmi() {
+        var p = parseFloat(amountEl.value) || 0;
+        var n = parseInt(tenureEl.value, 10) || 0;
+        var r = parseFloat(rateEl.value) || 0;
+        var type = typeEl.value === 'month' ? 'month' : 'year';
+
+        if (p <= 0 || n <= 0) {
+            emiEl.value = '';
+            return;
+        }
+
+        var monthlyRate = type === 'year' ? (r / 1200) : (r / 100);
+        var emi = 0;
+
+        if (monthlyRate <= 0) {
+            emi = p / n;
+        } else {
+            var factor = Math.pow(1 + monthlyRate, n);
+            emi = (p * monthlyRate * factor) / (factor - 1);
+        }
+
+        emiEl.value = isFinite(emi) ? emi.toFixed(2) : '';
+    }
+
+    amountEl.addEventListener('input', calcEmi);
+    tenureEl.addEventListener('input', calcEmi);
+    rateEl.addEventListener('input', calcEmi);
+    typeEl.addEventListener('change', calcEmi);
+    calcEmi();
+})();
+</script>
 
 <?php include 'footer.php'; ?>

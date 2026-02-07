@@ -267,6 +267,7 @@ CREATE TABLE `loan_applications` (
   `assigned_by` bigint(20) UNSIGNED DEFAULT NULL,
   `assigned_at` timestamp NULL DEFAULT NULL,
   `interest_rate` decimal(5,2) NOT NULL DEFAULT 0.00,
+  `interest_type` enum('year','month') NOT NULL DEFAULT 'year',
   `requested_amount` decimal(15,2) NOT NULL,
   `tenure_years` int(11) NOT NULL,
   `emi_amount` decimal(15,2) NOT NULL,
@@ -279,8 +280,8 @@ CREATE TABLE `loan_applications` (
 -- Dumping data for table `loan_applications`
 --
 
-INSERT INTO `loan_applications` (`id`, `customer_id`, `service_id`, `assigned_staff_id`, `assigned_by`, `assigned_at`, `interest_rate`, `requested_amount`, `tenure_years`, `emi_amount`, `status`, `created_at`, `rejection_note`) VALUES
-(2, 2, 1, NULL, NULL, NULL, 0.00, 90000.00, 0, 0.00, 'approved', '2026-02-07 06:06:11', '');
+INSERT INTO `loan_applications` (`id`, `customer_id`, `service_id`, `assigned_staff_id`, `assigned_by`, `assigned_at`, `interest_rate`, `interest_type`, `requested_amount`, `tenure_years`, `emi_amount`, `status`, `created_at`, `rejection_note`) VALUES
+(2, 2, 1, NULL, NULL, NULL, 0.00, 'year', 90000.00, 0, 0.00, 'approved', '2026-02-07 06:06:11', '');
 
 -- --------------------------------------------------------
 

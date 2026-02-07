@@ -14,6 +14,11 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 $staff_id = (int)$_SESSION['staff_id'];
 $action = $_POST['action'] ?? '';
+$interest_type_column_exists = false;
+$interest_col_res = mysqli_query($conn, "SHOW COLUMNS FROM loan_applications LIKE 'interest_type'");
+if ($interest_col_res && mysqli_num_rows($interest_col_res) > 0) {
+    $interest_type_column_exists = true;
+}
 
 function staffHasAccess($conn, $perm_key, $staff_id) {
     $query = "
@@ -28,6 +33,31 @@ function staffHasAccess($conn, $perm_key, $staff_id) {
     ";
     $result = mysqli_query($conn, $query);
     return (mysqli_num_rows($result) > 0);
+}
+
+function normalizeInterestType($value) {
+    $type = strtolower(trim((string)$value));
+    return ($type === 'month') ? 'month' : 'year';
+}
+
+function calculateEmiAmount($principal, $tenure_months, $interest_rate, $interest_type) {
+    $p = max(0.0, (float)$principal);
+    $n = max(1, (int)$tenure_months);
+    $r = max(0.0, (float)$interest_rate);
+    $type = normalizeInterestType($interest_type);
+
+    $monthly_rate = ($type === 'year') ? ($r / 1200) : ($r / 100);
+    if ($monthly_rate <= 0) {
+        return round($p / $n, 2);
+    }
+
+    $factor = pow(1 + $monthly_rate, $n);
+    if ($factor <= 1) {
+        return round($p / $n, 2);
+    }
+
+    $emi = $p * $monthly_rate * $factor / ($factor - 1);
+    return round($emi, 2);
 }
 
 if ($action == 'update_loan_status') {
@@ -45,9 +75,11 @@ if ($action == 'update_loan_status') {
 
     $status = mysqli_real_escape_string($conn, $_POST['status']);
     $note = mysqli_real_escape_string($conn, $_POST['note']);
-    $tenure = (int)$_POST['tenure_years'];
-    $emi = (float)$_POST['emi_amount'];
+    $requested_amount = isset($_POST['requested_amount']) ? (float)$_POST['requested_amount'] : 0.0;
+    $tenure_months = isset($_POST['tenure_months']) ? (int)$_POST['tenure_months'] : (int)($_POST['tenure_years'] ?? 0);
     $interest_rate = isset($_POST['interest_rate']) ? (float)$_POST['interest_rate'] : 0.0;
+    $interest_type = normalizeInterestType($_POST['interest_type'] ?? 'year');
+    $emi = calculateEmiAmount($requested_amount, $tenure_months, $interest_rate, $interest_type);
     $prev_status = '';
 
     $prev_res = mysqli_query($conn, "SELECT status FROM loan_applications WHERE id=$loan_id LIMIT 1");
@@ -56,12 +88,19 @@ if ($action == 'update_loan_status') {
         $prev_status = strtolower((string)$prev['status']);
     }
 
+    $interest_type_set_sql = '';
+    if ($interest_type_column_exists) {
+        $interest_type_set_sql = ", interest_type='$interest_type'";
+    }
+
     $sql = "UPDATE loan_applications SET 
             status='$status', 
             rejection_note='$note', 
-            tenure_years=$tenure, 
+            requested_amount=$requested_amount,
+            tenure_years=$tenure_months, 
             emi_amount=$emi,
             interest_rate=$interest_rate
+            $interest_type_set_sql
             WHERE id=$loan_id";
 
     if (mysqli_query($conn, $sql)) {
