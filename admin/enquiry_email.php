@@ -24,7 +24,7 @@ $enquiry = mysqli_fetch_assoc($enquiry_res);
 $msg = trim($_GET['msg'] ?? '');
 $err = trim($_GET['err'] ?? '');
 
-$subject_default = "Regarding your enquiry #{$enquiry_id}";
+$subject_default = "Regarding your enquiry ";
 $message_default = "Dear " . htmlspecialchars($enquiry['full_name']) . ",\n\nThanks for reaching out to Udhar Capital. We’re currently reviewing your request and our team will get back to you shortly.\n\nBest Regards,\nTeam Udhar Capital";
 ?>
 

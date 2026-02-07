@@ -15,7 +15,7 @@ function renderEnquiryEmailTemplate($data) {
             <div style="padding:24px; color:#0f172a;">
                 <p style="font-size:16px; margin:0 0 12px;">Hello ' . $name . ',</p>
                 <p style="margin:0 0 16px; color:#475569;">
-                    We’re following up on your enquiry <strong>#' . $enquiryId . '</strong>
+                    We’re following up on your enquiry 
                     regarding <strong>' . $loanType . '</strong>.
                 </p>
                 <div style="background:#f8fafc; border:1px solid #e2e8f0; padding:16px; border-radius:8px; color:#0f172a;">
