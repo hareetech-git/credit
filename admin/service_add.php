@@ -259,6 +259,16 @@ if ($selected_category) {
         JPG / PNG recommended (max 2MB)
     </small>
 </div>
+<div class="mb-4">
+    <label class="form-label">
+        Service Card Image
+        <small class="text-muted">(Image used on index service cards)</small>
+    </label>
+    <input type="file" name="card_img" class="form-control" accept="image/*">
+    <small class="text-muted" style="font-size:0.75rem;">
+        JPG / PNG recommended (max 2MB)
+    </small>
+</div>
 
                                             <button class="btn btn-primary-custom px-5">Save & Next</button>
                                         </form>

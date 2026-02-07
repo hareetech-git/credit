@@ -303,6 +303,29 @@ if ($selected_category) {
         Upload only if you want to replace the current image
     </small>
 </div>
+<div class="mb-4">
+    <label class="form-label">
+        Service Card Image
+        <small class="text-muted">(Image used on index service cards)</small>
+    </label>
+
+    <?php if (!empty($service_data['card_img'])): ?>
+        <div class="mb-2">
+            <img src="../<?= htmlspecialchars($service_data['card_img']) ?>"
+                 style="max-height:80px; border-radius:6px;">
+            <span class="text-muted small ms-2">Current</span>
+        </div>
+    <?php endif; ?>
+
+    <input type="hidden" name="existing_card_img"
+           value="<?= htmlspecialchars($service_data['card_img']) ?>">
+
+    <input type="file" name="card_img" class="form-control" accept="image/*">
+
+    <small class="text-muted" style="font-size:0.75rem;">
+        Upload only if you want to replace the current image
+    </small>
+</div>
 
                                     <button class="btn btn-primary-pro px-5">Update Core Info</button>
                                 </form>

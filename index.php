@@ -40,10 +40,10 @@ $service_cards = [];
 if (isset($conn)) {
     $service_res = mysqli_query(
         $conn,
-        "SELECT id, service_name, title, slug, short_description, hero_image
+        "SELECT id, service_name, title, slug, short_description, hero_image, card_img
          FROM services
          WHERE slug IS NOT NULL AND slug != ''
-         ORDER BY created_at DESC
+         ORDER BY id DESC
          LIMIT 6"
     );
 
@@ -1104,7 +1104,9 @@ unset($_SESSION['success_message']);
                     $icon = $card_icons[$index % count($card_icons)];
                     $card_title = !empty($service_card['service_name']) ? $service_card['service_name'] : $service_card['title'];
                     $card_desc = !empty($service_card['short_description']) ? limitWords($service_card['short_description'], 8) : 'Explore this service';
-                    $card_image = !empty($service_card['hero_image']) ? $service_card['hero_image'] : 'includes/assets/service detail.png';
+                    $card_image = !empty($service_card['card_img'])
+                        ? $service_card['card_img']
+                        : 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&q=80&w=600';
                 ?>
                 <div class="col-lg-4 col-md-6">
                     <div class="card bg-white border-0 shadow-sm h-100 card-hover rounded-4 overflow-hidden">

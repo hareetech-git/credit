@@ -14,6 +14,19 @@ function clean($conn, $str) {
     return mysqli_real_escape_string($conn, trim($str));
 }
 
+function normalizeImageExt($filename) {
+    $ext = strtolower((string)pathinfo($filename, PATHINFO_EXTENSION));
+    if ($ext === 'acif') {
+        $ext = 'avif';
+    }
+    return $ext;
+}
+
+function isAllowedImageExt($ext) {
+    $allowed = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'avif', 'jfif'];
+    return in_array($ext, $allowed, true);
+}
+
 // HELPER: Batch Insert Loop
 function batch_insert($conn, $keys, $values, $sql_template) {
     $count = 0;
@@ -56,6 +69,7 @@ switch ($type) {
         $long_desc       = clean($conn, $_POST['long_description']);
         // HERO IMAGE UPLOAD
 $hero_image = '';
+$card_img = '';
 
 if (!empty($_FILES['hero_image']['name'])) {
     $upload_dir = "../../../uploads/services/";
@@ -63,7 +77,11 @@ if (!empty($_FILES['hero_image']['name'])) {
         mkdir($upload_dir, 0777, true);
     }
 
-    $ext = pathinfo($_FILES['hero_image']['name'], PATHINFO_EXTENSION);
+    $ext = normalizeImageExt($_FILES['hero_image']['name']);
+    if (!isAllowedImageExt($ext)) {
+        header("Location: $base_url?error=Invalid hero image format. Allowed: jpg, jpeg, png, gif, webp, avif");
+        exit;
+    }
     $file_name = "service_" . time() . "_" . rand(100,999) . "." . $ext;
     $target = $upload_dir . $file_name;
 
@@ -72,13 +90,33 @@ if (!empty($_FILES['hero_image']['name'])) {
     }
 }
 
+// CARD IMAGE UPLOAD
+if (!empty($_FILES['card_img']['name'])) {
+    $upload_dir = "../../../uploads/services/";
+    if (!is_dir($upload_dir)) {
+        mkdir($upload_dir, 0777, true);
+    }
+
+    $ext = normalizeImageExt($_FILES['card_img']['name']);
+    if (!isAllowedImageExt($ext)) {
+        header("Location: $base_url?error=Invalid card image format. Allowed: jpg, jpeg, png, gif, webp, avif");
+        exit;
+    }
+    $file_name = "service_card_" . time() . "_" . rand(100,999) . "." . $ext;
+    $target = $upload_dir . $file_name;
+
+    if (move_uploaded_file($_FILES['card_img']['tmp_name'], $target)) {
+        $card_img = "uploads/services/" . $file_name;
+    }
+}
+
 
         if ($category_id > 0 && $title !== '') {
             $sql = "INSERT INTO services 
-(category_id, sub_category_id, service_name, title, slug, short_description, long_description, hero_image)
+(category_id, sub_category_id, service_name, title, slug, short_description, long_description, hero_image, card_img)
 
                     VALUES 
-                    ($category_id, $sub_category_id, '$service_name', '$title', '$slug', '$short_desc', '$long_desc', '$hero_image')";
+                    ($category_id, $sub_category_id, '$service_name', '$title', '$slug', '$short_desc', '$long_desc', '$hero_image', '$card_img')";
             
             if (mysqli_query($conn, $sql)) {
                 $new_id = mysqli_insert_id($conn);
@@ -178,7 +216,10 @@ if (!empty($_FILES['hero_image']['name'])) {
 
             // Check if file exists at this index
             if (!empty($images['name'][$i])) {
-                $ext = pathinfo($images['name'][$i], PATHINFO_EXTENSION);
+                $ext = normalizeImageExt($images['name'][$i]);
+                if (!isAllowedImageExt($ext)) {
+                    continue;
+                }
                 $file_name = "why_" . time() . "_" . rand(100,999) . "." . $ext;
                 $target = $upload_dir . $file_name;
 
@@ -221,7 +262,10 @@ if (!empty($_FILES['hero_image']['name'])) {
         $img_path   = '';
 
         if (!empty($images['name'][$i])) {
-            $ext = pathinfo($images['name'][$i], PATHINFO_EXTENSION);
+            $ext = normalizeImageExt($images['name'][$i]);
+            if (!isAllowedImageExt($ext)) {
+                continue;
+            }
             $file_name = "bank_" . time() . "_" . rand(100,999) . "." . $ext;
             $target = $upload_dir . $file_name;
 

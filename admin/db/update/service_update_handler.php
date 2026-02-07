@@ -19,6 +19,19 @@ function clean($conn, $str) {
     return mysqli_real_escape_string($conn, trim($str));
 }
 
+function normalizeImageExt($filename) {
+    $ext = strtolower((string)pathinfo($filename, PATHINFO_EXTENSION));
+    if ($ext === 'acif') {
+        $ext = 'avif';
+    }
+    return $ext;
+}
+
+function isAllowedImageExt($ext) {
+    $allowed = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'avif', 'jfif'];
+    return in_array($ext, $allowed, true);
+}
+
 // HELPER: Wipe Old Data & Batch Insert New
 function update_child_table($conn, $service_id, $table, $keys, $values, $sql_template) {
     // 1. Wipe existing rows for this service in this table
@@ -61,10 +74,11 @@ switch ($type) {
         $slug_source = empty($raw_slug) ? $title : $raw_slug;
         $slug        = strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '-', $slug_source)));
 
-        $short_desc      = clean($conn, $_POST['short_description']);
-        $long_desc       = clean($conn, $_POST['long_description']);
+$short_desc      = clean($conn, $_POST['short_description']);
+$long_desc       = clean($conn, $_POST['long_description']);
 // HERO IMAGE LOGIC
 $hero_image = clean($conn, $_POST['existing_hero_image'] ?? '');
+$card_img = clean($conn, $_POST['existing_card_img'] ?? '');
 
 if (!empty($_FILES['hero_image']['name'])) {
 
@@ -73,7 +87,11 @@ if (!empty($_FILES['hero_image']['name'])) {
         mkdir($upload_dir, 0777, true);
     }
 
-    $ext = pathinfo($_FILES['hero_image']['name'], PATHINFO_EXTENSION);
+    $ext = normalizeImageExt($_FILES['hero_image']['name']);
+    if (!isAllowedImageExt($ext)) {
+        header("Location: $base_url?service_id=$service_id&tab=info&error=Invalid hero image format. Allowed: jpg, jpeg, png, gif, webp, avif");
+        exit;
+    }
     $file_name = "service_" . time() . "_" . rand(100,999) . "." . $ext;
     $target = $upload_dir . $file_name;
 
@@ -88,6 +106,32 @@ if (!empty($_FILES['hero_image']['name'])) {
     }
 }
 
+// CARD IMAGE LOGIC
+if (!empty($_FILES['card_img']['name'])) {
+
+    $upload_dir = "../../../uploads/services/";
+    if (!is_dir($upload_dir)) {
+        mkdir($upload_dir, 0777, true);
+    }
+
+    $ext = normalizeImageExt($_FILES['card_img']['name']);
+    if (!isAllowedImageExt($ext)) {
+        header("Location: $base_url?service_id=$service_id&tab=info&error=Invalid card image format. Allowed: jpg, jpeg, png, gif, webp, avif");
+        exit;
+    }
+    $file_name = "service_card_" . time() . "_" . rand(100,999) . "." . $ext;
+    $target = $upload_dir . $file_name;
+
+    if (move_uploaded_file($_FILES['card_img']['tmp_name'], $target)) {
+
+        if (!empty($card_img) && file_exists("../../../".$card_img)) {
+            unlink("../../../".$card_img);
+        }
+
+        $card_img = "uploads/services/" . $file_name;
+    }
+}
+
         // 3. Update Database
         $sql = "UPDATE services SET 
     category_id = $category_id,
@@ -98,6 +142,7 @@ if (!empty($_FILES['hero_image']['name'])) {
     short_description = '$short_desc',
     long_description = '$long_desc',
     hero_image = '$hero_image',
+    card_img = '$card_img',
     updated_at = NOW()
 WHERE id = $service_id
     ";
@@ -212,7 +257,10 @@ WHERE id = $service_id
 
             // Check if a NEW file was uploaded for this index
             if (!empty($new_images['name'][$i])) {
-                $ext = pathinfo($new_images['name'][$i], PATHINFO_EXTENSION);
+                $ext = normalizeImageExt($new_images['name'][$i]);
+                if (!isAllowedImageExt($ext)) {
+                    continue;
+                }
                 $file_name = "why_" . time() . "_" . rand(100,999) . "." . $ext;
                 $target = $upload_dir . $file_name;
 
@@ -258,7 +306,10 @@ WHERE id = $service_id
 
         // new image uploaded?
         if (!empty($files['name'][$i])) {
-            $ext = pathinfo($files['name'][$i], PATHINFO_EXTENSION);
+            $ext = normalizeImageExt($files['name'][$i]);
+            if (!isAllowedImageExt($ext)) {
+                continue;
+            }
             $file = "bank_" . time() . "_" . rand(100,999) . "." . $ext;
 
             if (move_uploaded_file($files['tmp_name'][$i], $upload_dir.$file)) {
