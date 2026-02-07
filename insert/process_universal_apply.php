@@ -16,6 +16,9 @@ try {
         $full_name = mysqli_real_escape_string($conn, trim($_POST['full_name']));
         $email     = mysqli_real_escape_string($conn, trim($_POST['email']));
         $phone     = mysqli_real_escape_string($conn, trim($_POST['phone']));
+        if (!preg_match('/^[6-9][0-9]{9}$/', $phone)) {
+            throw new Exception("Enter valid 10-digit mobile number starting with 6-9.");
+        }
         $check = mysqli_query($conn, "SELECT id FROM customers WHERE email = '$email' OR phone = '$phone' LIMIT 1");
         $existing = $check ? mysqli_fetch_assoc($check) : null;
 
@@ -65,8 +68,21 @@ try {
         $r1p = mysqli_real_escape_string($conn, $_POST['reference1_phone']);
         $r2n = mysqli_real_escape_string($conn, $_POST['reference2_name']);
         $r2p = mysqli_real_escape_string($conn, $_POST['reference2_phone']);
+        if (!preg_match('/^[6-9][0-9]{9}$/', $r1p) || !preg_match('/^[6-9][0-9]{9}$/', $r2p)) {
+            throw new Exception("Reference mobile numbers must be valid 10-digit numbers starting with 6-9.");
+        }
         if (trim($r1n) === '' || trim($r2n) === '') {
             throw new Exception("Both reference person names are required.");
+        }
+        $r1n_norm = strtolower(preg_replace('/\s+/', ' ', trim((string)($_POST['reference1_name'] ?? ''))));
+        $r2n_norm = strtolower(preg_replace('/\s+/', ' ', trim((string)($_POST['reference2_name'] ?? ''))));
+        $r1p_norm = preg_replace('/\D+/', '', (string)($_POST['reference1_phone'] ?? ''));
+        $r2p_norm = preg_replace('/\D+/', '', (string)($_POST['reference2_phone'] ?? ''));
+        if ($r1n_norm !== '' && $r1n_norm === $r2n_norm) {
+            throw new Exception("Reference 1 and Reference 2 names must be different.");
+        }
+        if ($r1p_norm !== '' && $r1p_norm === $r2p_norm) {
+            throw new Exception("Reference 1 and Reference 2 phone numbers must be different.");
         }
 
         $profileRes = mysqli_query($conn, "SELECT id FROM customer_profiles WHERE customer_id = $cid LIMIT 1");
@@ -116,9 +132,18 @@ try {
         $loan_id = mysqli_insert_id($conn);
 
         if (!empty($_FILES['loan_docs']['name'])) {
+            $allowed_exts = ['pdf', 'jpg', 'jpeg', 'png'];
+            $max_size = 5 * 1024 * 1024; // 5 MB
             foreach ($_FILES['loan_docs']['name'] as $key => $val) {
                 if(empty($val)) continue;
                 $ext = strtolower(pathinfo($val, PATHINFO_EXTENSION));
+                if (!in_array($ext, $allowed_exts, true)) {
+                    throw new Exception("Only PDF, JPG, JPEG, PNG files are allowed.");
+                }
+                $file_size = (int)($_FILES['loan_docs']['size'][$key] ?? 0);
+                if ($file_size > $max_size) {
+                    throw new Exception("Each document must be 5 MB or less.");
+                }
                 $new_name = "loan_{$loan_id}_" . time() . "_$key.$ext";
                 if(move_uploaded_file($_FILES['loan_docs']['tmp_name'][$key], "../uploads/loans/$new_name")) {
                     $db_path = "uploads/loans/$new_name";

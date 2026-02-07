@@ -109,7 +109,7 @@ include 'includes/header.php';
                             <h4 class="section-title">Step 1: Account Setup</h4>
                             <div class="row g-4">
                                 <div class="col-md-6"><label class="form-label">Full Name</label><input type="text" name="full_name" class="form-control" placeholder="Enter full name" required></div>
-                                <div class="col-md-6"><label class="form-label">Mobile</label><input type="text" name="phone" class="form-control" placeholder="Enter mobile number" required pattern="[6-9]{1}[0-9]{9}"></div>
+                                <div class="col-md-6"><label class="form-label">Mobile</label><input type="text" name="phone" class="form-control" placeholder="Enter mobile number" required maxlength="10" inputmode="numeric" pattern="[6-9]{1}[0-9]{9}" title="Enter valid 10-digit mobile number starting with 6-9"></div>
                                 <div class="col-md-6"><label class="form-label">Email</label><input type="email" name="email" class="form-control" placeholder="Enter email address" required></div>
                                 <?php if($is_register_only): ?>
                                 <div class="col-md-6"><label class="form-label">Password</label><input type="password" name="password" class="form-control" placeholder="Enter password" required minlength="8"></div>
@@ -157,6 +157,8 @@ include 'includes/header.php';
                                         <input type="text" name="reference2_name" class="form-control" placeholder="Enter reference 2 name" required pattern="[A-Za-z][A-Za-z\s]{1,}" title="Enter a valid name">
                                         <input type="text" name="reference2_phone" class="form-control" placeholder="Enter reference 2 phone" required maxlength="10" pattern="[6-9]{1}[0-9]{9}">
                                     </div>
+                                    <small class="text-muted d-block mt-1">Note: Reference 1 and Reference 2 details should not be same.</small>
+                                    <small id="referenceDupError" class="text-danger d-none mt-1 d-block">Reference 1 and Reference 2 details must not be same.</small>
                                 </div>
                             </div>
                         </div>
@@ -309,6 +311,9 @@ include 'includes/header.php';
      * Validates required fields on the current tab
      */
     function validateForm() {
+        // Clear stale duplicate-reference error before checking required fields.
+        validateReferencesDifferent();
+
         let inputs = tabs[currentTab].querySelectorAll("input[required], select[required]");
         let valid = true;
         inputs.forEach(i => {
@@ -317,6 +322,10 @@ include 'includes/header.php';
                 i.value = pan;
                 const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]$/;
                 i.setCustomValidity(panRegex.test(pan) ? '' : 'Invalid PAN');
+            } else if (i.name === 'phone' || i.name === 'reference1_phone' || i.name === 'reference2_phone') {
+                i.value = (i.value || '').replace(/\D+/g, '').slice(0, 10);
+                const phoneRegex = /^[6-9][0-9]{9}$/;
+                i.setCustomValidity(phoneRegex.test(i.value) ? '' : 'Enter valid 10-digit mobile number starting with 6-9');
             } else if (i.name === 'birth_date') {
                 const dob = new Date(i.value);
                 const today = new Date();
@@ -332,7 +341,75 @@ include 'includes/header.php';
                 i.classList.remove("is-invalid"); 
             }
         });
+
+        const refsValid = validateReferencesDifferent();
+        const docsValid = validateLoanDocs();
+        return valid && refsValid && docsValid;
+    }
+
+    function validateLoanDocs() {
+        const fileInputs = tabs[currentTab].querySelectorAll('input[type="file"][name^="loan_docs["]');
+        if (!fileInputs || fileInputs.length === 0) return true;
+
+        let valid = true;
+        const maxBytes = 5 * 1024 * 1024; // 5 MB
+        const allowedExt = ['pdf', 'jpg', 'jpeg', 'png'];
+
+        fileInputs.forEach((input) => {
+            input.setCustomValidity('');
+            input.classList.remove('is-invalid');
+
+            if (!input.files || input.files.length === 0) return;
+            const file = input.files[0];
+            const ext = ((file.name || '').split('.').pop() || '').toLowerCase();
+
+            if (!allowedExt.includes(ext)) {
+                input.setCustomValidity('Only PDF, JPG, JPEG, PNG files are allowed.');
+                input.classList.add('is-invalid');
+                valid = false;
+                return;
+            }
+
+            if (file.size > maxBytes) {
+                input.setCustomValidity('File size must be 5 MB or less.');
+                input.classList.add('is-invalid');
+                valid = false;
+                return;
+            }
+        });
+
         return valid;
+    }
+
+    function validateReferencesDifferent() {
+        const r1n = document.querySelector('input[name="reference1_name"]');
+        const r2n = document.querySelector('input[name="reference2_name"]');
+        const r1p = document.querySelector('input[name="reference1_phone"]');
+        const r2p = document.querySelector('input[name="reference2_phone"]');
+        const dupError = document.getElementById('referenceDupError');
+
+        if (!r1n || !r2n || !r1p || !r2p) return true;
+
+        const n1 = (r1n.value || '').trim().toLowerCase();
+        const n2 = (r2n.value || '').trim().toLowerCase();
+        const p1 = (r1p.value || '').replace(/\D+/g, '');
+        const p2 = (r2p.value || '').replace(/\D+/g, '');
+
+        r2n.classList.remove('is-invalid');
+        r2p.classList.remove('is-invalid');
+        if (dupError) dupError.classList.add('d-none');
+
+        const sameName = n1 !== '' && n2 !== '' && n1 === n2;
+        const samePhone = p1 !== '' && p2 !== '' && p1 === p2;
+
+        if (sameName || samePhone) {
+            r2n.classList.add('is-invalid');
+            r2p.classList.add('is-invalid');
+            if (dupError) dupError.classList.remove('d-none');
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -367,9 +444,15 @@ include 'includes/header.php';
                     <div class="col-md-6">
                         <div class="p-3 border rounded bg-white text-center">
                             <label class="form-label small">${d.doc_name}</label>
-                            <input type="file" name="loan_docs[${d.doc_name.replace(/ /g, '_')}]" class="form-control form-control-sm" required>
+                            <input type="file" name="loan_docs[${d.doc_name.replace(/ /g, '_')}]" class="form-control form-control-sm" accept=".pdf,.jpg,.jpeg,.png" required>
+                            <small class="text-muted d-block mt-1">Allowed: PDF/JPG/JPEG/PNG, max 5 MB</small>
                         </div>
                     </div>`;
+            });
+
+            const fileInputs = container.querySelectorAll('input[type="file"][name^="loan_docs["]');
+            fileInputs.forEach((input) => {
+                input.addEventListener('change', validateLoanDocs);
             });
         } catch (e) { console.error("Error fetching docs", e); }
     }
@@ -413,6 +496,26 @@ include 'includes/header.php';
             });
         }
 
+        const mobileInput = document.querySelector('input[name="phone"]');
+        if (mobileInput) {
+            mobileInput.addEventListener('input', () => {
+                mobileInput.value = (mobileInput.value || '').replace(/\D+/g, '').slice(0, 10);
+                const phoneRegex = /^[6-9][0-9]{9}$/;
+                mobileInput.setCustomValidity(phoneRegex.test(mobileInput.value) ? '' : 'Enter valid 10-digit mobile number starting with 6-9');
+            });
+        }
+
+        const refInputs = [
+            document.querySelector('input[name="reference1_name"]'),
+            document.querySelector('input[name="reference2_name"]'),
+            document.querySelector('input[name="reference1_phone"]'),
+            document.querySelector('input[name="reference2_phone"]')
+        ].filter(Boolean);
+        refInputs.forEach((el) => {
+            el.addEventListener('input', validateReferencesDifferent);
+            el.addEventListener('blur', validateReferencesDifferent);
+        });
+
         // For Step 3, if a service is already selected (via slug), fetch docs immediately
         const serviceSelect = document.getElementById('service_select');
         if(serviceSelect && serviceSelect.value) {
@@ -423,4 +526,4 @@ include 'includes/header.php';
     });
 </script>
 
-<?php 'footer.php' ?>
+<?php include 'includes/footer.php'; ?>
