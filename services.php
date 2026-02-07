@@ -531,11 +531,7 @@ include 'includes/header.php';
                             <span class="badge bg-light text-primary mb-3 px-3 py-2 border">Financial Services</span>
                             <h1 class="service-hero-title"><?php echo htmlspecialchars($service['title']); ?></h1>
                             <div class="mb-4 text-muted fs-5">
-                                <?php if (!empty($service['short_description'])): ?>
-                                    <p><?php echo htmlspecialchars($service['short_description']); ?></p>
-                                <?php else: ?>
-                                    <p>Apply for financial services online at low rates through Udhar Capital.</p>
-                                <?php endif; ?>
+                                <p><?php echo !empty($service['short_description']) ? htmlspecialchars($service['short_description']) : 'Description currently unavailable.'; ?></p>
                             </div>
                             <a href="apply-loan.php?slug=<?php echo $slug?>" class="service-btn-custom">Apply Now <i
                                     class="fas fa-arrow-right ms-2"></i></a>
@@ -577,21 +573,20 @@ $heroImg = !empty($service['hero_image'])
                             </div>
                         <?php endif; ?>
 
-                        <table class="overview-table">
-                            <tbody>
-                                <?php
-                                $ov_data = ($overview && !empty($overview['data'])) ? $overview['data'] : [
-                                    'Amount' => 'Up to 1 Crore',
-                                    'Loan Tenure' => '3 to 5 Years',
-                                    'Interest Rates' => 'Starting from 10.5% p.a.',
-                                    'Processing Time' => '72 Hours'
-                                ];
-                                foreach ($ov_data as $key => $val) {
-                                    echo "<tr><td class='overview-key'>" . htmlspecialchars($key) . "</td><td>" . htmlspecialchars($val) . "</td></tr>";
-                                }
-                                ?>
-                            </tbody>
-                        </table>
+                        <?php if (!empty($overview['data']) && is_array($overview['data'])): ?>
+                            <table class="overview-table">
+                                <tbody>
+                                    <?php foreach ($overview['data'] as $key => $val): ?>
+                                        <tr>
+                                            <td class="overview-key"><?= htmlspecialchars((string)$key) ?></td>
+                                            <td><?= htmlspecialchars((string)$val) ?></td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        <?php else: ?>
+                            <div class="alert alert-light border">Overview details are not available for this service yet.</div>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>
@@ -609,7 +604,7 @@ $heroImg = !empty($service['hero_image'])
                                 if (!empty($service['long_description'])) {
                                     echo nl2br(htmlspecialchars($service['long_description']));
                                 } else {
-                                    echo "Contact us for more detailed information about this service.";
+                                    echo "Detailed information is currently unavailable for this service.";
                                 }
                                 ?>
                             </div>
@@ -626,31 +621,23 @@ $heroImg = !empty($service['hero_image'])
                     <p class="section-subtitle">Why this product is right for you</p>
                 </div>
 
-                <div class="row g-4">
-                    <?php
-                    $feat_data = (count($features) > 0) ? $features : [
-                        ['title' => 'Low Interest Rates', 'description' => 'Acquire a loan at competitive rates.'],
-                        ['title' => 'Fast Disbursal', 'description' => 'Funds in your account within 24 hours.'],
-                        ['title' => 'Flexible Tenure', 'description' => 'Repayment options from 12 to 60 months.'],
-                        ['title' => 'Minimal Documentation', 'description' => '100% paperless process.']
-                    ];
-
-                    foreach ($feat_data as $index => $feat) {
-                        $delay = ($index % 4) * 100; // Staggered animation
-                        ?>
-                        <div class="col-md-6 fade-in-up" style="animation-delay: <?php echo $delay; ?>ms;">
-                            <div class="feature-item">
-                                <div class="feature-icon"><i class="fas fa-check-circle"></i></div>
-                                <div>
-                                    <h4 class="fw-bold mb-2"><?php echo htmlspecialchars($feat['title']); ?></h4>
-                                    <p class="text-muted mb-0"><?php echo htmlspecialchars($feat['description']); ?></p>
+                <?php if (!empty($features)): ?>
+                    <div class="row g-4">
+                        <?php foreach ($features as $index => $feat): $delay = ($index % 4) * 100; ?>
+                            <div class="col-md-6 fade-in-up" style="animation-delay: <?php echo $delay; ?>ms;">
+                                <div class="feature-item">
+                                    <div class="feature-icon"><i class="fas fa-check-circle"></i></div>
+                                    <div>
+                                        <h4 class="fw-bold mb-2"><?php echo htmlspecialchars($feat['title']); ?></h4>
+                                        <p class="text-muted mb-0"><?php echo htmlspecialchars($feat['description']); ?></p>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <?php
-                    }
-                    ?>
-                </div>
+                        <?php endforeach; ?>
+                    </div>
+                <?php else: ?>
+                    <div class="alert alert-light border">Features are not configured for this service yet.</div>
+                <?php endif; ?>
             </div>
         </section>
 
@@ -664,19 +651,20 @@ $heroImg = !empty($service['hero_image'])
                             <h2 class="section-title">Eligibility Criteria</h2>
                             <p class="section-subtitle mb-0">Check if you qualify:</p>
                         </div>
-                        <table class="custom-table">
-                            <tbody>
-                                <?php
-                                $elig_data = (count($eligibility) > 0) ? $eligibility : [
-                                    ['criteria_key' => 'Age', 'criteria_value' => '21 - 65 years'],
-                                    ['criteria_key' => 'Income', 'criteria_value' => 'Min ₹25k/month']
-                                ];
-                                foreach ($elig_data as $row) {
-                                    echo "<tr><td>" . htmlspecialchars($row['criteria_key']) . "</td><td>" . htmlspecialchars($row['criteria_value']) . "</td></tr>";
-                                }
-                                ?>
-                            </tbody>
-                        </table>
+                        <?php if (!empty($eligibility)): ?>
+                            <table class="custom-table">
+                                <tbody>
+                                    <?php foreach ($eligibility as $row): ?>
+                                        <tr>
+                                            <td><?= htmlspecialchars($row['criteria_key']) ?></td>
+                                            <td><?= htmlspecialchars($row['criteria_value']) ?></td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        <?php else: ?>
+                            <div class="alert alert-light border">Eligibility criteria are not configured for this service yet.</div>
+                        <?php endif; ?>
                     </div>
                     <div class="col-lg-5 text-center mt-5 mt-lg-0 fade-in-up delay-200">
                         <img src="https://cdni.iconscout.com/illustration/premium/thumb/business-loan-illustration-download-in-svg-png-gif-file-formats--finance-money-investment-bank-pack-people-illustrations-4609389.png?f=webp"
@@ -693,33 +681,27 @@ $heroImg = !empty($service['hero_image'])
                     <h2 class="section-title">Why Choose Udhar Capital?</h2>
                 </div>
 
-                <div class="row g-4 justify-content-center">
-                    <?php
-                    $wc_data = (count($why_choose) > 0) ? $why_choose : [
-                        ['image' => '', 'title' => 'Quick Approval', 'description' => 'Instant approval system.'],
-                        ['image' => '', 'title' => 'Transparency', 'description' => 'No hidden charges.'],
-                        ['image' => '', 'title' => 'Secure', 'description' => '256-bit encryption.']
-                    ];
-
-                    foreach ($wc_data as $index => $wc) {
-                        ?>
-                        <div class="col-md-4 fade-in-up delay-<?php echo ($index + 1) * 100; ?>">
-                            <div class="wc-card h-100">
-                                <div class="mb-3">
-                                    <?php if (!empty($wc['image'])): ?>
-                                        <img src="<?php echo htmlspecialchars($wc['image']); ?>" style="width: 60px;">
-                                    <?php else: ?>
-                                        <i class="fas fa-award wc-icon-lg"></i>
-                                    <?php endif; ?>
+                <?php if (!empty($why_choose)): ?>
+                    <div class="row g-4 justify-content-center">
+                        <?php foreach ($why_choose as $index => $wc): ?>
+                            <div class="col-md-4 fade-in-up delay-<?php echo ($index + 1) * 100; ?>">
+                                <div class="wc-card h-100">
+                                    <div class="mb-3">
+                                        <?php if (!empty($wc['image'])): ?>
+                                            <img src="<?php echo htmlspecialchars($wc['image']); ?>" style="width: 60px;">
+                                        <?php else: ?>
+                                            <i class="fas fa-award wc-icon-lg"></i>
+                                        <?php endif; ?>
+                                    </div>
+                                    <h4 class="fw-bold"><?php echo htmlspecialchars($wc['title']); ?></h4>
+                                    <p class="text-muted"><?php echo htmlspecialchars($wc['description']); ?></p>
                                 </div>
-                                <h4 class="fw-bold"><?php echo htmlspecialchars($wc['title']); ?></h4>
-                                <p class="text-muted"><?php echo htmlspecialchars($wc['description']); ?></p>
                             </div>
-                        </div>
-                        <?php
-                    }
-                    ?>
-                </div>
+                        <?php endforeach; ?>
+                    </div>
+                <?php else: ?>
+                    <div class="alert alert-light border">Why-choose-us points are not configured for this service yet.</div>
+                <?php endif; ?>
             </div>
         </section>
 <section class="section-padding bg-light reveal">
@@ -736,30 +718,24 @@ $heroImg = !empty($service['hero_image'])
                     Keep these documents ready to ensure a smooth and fast loan approval process.
                 </p>
 
-                <div class="row g-3">
-                    <?php
-                    $doc_list = (count($documents) > 0) ? $documents : [
-                        ['doc_name' => 'Identity Proof'],
-                        ['doc_name' => 'PAN Card'],
-                        ['doc_name' => 'Photograph'],
-                        ['doc_name' => 'Business Proof'],
-                        ['doc_name' => 'Ownership Proof (Optional)'],
-                    ];
-
-                    foreach ($doc_list as $doc):
-                    ?>
-                        <div class="col-sm-6">
-                            <div class="doc-item">
-                                <span class="doc-icon">
-                                    <i class="fas fa-file-alt"></i>
-                                </span>
-                                <span class="doc-text">
-                                    <?= htmlspecialchars($doc['doc_name']) ?>
-                                </span>
+                <?php if (!empty($documents)): ?>
+                    <div class="row g-3">
+                        <?php foreach ($documents as $doc): ?>
+                            <div class="col-sm-6">
+                                <div class="doc-item">
+                                    <span class="doc-icon">
+                                        <i class="fas fa-file-alt"></i>
+                                    </span>
+                                    <span class="doc-text">
+                                        <?= htmlspecialchars($doc['doc_name']) ?>
+                                    </span>
+                                </div>
                             </div>
-                        </div>
-                    <?php endforeach; ?>
-                </div>
+                        <?php endforeach; ?>
+                    </div>
+                <?php else: ?>
+                    <div class="alert alert-light border">Document list is not configured for this service yet.</div>
+                <?php endif; ?>
 
                 <small class="text-muted d-block mt-4">
                     <i class="fas fa-info-circle me-1"></i>
@@ -785,16 +761,20 @@ $heroImg = !empty($service['hero_image'])
                 </div>
                 <div class="row justify-content-center fade-in-up">
                     <div class="col-lg-8">
-                        <table class="custom-table">
-                            <tbody>
-                                <?php
-                                $fees_data = (count($fees) > 0) ? $fees : [['fee_key' => 'Processing Fee', 'fee_value' => '1% - 2%']];
-                                foreach ($fees_data as $row) {
-                                    echo "<tr><td>" . htmlspecialchars($row['fee_key']) . "</td><td>" . htmlspecialchars($row['fee_value']) . "</td></tr>";
-                                }
-                                ?>
-                            </tbody>
-                        </table>
+                        <?php if (!empty($fees)): ?>
+                            <table class="custom-table">
+                                <tbody>
+                                    <?php foreach ($fees as $row): ?>
+                                        <tr>
+                                            <td><?= htmlspecialchars($row['fee_key']) ?></td>
+                                            <td><?= htmlspecialchars($row['fee_value']) ?></td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        <?php else: ?>
+                            <div class="alert alert-light border">Fee details are not configured for this service yet.</div>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>
@@ -806,32 +786,28 @@ $heroImg = !empty($service['hero_image'])
                     <h2 class="section-title">Partner Banks</h2>
                     <p class="section-subtitle">Trusted institutions powering our approvals and disbursals.</p>
                 </div>
-                <div class="bank-grid fade-in-up">
-                    <?php
-                    $bank_data = (count($banks) > 0) 
-                        ? $banks 
-                        : [['bank_key' => 'HDFC Bank', 'bank_value' => 'Partner', 'bank_image' => '']];
-
-                    foreach ($bank_data as $row) {
-                        ?>
-                        <div class="bank-card">
-                            <div class="bank-logo">
-                                <?php if (!empty($row['bank_image'])): ?>
-                                    <img src="<?= htmlspecialchars($row['bank_image']) ?>"
-                                         alt="<?= htmlspecialchars($row['bank_key']) ?>">
-                                <?php else: ?>
-                                    <span class="text-muted small">Logo</span>
-                                <?php endif; ?>
+                <?php if (!empty($banks)): ?>
+                    <div class="bank-grid fade-in-up">
+                        <?php foreach ($banks as $row): ?>
+                            <div class="bank-card">
+                                <div class="bank-logo">
+                                    <?php if (!empty($row['bank_image'])): ?>
+                                        <img src="<?= htmlspecialchars($row['bank_image']) ?>"
+                                            alt="<?= htmlspecialchars($row['bank_key']) ?>">
+                                    <?php else: ?>
+                                        <span class="text-muted small">Logo</span>
+                                    <?php endif; ?>
+                                </div>
+                                <div>
+                                    <div class="bank-name"><?= htmlspecialchars($row['bank_key']) ?></div>
+                                    <div class="bank-meta"><?= htmlspecialchars($row['bank_value']) ?></div>
+                                </div>
                             </div>
-                            <div>
-                                <div class="bank-name"><?= htmlspecialchars($row['bank_key']) ?></div>
-                                <div class="bank-meta"><?= htmlspecialchars($row['bank_value']) ?></div>
-                            </div>
-                        </div>
-                        <?php
-                    }
-                    ?>
-                </div>
+                        <?php endforeach; ?>
+                    </div>
+                <?php else: ?>
+                    <div class="alert alert-light border">Partner bank details are not configured for this service yet.</div>
+                <?php endif; ?>
             </div>
         </section>
 
@@ -841,22 +817,19 @@ $heroImg = !empty($service['hero_image'])
                     <h2 class="section-title">Different Forms of Loan Repayments</h2>
                     <p class="section-subtitle">Choose the repayment style that fits your cash flow.</p>
                 </div>
-                <div class="repayment-grid">
-                    <?php
-                    $repay_data = (count($repayments) > 0) ? $repayments : [
-                        ['title' => 'Standard EMI', 'description' => 'Fixed monthly payments.']
-                    ];
-                    foreach ($repay_data as $repay) {
-                        ?>
-                        <div class="repayment-card fade-in-up">
-                            <div class="mb-3 text-primary fs-2"><i class="fas fa-wallet"></i></div>
-                            <h4 class="fw-bold"><?php echo htmlspecialchars($repay['title']); ?></h4>
-                            <p class="text-muted mb-0"><?php echo htmlspecialchars($repay['description']); ?></p>
-                        </div>
-                        <?php
-                    }
-                    ?>
-                </div>
+                <?php if (!empty($repayments)): ?>
+                    <div class="repayment-grid">
+                        <?php foreach ($repayments as $repay): ?>
+                            <div class="repayment-card fade-in-up">
+                                <div class="mb-3 text-primary fs-2"><i class="fas fa-wallet"></i></div>
+                                <h4 class="fw-bold"><?php echo htmlspecialchars($repay['title']); ?></h4>
+                                <p class="text-muted mb-0"><?php echo htmlspecialchars($repay['description']); ?></p>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                <?php else: ?>
+                    <div class="alert alert-light border">Repayment options are not configured for this service yet.</div>
+                <?php endif; ?>
             </div>
         </section>
 

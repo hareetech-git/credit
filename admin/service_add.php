@@ -280,7 +280,7 @@ if ($selected_category) {
 
                             if (array_key_exists($tab, $genericTabs) && $service_id) {
                                 $config = $genericTabs[$tab];
-                                // Check if we need image upload capabilities
+                               
                                 $encType = (isset($config['has_image']) && $config['has_image']) ? 'enctype="multipart/form-data"' : '';
                                 ?>
                                 <h3 class="fw-bold mb-1"><?= $config['title'] ?></h3>

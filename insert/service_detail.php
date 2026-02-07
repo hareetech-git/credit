@@ -27,12 +27,13 @@ function getServiceData($slug) {
     }
 
     // Database connection
-    if(!file_exists('includes/connection.php')) {
+    $connFile = __DIR__ . '/../includes/connection.php';
+    if(!file_exists($connFile)) {
         $data['error'] = "Database configuration not found.";
         return $data;
     }
 
-    include('includes/connection.php');
+    include($connFile);
     
     if(!isset($conn)) {
         $data['error'] = "Database connection failed.";
@@ -66,7 +67,7 @@ function getServiceData($slug) {
                             $keys = json_decode($row['keys'], true);
                             $values = json_decode($row['values'], true);
                             
-                            if(is_array($keys) && is_array($values)) {
+                            if(is_array($keys) && is_array($values) && count($keys) === count($values)) {
                                 $data['overview'] = [
                                     'intro' => $row['title'],
                                     'data' => array_combine($keys, $values)
