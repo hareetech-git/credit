@@ -122,11 +122,11 @@ if ($id) {
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
                                         <label class="form-label">Email Address</label>
-                                        <input type="email" name="email" class="form-control" placeholder="srivastavasanyam8052@gmail.com" value="<?= $customer['email'] ?? '' ?>" required>
+                                        <input type="email" name="email" class="form-control" placeholder="Enter Your email" value="<?= $customer['email'] ?? '' ?>" required>
                                     </div>
                                     <div class="col-md-6 mb-3">
                                         <label class="form-label">Phone Number</label>
-                                        <input type="text" name="phone" class="form-control" placeholder="9984278970" value="<?= $customer['phone'] ?? '' ?>" required>
+                                        <input type="text" name="phone" class="form-control" placeholder="Enter Your Mobile Number" value="<?= $customer['phone'] ?? '' ?>" required>
                                     </div>
                                 </div>
 

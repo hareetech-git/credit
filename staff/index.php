@@ -104,7 +104,7 @@
                                 <div class="mb-4">
                                     <label for="username" class="form-label">Email Address</label>
                                     <input class="form-control" type="email" name="email" id="username" 
-                                           required placeholder="srivastavasanyam8052@gmail.com">
+                                           required placeholder="Enter Your email">
                                 </div>
 
                                 <div class="mb-4">

@@ -713,7 +713,7 @@ if (isset($conn)) {
                             <div class="form-group">
                                 <label class="form-label" for="phone">Phone number *</label>
                                 <input type="tel" name="phone" id="phone" class="form-control"
-                                       placeholder="9984278970" pattern="[0-9]{10}" maxlength="10" required>
+                                       placeholder="Enter Your Mobile Number" pattern="[0-9]{10}" maxlength="10" required>
                             </div>
                         </div>
                     </div>
