@@ -1,6 +1,7 @@
 <?php
 session_start();
 include 'config.php';
+require_once '../../includes/loan_notifications.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     die("Invalid access.");
@@ -42,6 +43,13 @@ if ($action == 'update_loan_status') {
     $tenure = (int)$_POST['tenure_years'];
     $emi = (float)$_POST['emi_amount'];
     $interest_rate = isset($_POST['interest_rate']) ? (float)$_POST['interest_rate'] : 0.0;
+    $prev_status = '';
+
+    $prev_res = mysqli_query($conn, "SELECT status FROM loan_applications WHERE id=$loan_id LIMIT 1");
+    if ($prev_res && mysqli_num_rows($prev_res) > 0) {
+        $prev = mysqli_fetch_assoc($prev_res);
+        $prev_status = strtolower((string)$prev['status']);
+    }
 
     // Update with extra fields
     $sql = "UPDATE loan_applications SET 
@@ -53,6 +61,11 @@ if ($action == 'update_loan_status') {
             WHERE id=$loan_id";
             
     if (mysqli_query($conn, $sql)) {
+        $status_lc = strtolower($status);
+        if (($status_lc === 'approved' || $status_lc === 'rejected') && $prev_status !== $status_lc) {
+            $send_credentials = ($status_lc === 'approved');
+            loanNotifyCustomerDecision($conn, $loan_id, $status_lc, $note, $send_credentials);
+        }
         header("Location: ../loan_view.php?id=$loan_id&msg=Loan Status Updated Successfully");
     } else {
         header("Location: ../loan_view.php?id=$loan_id&err=Update Failed");
@@ -65,6 +78,13 @@ if ($action == 'verify_doc') {
     $loan_id = (int)$_POST['loan_id'];
     $status = mysqli_real_escape_string($conn, $_POST['status']);
     $reason = mysqli_real_escape_string($conn, $_POST['reason']);
+    $prev_doc_status = '';
+
+    $prev_doc_res = mysqli_query($conn, "SELECT status FROM loan_application_docs WHERE id=$doc_id LIMIT 1");
+    if ($prev_doc_res && mysqli_num_rows($prev_doc_res) > 0) {
+        $prev_doc = mysqli_fetch_assoc($prev_doc_res);
+        $prev_doc_status = strtolower((string)$prev_doc['status']);
+    }
 
     $sql = "UPDATE loan_application_docs SET 
             status='$status', 
@@ -72,6 +92,16 @@ if ($action == 'verify_doc') {
             WHERE id=$doc_id";
             
     if (mysqli_query($conn, $sql)) {
+        $status_lc = strtolower($status);
+        if ($status_lc === 'verified' && $prev_doc_status !== 'verified') {
+            $pending_res = mysqli_query($conn, "SELECT COUNT(*) AS c FROM loan_application_docs WHERE loan_application_id=$loan_id AND status != 'verified'");
+            $total_res = mysqli_query($conn, "SELECT COUNT(*) AS c FROM loan_application_docs WHERE loan_application_id=$loan_id");
+            $pending_count = $pending_res ? (int)(mysqli_fetch_assoc($pending_res)['c'] ?? 0) : 0;
+            $total_count = $total_res ? (int)(mysqli_fetch_assoc($total_res)['c'] ?? 0) : 0;
+            if ($total_count > 0 && $pending_count === 0) {
+                loanNotifyCustomerDocumentsVerified($conn, $loan_id);
+            }
+        }
         header("Location: ../loan_view.php?id=$loan_id&msg=Document Status Updated");
     } else {
         header("Location: ../loan_view.php?id=$loan_id&err=Update Failed");

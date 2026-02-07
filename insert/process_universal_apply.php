@@ -1,11 +1,14 @@
 <?php
 include '../includes/connection.php';
+require_once '../includes/loan_notifications.php';
 session_start();
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') exit;
 
-$cid = $_SESSION['customer_id'] ?? null;
+$session_customer_id = $_SESSION['customer_id'] ?? null;
+$cid = $session_customer_id;
 $mode = $_POST['mode'] ?? 'apply'; 
+$is_guest_apply = !$session_customer_id && $mode !== 'register';
 mysqli_begin_transaction($conn);
 
 try {
@@ -13,21 +16,39 @@ try {
         $full_name = mysqli_real_escape_string($conn, trim($_POST['full_name']));
         $email     = mysqli_real_escape_string($conn, trim($_POST['email']));
         $phone     = mysqli_real_escape_string($conn, trim($_POST['phone']));
-        $password  = $_POST['password'];
+        $check = mysqli_query($conn, "SELECT id FROM customers WHERE email = '$email' OR phone = '$phone' LIMIT 1");
+        $existing = $check ? mysqli_fetch_assoc($check) : null;
 
-        $check = mysqli_query($conn, "SELECT id FROM customers WHERE email = '$email' OR phone = '$phone'");
-        if(mysqli_num_rows($check) > 0) throw new Exception("Email or Phone already registered.");
-
-        $hashedPass = password_hash($password, PASSWORD_BCRYPT);
-        mysqli_query($conn, "INSERT INTO customers (full_name, email, phone, password, status) VALUES ('$full_name', '$email', '$phone', '$hashedPass', 'active')");
-        $cid = mysqli_insert_id($conn);
+        if ($mode === 'register') {
+            if ($existing) {
+                throw new Exception("Email or Phone already registered.");
+            }
+            $password = trim($_POST['password'] ?? '');
+            if ($password === '' || strlen($password) < 8) {
+                throw new Exception("Password must be at least 8 characters.");
+            }
+            $hashedPass = password_hash($password, PASSWORD_BCRYPT);
+            mysqli_query($conn, "INSERT INTO customers (full_name, email, phone, password, status) VALUES ('$full_name', '$email', '$phone', '$hashedPass', 'active')");
+            $cid = mysqli_insert_id($conn);
+        } else {
+            if ($existing) {
+                $cid = (int)$existing['id'];
+                mysqli_query($conn, "UPDATE customers SET full_name='$full_name', email='$email', phone='$phone' WHERE id=$cid");
+            } else {
+                $generatedPassword = 'UDH' . random_int(100000, 999999) . '!';
+                $hashedPass = password_hash($generatedPassword, PASSWORD_BCRYPT);
+                mysqli_query($conn, "INSERT INTO customers (full_name, email, phone, password, status) VALUES ('$full_name', '$email', '$phone', '$hashedPass', 'active')");
+                $cid = mysqli_insert_id($conn);
+            }
+        }
 
         // Link any existing enquiries by email to this customer
         mysqli_query($conn, "UPDATE enquiries SET customer_id = $cid WHERE customer_id IS NULL AND email = '$email'");
 
         $pan = strtoupper(mysqli_real_escape_string($conn, $_POST['pan_number']));
-        $dob = $_POST['birth_date'];
-        $emp = $_POST['employee_type'];
+        $dob = mysqli_real_escape_string($conn, $_POST['birth_date']);
+        $emp = mysqli_real_escape_string($conn, $_POST['employee_type']);
+        $company_name = mysqli_real_escape_string($conn, trim($_POST['company_name'] ?? ''));
         $inc = (float)$_POST['monthly_income'];
         $state = mysqli_real_escape_string($conn, $_POST['state']);
         $city = mysqli_real_escape_string($conn, $_POST['city']);
@@ -37,16 +58,36 @@ try {
         $r2n = mysqli_real_escape_string($conn, $_POST['reference2_name']);
         $r2p = mysqli_real_escape_string($conn, $_POST['reference2_phone']);
 
-        mysqli_query($conn, "INSERT INTO customer_profiles (customer_id, pan_number, birth_date, state, city, pin_code, employee_type, monthly_income, reference1_name, reference1_phone, reference2_name, reference2_phone) 
-                             VALUES ($cid, '$pan', '$dob', '$state', '$city', '$pin', '$emp', '$inc', '$r1n', '$r1p', '$r2n', '$r2p')");
+        $profileRes = mysqli_query($conn, "SELECT id FROM customer_profiles WHERE customer_id = $cid LIMIT 1");
+        if ($profileRes && mysqli_num_rows($profileRes) > 0) {
+            mysqli_query($conn, "UPDATE customer_profiles SET
+                                 pan_number='$pan',
+                                 birth_date='$dob',
+                                 state='$state',
+                                 city='$city',
+                                 pin_code='$pin',
+                                 employee_type='$emp',
+                                 company_name='$company_name',
+                                 monthly_income='$inc',
+                                 reference1_name='$r1n',
+                                 reference1_phone='$r1p',
+                                 reference2_name='$r2n',
+                                 reference2_phone='$r2p'
+                                 WHERE customer_id=$cid");
+        } else {
+            mysqli_query($conn, "INSERT INTO customer_profiles (customer_id, pan_number, birth_date, state, city, pin_code, employee_type, company_name, monthly_income, reference1_name, reference1_phone, reference2_name, reference2_phone) 
+                                 VALUES ($cid, '$pan', '$dob', '$state', '$city', '$pin', '$emp', '$company_name', '$inc', '$r1n', '$r1p', '$r2n', '$r2p')");
+        }
 
-        // Set Full Sessions
-        $_SESSION['customer_id']     = $cid;
-        $_SESSION['customer_name']   = $full_name;
-        $_SESSION['customer_email']  = $email;
-        $_SESSION['customer_phone']  = $phone;
-        $_SESSION['reference1_name'] = $r1n;
-        $_SESSION['reference2_name'] = $r2n;
+        if ($mode === 'register') {
+            // Set sessions only for explicit registration flow.
+            $_SESSION['customer_id']     = $cid;
+            $_SESSION['customer_name']   = $full_name;
+            $_SESSION['customer_email']  = $email;
+            $_SESSION['customer_phone']  = $phone;
+            $_SESSION['reference1_name'] = $r1n;
+            $_SESSION['reference2_name'] = $r2n;
+        }
     }
 
     if ($mode === 'register') {
@@ -56,7 +97,11 @@ try {
     } else {
         $sid = (int)$_POST['service_id'];
         $amt = (float)$_POST['requested_amount'];
-        mysqli_query($conn, "INSERT INTO loan_applications (customer_id, service_id, requested_amount, status) VALUES ($cid, $sid, $amt, 'pending')");
+        if ($sid <= 0 || $amt <= 0) {
+            throw new Exception("Please select a valid loan service and amount.");
+        }
+
+        mysqli_query($conn, "INSERT INTO loan_applications (customer_id, service_id, requested_amount, tenure_years, emi_amount, status) VALUES ($cid, $sid, $amt, 0, 0, 'pending')");
         $loan_id = mysqli_insert_id($conn);
 
         if (!empty($_FILES['loan_docs']['name'])) {
@@ -72,7 +117,13 @@ try {
             }
         }
         mysqli_commit($conn);
-        header("Location: ../customer/dashboard.php?msg=" . urlencode("Application Submitted"));
+        loanNotifyAdminsOnNewApplication($conn, (int)$loan_id);
+
+        if ($is_guest_apply) {
+            header("Location: ../apply-loan.php?msg=" . urlencode("Application submitted successfully. Our team will review and contact you by email."));
+        } else {
+            header("Location: ../customer/dashboard.php?msg=" . urlencode("Application Submitted"));
+        }
         exit;
     }
 } catch (Exception $e) {

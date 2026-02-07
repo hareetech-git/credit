@@ -54,6 +54,16 @@ include 'includes/header.php';
 <div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-lg-11">
+            <?php if (!empty($_GET['msg'])): ?>
+            <div class="alert alert-success border-0 shadow-sm rounded-4 mb-4">
+                <?= htmlspecialchars($_GET['msg']) ?>
+            </div>
+            <?php endif; ?>
+            <?php if (!empty($_GET['err'])): ?>
+            <div class="alert alert-danger border-0 shadow-sm rounded-4 mb-4">
+                <?= htmlspecialchars($_GET['err']) ?>
+            </div>
+            <?php endif; ?>
             
             <?php if(!$is_logged_in): ?>
             <div class="text-center">
@@ -101,7 +111,9 @@ include 'includes/header.php';
                                 <div class="col-md-6"><label class="form-label">Full Name</label><input type="text" name="full_name" class="form-control" required></div>
                                 <div class="col-md-6"><label class="form-label">Mobile</label><input type="text" name="phone" class="form-control" required pattern="[6-9]{1}[0-9]{9}"></div>
                                 <div class="col-md-6"><label class="form-label">Email</label><input type="email" name="email" class="form-control" required></div>
+                                <?php if($is_register_only): ?>
                                 <div class="col-md-6"><label class="form-label">Password</label><input type="password" name="password" class="form-control" required minlength="8"></div>
+                                <?php endif; ?>
                                 <div class="col-md-12"><label class="form-label">Birth Date</label><input type="date" name="birth_date" class="form-control" required></div>
                             </div>
                         </div>

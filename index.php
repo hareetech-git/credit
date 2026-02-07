@@ -831,6 +831,104 @@ unset($_SESSION['success_message']);
         0%, 100% { transform: translateY(0); }
         50% { transform: translateY(-10px); }
     }
+
+
+    /* why choose us section start here  */
+       /* Unique Light Glassmorphism Design */
+.ud-cap-feature-section {
+    position: relative;
+    background-attachment: fixed;
+    background-size: cover;
+    background-position: center;
+    padding: 80px 0;
+}
+
+/* The semi-transparent light overlay */
+.ud-cap-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.7) 100%);
+    z-index: 1;
+}
+
+.ud-cap-container {
+    position: relative;
+    z-index: 2;
+}
+
+.ud-cap-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 25px;
+    margin-top: 40px;
+}
+
+.ud-cap-card {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 15px;
+    padding: 35px 25px;
+    text-align: center;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+}
+
+.ud-cap-card:hover {
+    transform: translateY(-10px);
+    background: #ffffff;
+    box-shadow: 0 20px 40px rgba(200, 16, 46, 0.15);
+    border-color: #c8102e;
+}
+
+.ud-cap-icon-wrapper {
+    width: 70px;
+    height: 70px;
+    margin: 0 auto 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: #f8f9fa;
+    color: #2a0a77;
+    font-size: 1.8rem;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.ud-cap-card:hover .ud-cap-icon-wrapper {
+    background: #c8102e;
+    color: #ffffff;
+    transform: scale(1.1);
+}
+
+.ud-cap-h5 {
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 12px;
+    font-size: 1.2rem;
+}
+
+.ud-cap-p {
+    color: #666;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    margin-bottom: 0;
+}
+
+/* Aesthetic accent line */
+.ud-cap-accent {
+    width: 50px;
+    height: 4px;
+    background: #c8102e;
+    margin-bottom: 20px;
+    border-radius: 2px;
+}
+    
+    /* why choose us section end here  */
 </style>
 
 <!-- Hero Section -->
@@ -1064,82 +1162,54 @@ unset($_SESSION['success_message']);
     </div>
 </section>
  <!-- Why Choose Us Section -->
-<section class="why-choose-section position-relative py-5" style="background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('includes/assets/why choose us.png') center center / cover no-repeat; min-height: 500px;">
-    <div class="container py-5">
+
+<section class="ud-cap-feature-section" style="background-image: url('includes/assets/why choose us.png');">
+    <div class="ud-cap-overlay"></div>
+    
+    <div class="container ud-cap-container">
         <div class="row">
-            <div class="col-12 mb-4">
-                <h2 class="fw-bold text-white mb-4">Why Choose Udhar Capital</h2>
+            <div class="col-lg-6">
+                <div class="ud-cap-accent"></div>
+                <h2 class="fw-bold mb-4" style="color: #fff; font-size: 2.5rem;">Why Choose Udhar Capital</h2>
             </div>
         </div>
-        
-        <div class="row g-4">
-            <!-- Card 1 -->
-            <div class="col-lg-3 col-md-6">
-                <div class="why-choose-card bg-white rounded-3 p-4 h-100 shadow-sm position-relative overflow-hidden">
-                    <div class="why-choose-border position-absolute top-0 start-0 bottom-0"
-                          style="width: 4px; background-color: var(--primary-color);"></div>
-                    <div class="text-center mb-3">
-                        <div class="why-choose-icon bg-danger bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center"
-                              style="width: 60px; height: 60px;">
-                        <i class="fas fa-clock fs-3" style="color: #2a0a77;"></i>
-                        </div>
-                    </div>
-                    <h5 class="fw-bold mb-2 text-center">Quick & Convenient</h5>
-                    <p class="text-muted text-center mb-0 small">Easy application process</p>
+
+        <div class="ud-cap-grid">
+            <div class="ud-cap-card">
+                <div class="ud-cap-icon-wrapper">
+                    <i class="fas fa-clock"></i>
                 </div>
+                <h5 class="ud-cap-h5">Quick & Convenient</h5>
+                <p class="ud-cap-p">A streamlined digital process designed to get you started in minutes without the usual bank hassles.</p>
             </div>
 
-            <!-- Card 2 -->
-            <div class="col-lg-3 col-md-6">
-                <div class="why-choose-card bg-white rounded-3 p-4 h-100 shadow-sm position-relative overflow-hidden">
-                    <div class="why-choose-border position-absolute top-0 start-0 bottom-0"
-                          style="width: 4px; background-color: var(--primary-color);"></div>
-                    <div class="text-center mb-3">
-                        <div class="why-choose-icon bg-danger bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center"
-                              style="width: 60px; height: 60px;">
-                            <i class="fas fa-check-circle fs-3 "style="color: #2a0a77;"></i>
-                        </div>
-                    </div>
-                    <h5 class="fw-bold mb-2 text-center">Instant Online Approval</h5>
-                    <p class="text-muted text-center mb-0 small">Apply online and get instant approval on your loan application</p>
+            <div class="ud-cap-card">
+                <div class="ud-cap-icon-wrapper">
+                    <i class="fas fa-check-double"></i>
                 </div>
+                <h5 class="ud-cap-h5">Instant Approval</h5>
+                <p class="ud-cap-p">Our smart evaluation engine provides real-time feedback on your loan eligibility and approval status.</p>
             </div>
 
-            <!-- Card 3 -->
-            <div class="col-lg-3 col-md-6">
-                <div class="why-choose-card bg-white rounded-3 p-4 h-100 shadow-sm position-relative overflow-hidden">
-                    <div class="why-choose-border position-absolute top-0 start-0 bottom-0"
-                          style="width: 4px; background-color: var(--primary-color);"></div>
-                    <div class="text-center mb-3">
-                        <div class="why-choose-icon bg-danger bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center"
-                              style="width: 60px; height: 60px;">
-                            <i class="fas fa-money-bill-wave fs-3"style="color: #2a0a77;"></i>
-                        </div>
-                    </div>
-                    <h5 class="fw-bold mb-2 text-center">Disbursal Within Hours</h5>
-                    <p class="text-muted text-center mb-0 small">Get the loan amount transferred to your bank account within hours</p>
+            <div class="ud-cap-card">
+                <div class="ud-cap-icon-wrapper">
+                    <i class="fas fa-history"></i>
                 </div>
+                <h5 class="ud-cap-h5">Same-Day Disbursal</h5>
+                <p class="ud-cap-p">Once approved, the funds reach your account within hours, ensuring your financial needs are met instantly.</p>
             </div>
 
-            <!-- Card 4 -->
-            <div class="col-lg-3 col-md-6">
-                <div class="why-choose-card bg-white rounded-3 p-4 h-100 shadow-sm position-relative overflow-hidden">
-                    <div class="why-choose-border position-absolute top-0 start-0 bottom-0"
-                          style="width: 4px; background-color: var(--primary-color);"></div>
-                    <div class="text-center mb-3">
-                        <div class="why-choose-icon bg-danger bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center"
-                              style="width: 60px; height: 60px;">
-                            <i class="fas fa-money-bill-wave fs-3"style="color: #2a0a77;"></i>
-                        </div>
-                    </div>
-                    <h5 class="fw-bold mb-2 text-center">No Collaterals or Hidden Charges</h5>
-                    <p class="text-muted text-center mb-0 small">Transparent loans with no collateral required</p>
+            <div class="ud-cap-card">
+                <div class="ud-cap-icon-wrapper">
+                    <i class="fas fa-shield-alt"></i>
                 </div>
+                <h5 class="ud-cap-h5">No Collateral</h5>
+                <p class="ud-cap-p">Access capital based on your merit. No need to pledge assets or worry about hidden security fees.</p>
             </div>
-
         </div>
     </div>
 </section>
+
 
 <!-- How It Works Section -->
 <section class="py-5 bg-white">
