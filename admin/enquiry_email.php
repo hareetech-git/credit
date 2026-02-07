@@ -21,6 +21,8 @@ if (!$enquiry_res || mysqli_num_rows($enquiry_res) === 0) {
     exit;
 }
 $enquiry = mysqli_fetch_assoc($enquiry_res);
+$msg = trim($_GET['msg'] ?? '');
+$err = trim($_GET['err'] ?? '');
 
 $subject_default = "Regarding your enquiry #{$enquiry_id}";
 $message_default = "Dear " . htmlspecialchars($enquiry['full_name']) . ",\n\nThanks for reaching out to Udhar Capital. We’re currently reviewing your request and our team will get back to you shortly.\n\nBest Regards,\nTeam Udhar Capital";
@@ -115,6 +117,13 @@ $message_default = "Dear " . htmlspecialchars($enquiry['full_name']) . ",\n\nTha
                         </a>
                     </div>
 
+                    <?php if ($msg !== ''): ?>
+                        <div class="alert alert-success border-0 shadow-sm mb-4"><?= htmlspecialchars($msg) ?></div>
+                    <?php endif; ?>
+                    <?php if ($err !== ''): ?>
+                        <div class="alert alert-danger border-0 shadow-sm mb-4"><?= htmlspecialchars($err) ?></div>
+                    <?php endif; ?>
+
                     <div class="email-card">
                         <div class="email-header-info">
                             <div class="d-flex align-items-center">
@@ -137,7 +146,7 @@ $message_default = "Dear " . htmlspecialchars($enquiry['full_name']) . ",\n\nTha
                                         <label class="form-label">Recipient Email</label>
                                         <div class="input-group has-icon">
                                             <span class="input-group-text"><i class="fas fa-envelope"></i></span>
-                                            <input type="email" name="to_email" class="form-control" value="<?= htmlspecialchars($enquiry['email']) ?>" required>
+                                            <input type="email" name="to_email" class="form-control" placeholder="Enter recipient email" value="<?= htmlspecialchars($enquiry['email']) ?>" required>
                                         </div>
                                     </div>
 
@@ -145,7 +154,7 @@ $message_default = "Dear " . htmlspecialchars($enquiry['full_name']) . ",\n\nTha
                                         <label class="form-label">Recipient Name</label>
                                         <div class="input-group has-icon">
                                             <span class="input-group-text"><i class="fas fa-user"></i></span>
-                                            <input type="text" name="to_name" class="form-control" value="<?= htmlspecialchars($enquiry['full_name']) ?>" required>
+                                            <input type="text" name="to_name" class="form-control" placeholder="Enter recipient name" value="<?= htmlspecialchars($enquiry['full_name']) ?>" required>
                                         </div>
                                     </div>
 

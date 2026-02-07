@@ -38,9 +38,9 @@ $html = renderEnquiryEmailTemplate([
 $sent = sendEnquiryEmail($to_email, $to_name, $subject, $html);
 
 if ($sent) {
-    header("Location: ../enquiry_view.php?id=$enquiry_id&msg=Email sent");
+    header("Location: ../enquiry_email.php?id=$enquiry_id&msg=" . urlencode("Email sent successfully"));
 } else {
-    header("Location: ../enquiry_email.php?id=$enquiry_id&err=Email failed");
+    header("Location: ../enquiry_email.php?id=$enquiry_id&err=" . urlencode("Email failed to send"));
 }
 exit;
 ?>

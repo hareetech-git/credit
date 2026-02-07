@@ -108,13 +108,13 @@ include 'includes/header.php';
                         <div class="tab" id="tab0">
                             <h4 class="section-title">Step 1: Account Setup</h4>
                             <div class="row g-4">
-                                <div class="col-md-6"><label class="form-label">Full Name</label><input type="text" name="full_name" class="form-control" required></div>
-                                <div class="col-md-6"><label class="form-label">Mobile</label><input type="text" name="phone" class="form-control" required pattern="[6-9]{1}[0-9]{9}"></div>
-                                <div class="col-md-6"><label class="form-label">Email</label><input type="email" name="email" class="form-control" required></div>
+                                <div class="col-md-6"><label class="form-label">Full Name</label><input type="text" name="full_name" class="form-control" placeholder="Enter full name" required></div>
+                                <div class="col-md-6"><label class="form-label">Mobile</label><input type="text" name="phone" class="form-control" placeholder="Enter mobile number" required pattern="[6-9]{1}[0-9]{9}"></div>
+                                <div class="col-md-6"><label class="form-label">Email</label><input type="email" name="email" class="form-control" placeholder="Enter email address" required></div>
                                 <?php if($is_register_only): ?>
-                                <div class="col-md-6"><label class="form-label">Password</label><input type="password" name="password" class="form-control" required minlength="8"></div>
+                                <div class="col-md-6"><label class="form-label">Password</label><input type="password" name="password" class="form-control" placeholder="Enter password" required minlength="8"></div>
                                 <?php endif; ?>
-                                <div class="col-md-12"><label class="form-label">Birth Date</label><input type="date" name="birth_date" class="form-control" required></div>
+                                <div class="col-md-12"><label class="form-label">Birth Date</label><input type="date" name="birth_date" id="birth_date" class="form-control" required></div>
                             </div>
                         </div>
 
@@ -147,15 +147,15 @@ include 'includes/header.php';
                                 <div class="col-md-6">
                                     <label class="form-label">Reference 1</label>
                                     <div class="input-group">
-                                        <input type="text" name="reference1_name" class="form-control" placeholder="Name" required>
-                                        <input type="text" name="reference1_phone" class="form-control" placeholder="9984278970" required maxlength="10">
+                                        <input type="text" name="reference1_name" class="form-control" placeholder="Enter reference 1 name" required pattern="[A-Za-z][A-Za-z\s]{1,}" title="Enter a valid name">
+                                        <input type="text" name="reference1_phone" class="form-control" placeholder="Enter reference 1 phone" required maxlength="10" pattern="[6-9]{1}[0-9]{9}">
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label">Reference 2</label>
                                     <div class="input-group">
-                                        <input type="text" name="reference2_name" class="form-control" placeholder="Name" required>
-                                        <input type="text" name="reference2_phone" class="form-control" placeholder="9984278970" required maxlength="10">
+                                        <input type="text" name="reference2_name" class="form-control" placeholder="Enter reference 2 name" required pattern="[A-Za-z][A-Za-z\s]{1,}" title="Enter a valid name">
+                                        <input type="text" name="reference2_phone" class="form-control" placeholder="Enter reference 2 phone" required maxlength="10" pattern="[6-9]{1}[0-9]{9}">
                                     </div>
                                 </div>
                             </div>
@@ -184,8 +184,14 @@ include 'includes/header.php';
                                 
                                 <div class="col-12">
                                     <div class="consent-wrapper p-4">
-                                        <div class="form-check mb-2"><input class="form-check-input" type="checkbox" id="c2" onchange="toggleSubmit()"><label class="form-check-label small fw-bold">I agree to Terms & Conditions.</label></div>
-                                        <div class="form-check"><input class="form-check-input" type="checkbox" id="c3" onchange="toggleSubmit()"><label class="form-check-label small fw-bold">I accept the Privacy Policy.</label></div>
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="checkbox" id="c2" onchange="toggleSubmit()">
+                                            <label class="form-check-label small fw-bold">I agree to <a href="terms.php" target="_blank" rel="noopener">Terms & Conditions</a>.</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="c3" onchange="toggleSubmit()">
+                                            <label class="form-check-label small fw-bold">I accept the <a href="privacy.php" target="_blank" rel="noopener">Privacy Policy</a>.</label>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -311,6 +317,13 @@ include 'includes/header.php';
                 i.value = pan;
                 const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]$/;
                 i.setCustomValidity(panRegex.test(pan) ? '' : 'Invalid PAN');
+            } else if (i.name === 'birth_date') {
+                const dob = new Date(i.value);
+                const today = new Date();
+                let age = today.getFullYear() - dob.getFullYear();
+                const m = today.getMonth() - dob.getMonth();
+                if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) age--;
+                i.setCustomValidity(age >= 18 ? '' : 'Age must be 18+');
             }
             if(!i.checkValidity()) { 
                 i.classList.add("is-invalid"); 
@@ -381,6 +394,13 @@ include 'includes/header.php';
 
     // Initialize on page load
     document.addEventListener('DOMContentLoaded', () => {
+        const dobInput = document.getElementById('birth_date');
+        if (dobInput) {
+            const today = new Date();
+            today.setFullYear(today.getFullYear() - 18);
+            dobInput.max = today.toISOString().split('T')[0];
+        }
+
         const panInput = document.getElementById('pan_number');
         if (panInput) {
             panInput.addEventListener('input', () => {

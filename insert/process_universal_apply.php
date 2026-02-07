@@ -47,6 +47,14 @@ try {
 
         $pan = strtoupper(mysqli_real_escape_string($conn, $_POST['pan_number']));
         $dob = mysqli_real_escape_string($conn, $_POST['birth_date']);
+        $dob_ts = strtotime($dob);
+        if (!$dob_ts) {
+            throw new Exception("Invalid birth date.");
+        }
+        $age_years = (int)date_diff(new DateTime(date('Y-m-d', $dob_ts)), new DateTime(date('Y-m-d')))->y;
+        if ($age_years < 18) {
+            throw new Exception("Applicant must be at least 18 years old.");
+        }
         $emp = mysqli_real_escape_string($conn, $_POST['employee_type']);
         $company_name = mysqli_real_escape_string($conn, trim($_POST['company_name'] ?? ''));
         $inc = (float)$_POST['monthly_income'];
@@ -57,6 +65,9 @@ try {
         $r1p = mysqli_real_escape_string($conn, $_POST['reference1_phone']);
         $r2n = mysqli_real_escape_string($conn, $_POST['reference2_name']);
         $r2p = mysqli_real_escape_string($conn, $_POST['reference2_phone']);
+        if (trim($r1n) === '' || trim($r2n) === '') {
+            throw new Exception("Both reference person names are required.");
+        }
 
         $profileRes = mysqli_query($conn, "SELECT id FROM customer_profiles WHERE customer_id = $cid LIMIT 1");
         if ($profileRes && mysqli_num_rows($profileRes) > 0) {

@@ -28,6 +28,8 @@ if (!$enquiry_res || mysqli_num_rows($enquiry_res) === 0) {
     exit;
 }
 $enquiry = mysqli_fetch_assoc($enquiry_res);
+$msg = trim($_GET['msg'] ?? '');
+$err = trim($_GET['err'] ?? '');
 
 $subject_default = "Regarding your enquiry #{$enquiry_id}";
 $message_default = "Thanks for reaching out. We’re reviewing your request and will get back to you shortly.";
@@ -44,6 +46,13 @@ $message_default = "Thanks for reaching out. We’re reviewing your request and 
                 <a href="enquiry_view.php?id=<?= $enquiry_id ?>" class="btn btn-outline-secondary btn-sm">Back</a>
             </div>
 
+            <?php if ($msg !== ''): ?>
+                <div class="alert alert-success border-0 shadow-sm mb-4"><?= htmlspecialchars($msg) ?></div>
+            <?php endif; ?>
+            <?php if ($err !== ''): ?>
+                <div class="alert alert-danger border-0 shadow-sm mb-4"><?= htmlspecialchars($err) ?></div>
+            <?php endif; ?>
+
             <div class="card card-modern">
                 <div class="card-body">
                     <form method="POST" action="db/enquiry_send_email.php">
@@ -51,19 +60,19 @@ $message_default = "Thanks for reaching out. We’re reviewing your request and 
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <label class="form-label">To (Email)</label>
-                                <input type="email" name="to_email" class="form-control" value="<?= htmlspecialchars($enquiry['email']) ?>" required>
+                                <input type="email" name="to_email" class="form-control" placeholder="Enter recipient email" value="<?= htmlspecialchars($enquiry['email']) ?>" required>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">To (Name)</label>
-                                <input type="text" name="to_name" class="form-control" value="<?= htmlspecialchars($enquiry['full_name']) ?>" required>
+                                <input type="text" name="to_name" class="form-control" placeholder="Enter recipient name" value="<?= htmlspecialchars($enquiry['full_name']) ?>" required>
                             </div>
                             <div class="col-12">
                                 <label class="form-label">Subject</label>
-                                <input type="text" name="subject" class="form-control" value="<?= htmlspecialchars($subject_default) ?>" required>
+                                <input type="text" name="subject" class="form-control" placeholder="Enter subject" value="<?= htmlspecialchars($subject_default) ?>" required>
                             </div>
                             <div class="col-12">
                                 <label class="form-label">Message</label>
-                                <textarea name="message" class="form-control" rows="5" required><?= htmlspecialchars($message_default) ?></textarea>
+                                <textarea name="message" class="form-control" rows="5" placeholder="Enter message" required><?= htmlspecialchars($message_default) ?></textarea>
                             </div>
                         </div>
                         <button class="btn btn-dark mt-3">Send Email</button>
