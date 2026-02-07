@@ -79,7 +79,7 @@ include 'sidebar.php';
                             <h6 class="fw-bold text-dark border-bottom pb-2 mb-3">Loan Summary</h6>
                             <div class="d-flex justify-content-between mb-2">
                                 <span class="text-muted small">Amount:</span>
-                                <span class="fw-bold small">&#8377;<?= number_format($loan['requested_amount'], 2) ?></span>
+                                <span class="fw-bold small">&#8377;<?= format_inr($loan['requested_amount'], 2) ?></span>
                             </div>
                             <div class="d-flex justify-content-between mb-2">
                                 <span class="text-muted small">Tenure:</span>
@@ -87,7 +87,7 @@ include 'sidebar.php';
                             </div>
                             <div class="d-flex justify-content-between mb-2">
                                 <span class="text-muted small">EMI:</span>
-                                <span class="fw-bold small">&#8377;<?= number_format($loan['emi_amount'], 2) ?></span>
+                                <span class="fw-bold small">&#8377;<?= format_inr($loan['emi_amount'], 2) ?></span>
                             </div>
                             <div class="d-flex justify-content-between mb-2">
                                 <span class="text-muted small">Interest Rate (p.a.):</span>

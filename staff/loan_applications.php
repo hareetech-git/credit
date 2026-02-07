@@ -174,7 +174,7 @@ function sortLink($col, $label, $current_col, $current_order, $next_order, $stat
                                             </div>
                                         </td>
                                         <td><span class="text-secondary fw-medium"><?= htmlspecialchars($row['service_name']) ?></span></td>
-                                        <td class="fw-bold text-dark">₹<?= number_format($row['requested_amount']) ?></td>
+                                        <td class="fw-bold text-dark">₹<?= format_inr($row['requested_amount']) ?></td>
                                         <td class="text-muted"><?= number_format((float)$row['interest_rate'], 2) ?>%</td>
                                         <td>
                                             <span class="st-badge st-<?= $row['status'] ?>">
@@ -365,7 +365,7 @@ function sortLink($col, $label, $current_col, $current_order, $next_order, $stat
                                             </div>
                                         </td>
                                         <td><span class="text-secondary fw-medium"><?= htmlspecialchars($row['service_name']) ?></span></td>
-                                        <td class="fw-bold text-dark">₹<?= number_format($row['requested_amount']) ?></td>
+                                        <td class="fw-bold text-dark">₹<?= format_inr($row['requested_amount']) ?></td>
                                         <td class="text-muted"><?= number_format((float)$row['interest_rate'], 2) ?>%</td>
                                         <td>
                                             <span class="st-badge st-<?= $row['status'] ?>">

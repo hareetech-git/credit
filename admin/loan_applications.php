@@ -208,7 +208,7 @@ function getSortUrl($col, $next_order, $search, $status, $staff) {
                                                 </div>
                                             </td>
                                             <td><span class="text-muted fw-medium"><?= htmlspecialchars($row['service_name']) ?></span></td>
-                                            <td class="fw-bold text-dark">₹<?= number_format($row['requested_amount']) ?></td>
+                                            <td class="fw-bold text-dark">₹<?= format_inr($row['requested_amount']) ?></td>
                                             <td>
                                                 <span class="badge-soft badge-<?= $row['status'] ?>">
                                                     <?= ucfirst($row['status']) ?>

@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/mailer.php';
 require_once __DIR__ . '/loan_email_template.php';
+require_once __DIR__ . '/format_helpers.php';
 
 function loanGetApplicationPayload(mysqli $conn, int $loan_id): ?array {
     $sql = "SELECT l.id, l.requested_amount, l.status, l.rejection_note, l.tenure_years, l.interest_rate, l.created_at,
@@ -46,7 +47,7 @@ function loanNotifyAdminsOnNewApplication(mysqli $conn, int $loan_id): void {
             'Applicant Email' => (string)$loan['email'],
             'Phone' => (string)$loan['phone'],
             'Service' => (string)$loan['service_name'],
-            'Amount' => 'INR ' . number_format((float)$loan['requested_amount'], 2),
+            'Amount' => 'INR ' . format_inr((float)$loan['requested_amount'], 2),
             'Submitted At' => (string)$loan['created_at'],
         ]
     );
@@ -122,7 +123,7 @@ function loanNotifyCustomerDecision(mysqli $conn, int $loan_id, string $status, 
             [
                 'Application ID' => 'L-' . (int)$loan['id'],
                 'Service' => (string)$loan['service_name'],
-                'Approved Amount' => 'INR ' . number_format((float)$loan['requested_amount'], 2),
+                'Approved Amount' => 'INR ' . format_inr((float)$loan['requested_amount'], 2),
                 'Tenure' => (int)$loan['tenure_years'] . ' years',
                 'Interest Rate' => number_format((float)$loan['interest_rate'], 2) . '%',
                 'Status' => 'Approved',

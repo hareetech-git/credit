@@ -131,7 +131,7 @@ $docs_res = mysqli_query($conn, "SELECT * FROM loan_application_docs WHERE loan_
                     <div class="row text-center">
                         <div class="col-4">
                             <span class="opacity-75 x-small d-block text-uppercase">Amount</span>
-                            <span class="h4 fw-bold mb-0">₹<?= number_format($loan['requested_amount']) ?></span>
+                            <span class="h4 fw-bold mb-0">₹<?= format_inr($loan['requested_amount']) ?></span>
                         </div>
                         <div class="col-4">
                             <span class="opacity-75 x-small d-block text-uppercase">Tenure</span>

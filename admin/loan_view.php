@@ -109,7 +109,7 @@ $docs_res = mysqli_query($conn, "SELECT * FROM loan_application_docs WHERE loan_
                                 <span class="badge bg-light text-dark border"><?= htmlspecialchars($loan['service_name']) ?></span>
                             </div>
 
-                            <div class="data-item"><span class="data-label">Requested Amount</span><span class="data-value">₹<?= number_format($loan['requested_amount']) ?></span></div>
+                            <div class="data-item"><span class="data-label">Requested Amount</span><span class="data-value">₹<?= format_inr($loan['requested_amount']) ?></span></div>
                             <div class="data-item"><span class="data-label">Tenure</span><span class="data-value"><?= (int)$loan['tenure_years'] ?> Months</span></div>
                             <div class="data-item"><span class="data-label">Interest Rate</span><span class="data-value"><?= number_format((float)$loan['interest_rate'], 2) ?>% (<?= strtoupper($loan_interest_type) ?>)</span></div>
                             <div class="data-item">

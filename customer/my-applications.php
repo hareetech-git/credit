@@ -55,7 +55,7 @@ include 'sidebar.php';
                                         <span class="status-badge bg-<?= $row['status'] ?>"><?= $row['status'] ?></span>
                                     </div>
                                     <h5 class="fw-bold text-dark mb-1"><?= htmlspecialchars($row['service_name']) ?></h5>
-                                    <h4 class="fw-bold text-primary mb-3">₹<?= number_format($row['requested_amount'], 2) ?></h4>
+                                    <h4 class="fw-bold text-primary mb-3">₹<?= format_inr($row['requested_amount'], 2) ?></h4>
                                     
                                     <div class="border-top pt-3 mt-3">
                                         <div class="d-flex justify-content-between small text-muted mb-2">

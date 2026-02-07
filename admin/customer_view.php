@@ -174,7 +174,7 @@ $loan_res = mysqli_query($conn, $loan_query);
                                 </div>
                                 <div class="col-md-4">
                                     <span class="info-label">Monthly Net Pay</span>
-                                    <div class="info-value text-success fw-bold"><?= $cust['monthly_income'] ? '₹' . number_format($cust['monthly_income']) : '--' ?></div>
+                                    <div class="info-value text-success fw-bold"><?= $cust['monthly_income'] ? '₹' . format_inr($cust['monthly_income']) : '--' ?></div>
                                 </div>
                                 <div class="col-md-4">
                                     <span class="info-label">Date of Birth</span>
@@ -223,7 +223,7 @@ $loan_res = mysqli_query($conn, $loan_query);
                                                 <tr>
                                                     <td class="text-muted fw-bold">#APP-<?= $loan['id'] ?></td>
                                                     <td class="fw-bold text-dark"><?= htmlspecialchars($loan['service_name']) ?></td>
-                                                    <td class="text-primary fw-bold">₹<?= number_format($loan['requested_amount']) ?></td>
+                                                    <td class="text-primary fw-bold">₹<?= format_inr($loan['requested_amount']) ?></td>
                                                     <td><?= $loan['tenure_years'] ?> Years</td>
                                                     <td class="text-muted small"><?= date('d M, Y', strtotime($loan['created_at'])) ?></td>
                                                     <td>
