@@ -65,7 +65,7 @@ if ($selected_category) {
         --primary-accent: #2563eb;
         --danger-red: #e11d48;
     }
-.input-error-aadhaar {
+.input-error-identity {
     border-color: var(--danger-red) !important;
     background-color: #fff1f2 !important;
     box-shadow: 0 0 0 0.25rem rgba(225, 29, 72, 0.1);
@@ -314,7 +314,7 @@ if ($selected_category) {
                                 'overview'    => ['title' => 'Service Overview', 'has_title'=>true, 'table' => 'service_overview', 'handler' => 'update_overview'],
                                 'features'    => ['title' => 'Service Features', 'table' => 'service_features', 'handler' => 'update_feature', 'k' => 'title', 'v' => 'description'],
                                 'eligibility' => ['title' => 'Eligibility Criteria', 'table' => 'service_eligibility_criteria', 'handler' => 'update_eligibility', 'k' => 'criteria_key', 'v' => 'criteria_value'],
-                                'documents'   => ['title' => 'Required Documents', 'table' => 'service_documents', 'handler' => 'update_document', 'k' => 'doc_name', 'v' => 'disclaimer' ,'legal_notice' => 'Notice: As per applicable regulations, Aadhaar numbers must not be collected on this platform. Please use other Identity Proof instead.'],
+                                'documents'   => ['title' => 'Required Documents', 'table' => 'service_documents', 'handler' => 'update_document', 'k' => 'doc_name', 'v' => 'disclaimer' ,'legal_notice' => 'Notice: As per applicable regulations, restricted identity numbers must not be collected on this platform. Use generic identity proof labels instead.'],
                                 'fees'        => ['title' => 'Fees & Charges', 'table' => 'service_fees_charges', 'handler' => 'update_fee', 'k' => 'fee_key', 'v' => 'fee_value', 'v_type' => 'input'],
                                 'repayment'   => ['title' => 'Loan Repayment', 'table' => 'service_loan_repayment', 'handler' => 'update_repayment', 'k' => 'title', 'v' => 'description'],
                                 'why'         => ['title' => 'Why Choose Us', 'has_image'=>true, 'table' => 'service_why_choose_us', 'handler' => 'update_why', 'k' => 'title', 'v' => 'description'],
@@ -498,13 +498,13 @@ function removeRow(btn) {
     if (row) row.remove();
 }
 
-// Function to check for "Aadhaar" variations
-function validateAadhaar(input) {
+// Function to check for restricted identity-number variations
+function validateRestrictedIdentity(input) {
     const pattern = /a+d+h+a+r/i; 
     if (pattern.test(input.value)) {
-        input.classList.add('input-error-aadhaar');
+        input.classList.add('input-error-identity');
     } else {
-        input.classList.remove('input-error-aadhaar');
+        input.classList.remove('input-error-identity');
     }
 }
 
@@ -512,7 +512,7 @@ function validateAadhaar(input) {
 document.addEventListener('input', function (e) {
     // This matches the field name used in the 'documents' tab
     if (e.target && e.target.name === 'doc_name[]') {
-        validateAadhaar(e.target);
+        validateRestrictedIdentity(e.target);
     }
 });
 </script>

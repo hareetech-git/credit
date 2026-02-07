@@ -8,7 +8,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $full_name = mysqli_real_escape_string($conn, trim($_POST['full_name']));
     $email     = mysqli_real_escape_string($conn, trim($_POST['email']));
     $phone     = mysqli_real_escape_string($conn, trim($_POST['phone']));
-    $aadhaar   = mysqli_real_escape_string($conn, trim($_POST['aadhaar_number']));
     $password  = $_POST['password'];
 
     // 1. Check if email or phone already exists
@@ -24,8 +23,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
 
     // 3. Insert into database
-    $sql = "INSERT INTO customers (full_name, email, phone, password, aadhaar_number, status) 
-            VALUES ('$full_name', '$email', '$phone', '$hashedPassword', '$aadhaar', 'active')";
+    $sql = "INSERT INTO customers (full_name, email, phone, password, status) 
+            VALUES ('$full_name', '$email', '$phone', '$hashedPassword', 'active')";
 
     if (mysqli_query($conn, $sql)) {
         // Get the ID of the newly created user

@@ -57,7 +57,6 @@ CREATE TABLE `customers` (
   `email` varchar(255) NOT NULL,
   `phone` varchar(20) NOT NULL,
   `password` varchar(255) NOT NULL,
-  `aadhaar_number` varchar(20) DEFAULT NULL,
   `status` enum('active','blocked') DEFAULT 'active',
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
@@ -67,8 +66,8 @@ CREATE TABLE `customers` (
 -- Dumping data for table `customers`
 --
 
-INSERT INTO `customers` (`id`, `full_name`, `email`, `phone`, `password`, `aadhaar_number`, `status`, `created_at`, `updated_at`) VALUES
-(2, 'Sanyam Customer', 'sanyam.fullstackdev@gmail.com', '9984278970', '$2y$10$mbGW6V7W6/RE6R9tadZoU.0Hsh5U8Ppe5ggq/xcAcT3TQ/PtCPoxm', NULL, 'active', '2026-02-05 09:55:25', '2026-02-05 09:55:25');
+INSERT INTO `customers` (`id`, `full_name`, `email`, `phone`, `password`, `status`, `created_at`, `updated_at`) VALUES
+(2, 'Sanyam Customer', 'sanyam.fullstackdev@gmail.com', '9984278970', '$2y$10$mbGW6V7W6/RE6R9tadZoU.0Hsh5U8Ppe5ggq/xcAcT3TQ/PtCPoxm', 'active', '2026-02-05 09:55:25', '2026-02-05 09:55:25');
 
 -- --------------------------------------------------------
 

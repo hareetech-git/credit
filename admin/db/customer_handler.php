@@ -8,20 +8,19 @@ if ($action == 'create' || $action == 'update') {
     $name = mysqli_real_escape_string($conn, $_POST['full_name']);
     $email = mysqli_real_escape_string($conn, $_POST['email']);
     $phone = mysqli_real_escape_string($conn, $_POST['phone']);
-    $aadhaar = mysqli_real_escape_string($conn, $_POST['aadhaar_number']);
     $status = $_POST['status'];
 
     if ($action == 'create') {
         $pass = password_hash($_POST['password'], PASSWORD_BCRYPT);
-        $sql = "INSERT INTO customers (full_name, email, phone, password, aadhaar_number, status) 
-                VALUES ('$name', '$email', '$phone', '$pass', '$aadhaar', '$status')";
+        $sql = "INSERT INTO customers (full_name, email, phone, password, status) 
+                VALUES ('$name', '$email', '$phone', '$pass', '$status')";
         mysqli_query($conn, $sql);
         $id = mysqli_insert_id($conn);
         
         // Create empty profile entry
         mysqli_query($conn, "INSERT INTO customer_profiles (customer_id) VALUES ($id)");
     } else {
-        $sql = "UPDATE customers SET full_name='$name', email='$email', phone='$phone', aadhaar_number='$aadhaar', status='$status' WHERE id=$id";
+        $sql = "UPDATE customers SET full_name='$name', email='$email', phone='$phone', status='$status' WHERE id=$id";
         mysqli_query($conn, $sql);
     }
 

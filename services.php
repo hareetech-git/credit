@@ -739,7 +739,7 @@ $heroImg = !empty($service['hero_image'])
                 <div class="row g-3">
                     <?php
                     $doc_list = (count($documents) > 0) ? $documents : [
-                        ['doc_name' => 'Aadhaar Card'],
+                        ['doc_name' => 'Identity Proof'],
                         ['doc_name' => 'PAN Card'],
                         ['doc_name' => 'Photograph'],
                         ['doc_name' => 'Business Proof'],

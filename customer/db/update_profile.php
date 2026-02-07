@@ -6,7 +6,6 @@ if (!isset($_SESSION['customer_id'])) { exit; }
 $cid = $_SESSION['customer_id'];
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    $aadhaar = mysqli_real_escape_string($conn, $_POST['aadhaar_number'] ?? '');
     $pan     = strtoupper(mysqli_real_escape_string($conn, $_POST['pan_number'] ?? ''));
     $dob     = mysqli_real_escape_string($conn, $_POST['birth_date']);
     $emp_type = mysqli_real_escape_string($conn, $_POST['employee_type']);
@@ -34,11 +33,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 mysqli_query($conn, "UPDATE customers SET password = '$hashed' WHERE id = $cid");
                 $pass_msg = " & Password Updated";
             } else { throw new Exception("Current password incorrect"); }
-        }
-
-        // Identity Update
-        if (!empty($aadhaar)) {
-            mysqli_query($conn, "UPDATE customers SET aadhaar_number = '$aadhaar' WHERE id = $cid AND (aadhaar_number IS NULL OR aadhaar_number = '')");
         }
 
         // Profile Update

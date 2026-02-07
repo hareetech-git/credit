@@ -1274,7 +1274,7 @@ unset($_SESSION['success_message']);
                         <div class="mt-3">
                             <small class="text-muted d-block">
                                 <i class="fas fa-check-circle text-success me-1"></i>
-                                Aadhaar Card
+                                Identity Proof
                             </small>
                             <small class="text-muted d-block">
                                 <i class="fas fa-check-circle text-success me-1"></i>

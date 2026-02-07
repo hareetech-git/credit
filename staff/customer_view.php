@@ -172,10 +172,6 @@ $loan_res = mysqli_query($conn, $loan_query);
                                     <span class="info-label">Permanent Account (PAN)</span>
                                     <div class="info-value p-2 border rounded bg-light"><?= $cust['pan_number'] ?: 'Not Provided' ?></div>
                                 </div>
-                                <div class="col-md-6">
-                                    <span class="info-label">Aadhaar Identity</span>
-                                    <div class="info-value p-2 border rounded bg-light"><?= $cust['aadhaar_number'] ?: 'Not Provided' ?></div>
-                                </div>
                                 <div class="col-md-4">
                                     <span class="info-label">Employment Type</span>
                                     <div class="info-value text-capitalize"><?= str_replace('_', ' ', $cust['employee_type']) ?: '--' ?></div>

@@ -12,10 +12,6 @@ document.getElementById('profileForm').addEventListener('submit', function(e) {
         input.parentNode.appendChild(feedback);
     };
 
-    // Aadhaar Check
-    const adhr = document.getElementById('aadhaar_number');
-    if(adhr && !adhr.readOnly && adhr.value && !/^\d{12}$/.test(adhr.value)) showError(adhr, "Must be 12 digits");
-
     // PAN Check
     const pan = document.getElementById('pan_number');
     if(pan && !pan.readOnly && pan.value && !/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(pan.value.toUpperCase())) showError(pan, "Invalid Format (ABCDE1234F)");

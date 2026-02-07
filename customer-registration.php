@@ -172,7 +172,7 @@ include 'includes/connection.php';
                 </div>
                 <div class="ux-benefit">
                     <h5>Encrypted & Secure</h5>
-                    <p>Your Aadhaar and personal data are 256-bit encrypted.</p>
+                    <p>Your personal data is protected with modern encryption.</p>
                 </div>
             </div>
 

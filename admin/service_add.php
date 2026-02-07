@@ -271,7 +271,7 @@ if ($selected_category) {
                                 'overview' => ['title' => 'Service Overview', 'has_title' => true, 'h1' => 'Overview Title', 'k' => 'keys[]', 'v' => 'values[]', 'kp' => 'Feature', 'vp' => 'Details', 'type' => 'save_overview'],
                                 'features' => ['title' => 'Key Features', 'h1' => 'Feature Title', 'k' => 'title[]', 'v' => 'description[]', 'kp' => 'Title', 'vp' => 'Description', 'type' => 'add_feature'],
                                 'eligibility' => ['title' => 'Eligibility Criteria', 'h1' => 'Criteria', 'k' => 'criteria_key[]', 'v' => 'criteria_value[]', 'kp' => 'Criteria', 'vp' => 'Value', 'type' => 'add_eligibility'],
-                                'documents' => ['title' => 'Required Documents', 'h1' => 'Document Name', 'k' => 'doc_name[]', 'v' => 'disclaimer[]', 'kp' => 'Name', 'vp' => 'Notes', 'type' => 'add_document', 'legal_notice' => 'Notice: As per Government of India regulations, the use, entry, or storage of Aadhaar number or Aadhaar-related information is strictly prohibited on this platform.'],
+                                'documents' => ['title' => 'Required Documents', 'h1' => 'Document Name', 'k' => 'doc_name[]', 'v' => 'disclaimer[]', 'kp' => 'Name', 'vp' => 'Notes', 'type' => 'add_document', 'legal_notice' => 'Notice: As per applicable regulations, entry or storage of restricted identity numbers is prohibited on this platform. Use generic identity proof labels only.'],
                                 'fees' => ['title' => 'Fees & Charges', 'h1' => 'Fee Name', 'k' => 'fee_key[]', 'v' => 'fee_value[]', 'kp' => 'Type', 'vp' => 'Amount/%', 'type' => 'add_fee', 'mode' => 'input'],
                                 'repayment' => ['title' => 'Repayment Details', 'h1' => 'Option', 'k' => 'title[]', 'v' => 'description[]', 'kp' => 'Title', 'vp' => 'Description', 'type' => 'add_repayment'],
                                 'why' => ['title' => 'Why Choose Us', 'has_image' => true, 'h1' => 'Reason', 'k' => 'title[]', 'v' => 'description[]', 'kp' => 'Benefit', 'vp' => 'Details', 'type' => 'add_why'],
@@ -411,8 +411,8 @@ if ($selected_category) {
     }
 
     // 1. Function to validate forbidden keywords
-function validateAadhaarInput(element) {
-    // Regex to catch Aadhaar, Adhaar, Aadhar, etc.
+function validateRestrictedIdentityInput(element) {
+    // Regex to catch restricted identity-number terms
     const forbiddenPattern = /a+d+h+a+r/i; 
     
     if (forbiddenPattern.test(element.value)) {
@@ -420,17 +420,17 @@ function validateAadhaarInput(element) {
         element.style.backgroundColor = "#fff5f5";
         
         // Optional: Add a tiny warning message if it doesn't exist
-        if (!element.nextElementSibling || !element.nextElementSibling.classList.contains('aadhaar-error')) {
+        if (!element.nextElementSibling || !element.nextElementSibling.classList.contains('identity-error')) {
             const error = document.createElement('small');
-            error.className = 'aadhaar-error text-danger d-block';
+            error.className = 'identity-error text-danger d-block';
             error.style.fontSize = '0.65rem';
-            error.innerText = 'Restricted: Use "Identity Proof" instead of "Aadhaar".';
+            error.innerText = 'Restricted: Use "Identity Proof" label only.';
             element.parentNode.appendChild(error);
         }
     } else {
         element.style.borderColor = "";
         element.style.backgroundColor = "";
-        const errorMsg = element.parentNode.querySelector('.aadhaar-error');
+        const errorMsg = element.parentNode.querySelector('.identity-error');
         if (errorMsg) errorMsg.remove();
     }
 }
@@ -438,7 +438,7 @@ function validateAadhaarInput(element) {
 // 2. Attach listener to existing and future inputs
 document.addEventListener('input', function (e) {
     if (e.target && e.target.name === 'doc_name[]') {
-        validateAadhaarInput(e.target);
+        validateRestrictedIdentityInput(e.target);
     }
 });
 </script>

@@ -22,7 +22,7 @@ $initials = strtoupper(substr($name_parts[0], 0, 1) . (count($name_parts) > 1 ? 
 
 // 2. Percentage Calculation (15 fields total)
 $profile_fields = [
-    'full_name', 'email', 'phone', 'aadhaar_number', 'pan_number', 
+    'full_name', 'email', 'phone', 'pan_number',
     'birth_date', 'state', 'city', 'pin_code', 'employee_type', 'monthly_income',
     'reference1_name', 'reference1_phone', 'reference2_name', 'reference2_phone'
 ];
@@ -30,7 +30,7 @@ $filled_count = 0;
 foreach ($profile_fields as $field) { if (!empty($data[$field])) $filled_count++; }
 $percentage = round(($filled_count / count($profile_fields)) * 100);
 
-$kyc_status = (!empty($data['aadhaar_number']) && !empty($data['pan_number']));
+$kyc_status = (!empty($data['pan_number']));
 ?>
 
 <?php include 'topbar.php'; ?>
@@ -91,7 +91,6 @@ $kyc_status = (!empty($data['aadhaar_number']) && !empty($data['pan_number']));
                                     <div class="col-md-6"><label class="form-label">Email</label><input type="text" class="form-control" value="<?= $data['email'] ?>" readonly></div>
                                     <div class="col-md-6"><label class="form-label">Phone</label><input type="text" class="form-control" value="<?= $data['phone'] ?>" readonly></div>
                                     <div class="col-md-6"><label class="form-label">PAN Number</label><input type="text" name="pan_number" id="pan_number" class="form-control" value="<?= $data['pan_number'] ?>" <?= !empty($data['pan_number']) ? 'readonly' : '' ?> maxlength="10" style="text-transform: uppercase;"></div>
-                                    <div class="col-md-6"><label class="form-label">Aadhaar Number</label><input type="text" name="aadhaar_number" id="aadhaar_number" class="form-control" value="<?= $data['aadhaar_number'] ?>" <?= !empty($data['aadhaar_number']) ? 'readonly' : '' ?> maxlength="12"></div>
                                     <div class="col-md-6"><label class="form-label">Birth Date</label><input type="date" name="birth_date" class="form-control" value="<?= $data['birth_date'] ?>"></div>
                                 </div>
                             </div>

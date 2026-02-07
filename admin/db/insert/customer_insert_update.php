@@ -11,15 +11,14 @@ if ($action == 'create' || $action == 'update') {
     $name = mysqli_real_escape_string($conn, $_POST['full_name']);
     $email = mysqli_real_escape_string($conn, $_POST['email']);
     $phone = mysqli_real_escape_string($conn, $_POST['phone']);
-    $aadhaar = mysqli_real_escape_string($conn, $_POST['aadhaar_number']);
     $status = mysqli_real_escape_string($conn, $_POST['status']);
 
     if ($action == 'create') {
         // --- CREATE NEW CUSTOMER ---
         $pass = password_hash($_POST['password'], PASSWORD_BCRYPT);
         
-        $sql = "INSERT INTO customers (full_name, email, phone, password, aadhaar_number, status) 
-                VALUES ('$name', '$email', '$phone', '$pass', '$aadhaar', '$status')";
+        $sql = "INSERT INTO customers (full_name, email, phone, password, status) 
+                VALUES ('$name', '$email', '$phone', '$pass', '$status')";
         
         if(mysqli_query($conn, $sql)) {
             $id = mysqli_insert_id($conn);
@@ -37,7 +36,6 @@ if ($action == 'create' || $action == 'update') {
                 full_name='$name', 
                 email='$email', 
                 phone='$phone', 
-                aadhaar_number='$aadhaar', 
                 status='$status' 
                 WHERE id=$id";
         mysqli_query($conn, $sql);
