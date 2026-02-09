@@ -759,7 +759,7 @@ include 'includes/connection.php';
                     <div class="why-different-number">03</div>
                     <h4 class="fw-bold mb-3">Minimal Documentation</h4>
                     <p class="text-muted mb-0">
-                        Forget endless paperwork. We've streamlined our process to require only essential documents – Aadhaar, PAN, and bank statement. That's it!
+                        Forget endless paperwork. We've streamlined our process to require only essential documents –  PAN, and bank statement. That's it!
                     </p>
                 </div>
             </div>
