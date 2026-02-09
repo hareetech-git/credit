@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 09, 2026 at 08:18 AM
+-- Generation Time: Feb 09, 2026 at 09:44 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -124,6 +124,133 @@ CREATE TABLE `departments` (
 
 INSERT INTO `departments` (`id`, `name`, `created_at`, `updated_at`, `created_by`) VALUES
 (1, 'Loan Department', '2026-01-29 08:02:52', '2026-01-29 08:02:52', NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `dsa`
+--
+
+CREATE TABLE `dsa` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `phone` varchar(20) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `department_id` int(11) DEFAULT NULL,
+  `created_by` bigint(20) UNSIGNED DEFAULT NULL,
+  `status` enum('active','inactive') DEFAULT 'active',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `dsa`
+--
+
+INSERT INTO `dsa` (`id`, `name`, `email`, `phone`, `password`, `department_id`, `created_by`, `status`, `created_at`, `updated_at`) VALUES
+(1, 'Sample DSA', 'dsa@example.com', '9000000000', '$2y$10$Ryd1rY7d1Ds6eMRKT2wMh.ARQUWmGr95bQtgZwI/hXuI4ik.o/o2e', 1, 1, 'active', '2026-02-09 07:30:02', '2026-02-09 07:30:02');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `dsa_permissions`
+--
+
+CREATE TABLE `dsa_permissions` (
+  `id` int(11) NOT NULL,
+  `perm_key` varchar(80) NOT NULL,
+  `description` varchar(255) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `dsa_permissions`
+--
+
+INSERT INTO `dsa_permissions` (`id`, `perm_key`, `description`) VALUES
+(1, 'dsa_dashboard_view', 'View DSA dashboard'),
+(2, 'dsa_profile_manage', 'View and update DSA profile'),
+(3, 'dsa_lead_view', 'View own submitted leads'),
+(4, 'dsa_lead_create', 'Create new lead/application');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `dsa_profiles`
+--
+
+CREATE TABLE `dsa_profiles` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `dsa_id` bigint(20) UNSIGNED NOT NULL,
+  `firm_name` varchar(255) DEFAULT NULL,
+  `pan_number` varchar(20) DEFAULT NULL,
+  `city` varchar(100) DEFAULT NULL,
+  `state` varchar(100) DEFAULT NULL,
+  `pin_code` varchar(10) DEFAULT NULL,
+  `bank_name` varchar(255) DEFAULT NULL,
+  `account_number` varchar(50) DEFAULT NULL,
+  `ifsc_code` varchar(20) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `dsa_profiles`
+--
+
+INSERT INTO `dsa_profiles` (`id`, `dsa_id`, `firm_name`, `pan_number`, `city`, `state`, `pin_code`, `bank_name`, `account_number`, `ifsc_code`, `created_at`, `updated_at`) VALUES
+(1, 1, 'Sample Associates', 'ABCDE1234F', 'Lucknow', 'Uttar Pradesh', '226001', 'State Bank of India', '1234567890', 'SBIN0000123', '2026-02-09 07:30:02', '2026-02-09 07:30:02');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `dsa_requests`
+--
+
+CREATE TABLE `dsa_requests` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `customer_id` bigint(20) UNSIGNED NOT NULL,
+  `full_name` varchar(255) NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `phone` varchar(20) NOT NULL,
+  `firm_name` varchar(255) NOT NULL,
+  `pan_number` varchar(20) DEFAULT NULL,
+  `city` varchar(100) DEFAULT NULL,
+  `state` varchar(100) DEFAULT NULL,
+  `pin_code` varchar(10) DEFAULT NULL,
+  `bank_name` varchar(255) DEFAULT NULL,
+  `account_number` varchar(50) DEFAULT NULL,
+  `ifsc_code` varchar(20) DEFAULT NULL,
+  `message` text DEFAULT NULL,
+  `status` enum('pending','approved','rejected') NOT NULL DEFAULT 'pending',
+  `admin_note` text DEFAULT NULL,
+  `reviewed_by` bigint(20) UNSIGNED DEFAULT NULL,
+  `reviewed_at` timestamp NULL DEFAULT NULL,
+  `dsa_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `dsa_user_permissions`
+--
+
+CREATE TABLE `dsa_user_permissions` (
+  `dsa_id` bigint(20) UNSIGNED NOT NULL,
+  `permission_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `dsa_user_permissions`
+--
+
+INSERT INTO `dsa_user_permissions` (`dsa_id`, `permission_id`) VALUES
+(1, 1),
+(1, 2),
+(1, 3),
+(1, 4);
 
 -- --------------------------------------------------------
 
@@ -671,133 +798,6 @@ INSERT INTO `service_why_choose_us` (`id`, `service_id`, `image`, `title`, `desc
 -- --------------------------------------------------------
 
 --
--- Table structure for table `dsa`
---
-
-CREATE TABLE `dsa` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `name` varchar(255) NOT NULL,
-  `email` varchar(255) NOT NULL,
-  `phone` varchar(20) NOT NULL,
-  `password` varchar(255) NOT NULL,
-  `department_id` int(11) DEFAULT NULL,
-  `created_by` bigint(20) UNSIGNED DEFAULT NULL,
-  `status` enum('active','inactive') DEFAULT 'active',
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `dsa`
---
-
-INSERT INTO `dsa` (`id`, `name`, `email`, `phone`, `password`, `department_id`, `created_by`, `status`, `created_at`, `updated_at`) VALUES
-(1, 'Sample DSA', 'dsa@example.com', '9000000000', '$2y$10$Ryd1rY7d1Ds6eMRKT2wMh.ARQUWmGr95bQtgZwI/hXuI4ik.o/o2e', 1, 1, 'active', '2026-02-09 09:00:00', '2026-02-09 09:00:00');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `dsa_profiles`
---
-
-CREATE TABLE `dsa_profiles` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `dsa_id` bigint(20) UNSIGNED NOT NULL,
-  `firm_name` varchar(255) DEFAULT NULL,
-  `pan_number` varchar(20) DEFAULT NULL,
-  `city` varchar(100) DEFAULT NULL,
-  `state` varchar(100) DEFAULT NULL,
-  `pin_code` varchar(10) DEFAULT NULL,
-  `bank_name` varchar(255) DEFAULT NULL,
-  `account_number` varchar(50) DEFAULT NULL,
-  `ifsc_code` varchar(20) DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `dsa_profiles`
---
-
-INSERT INTO `dsa_profiles` (`id`, `dsa_id`, `firm_name`, `pan_number`, `city`, `state`, `pin_code`, `bank_name`, `account_number`, `ifsc_code`, `created_at`, `updated_at`) VALUES
-(1, 1, 'Sample Associates', 'ABCDE1234F', 'Lucknow', 'Uttar Pradesh', '226001', 'State Bank of India', '1234567890', 'SBIN0000123', '2026-02-09 09:00:00', '2026-02-09 09:00:00');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `dsa_permissions`
---
-
-CREATE TABLE `dsa_permissions` (
-  `id` int(11) NOT NULL,
-  `perm_key` varchar(80) NOT NULL,
-  `description` varchar(255) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `dsa_permissions`
---
-
-INSERT INTO `dsa_permissions` (`id`, `perm_key`, `description`) VALUES
-(1, 'dsa_dashboard_view', 'View DSA dashboard'),
-(2, 'dsa_profile_manage', 'View and update DSA profile'),
-(3, 'dsa_lead_view', 'View own submitted leads'),
-(4, 'dsa_lead_create', 'Create new lead/application');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `dsa_user_permissions`
---
-
-CREATE TABLE `dsa_user_permissions` (
-  `dsa_id` bigint(20) UNSIGNED NOT NULL,
-  `permission_id` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `dsa_user_permissions`
---
-
-INSERT INTO `dsa_user_permissions` (`dsa_id`, `permission_id`) VALUES
-(1, 1),
-(1, 2),
-(1, 3),
-(1, 4);
-
--- --------------------------------------------------------
-
---
--- Table structure for table `dsa_requests`
---
-
-CREATE TABLE `dsa_requests` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `customer_id` bigint(20) UNSIGNED NOT NULL,
-  `full_name` varchar(255) NOT NULL,
-  `email` varchar(255) NOT NULL,
-  `phone` varchar(20) NOT NULL,
-  `firm_name` varchar(255) NOT NULL,
-  `pan_number` varchar(20) DEFAULT NULL,
-  `city` varchar(100) DEFAULT NULL,
-  `state` varchar(100) DEFAULT NULL,
-  `pin_code` varchar(10) DEFAULT NULL,
-  `bank_name` varchar(255) DEFAULT NULL,
-  `account_number` varchar(50) DEFAULT NULL,
-  `ifsc_code` varchar(20) DEFAULT NULL,
-  `message` text DEFAULT NULL,
-  `status` enum('pending','approved','rejected') NOT NULL DEFAULT 'pending',
-  `admin_note` text DEFAULT NULL,
-  `reviewed_by` bigint(20) UNSIGNED DEFAULT NULL,
-  `reviewed_at` timestamp NULL DEFAULT NULL,
-  `dsa_id` bigint(20) UNSIGNED DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `staff`
 --
 
@@ -880,13 +880,6 @@ ALTER TABLE `dsa`
   ADD UNIQUE KEY `phone` (`phone`);
 
 --
--- Indexes for table `dsa_profiles`
---
-ALTER TABLE `dsa_profiles`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `dsa_id` (`dsa_id`);
-
---
 -- Indexes for table `dsa_permissions`
 --
 ALTER TABLE `dsa_permissions`
@@ -894,11 +887,11 @@ ALTER TABLE `dsa_permissions`
   ADD UNIQUE KEY `uniq_dsa_perm_key` (`perm_key`);
 
 --
--- Indexes for table `dsa_user_permissions`
+-- Indexes for table `dsa_profiles`
 --
-ALTER TABLE `dsa_user_permissions`
-  ADD PRIMARY KEY (`dsa_id`,`permission_id`),
-  ADD KEY `idx_dsa_user_permission_perm` (`permission_id`);
+ALTER TABLE `dsa_profiles`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `dsa_id` (`dsa_id`);
 
 --
 -- Indexes for table `dsa_requests`
@@ -909,6 +902,13 @@ ALTER TABLE `dsa_requests`
   ADD KEY `idx_dsa_requests_status` (`status`),
   ADD KEY `idx_dsa_requests_reviewed_by` (`reviewed_by`),
   ADD KEY `idx_dsa_requests_dsa` (`dsa_id`);
+
+--
+-- Indexes for table `dsa_user_permissions`
+--
+ALTER TABLE `dsa_user_permissions`
+  ADD PRIMARY KEY (`dsa_id`,`permission_id`),
+  ADD KEY `idx_dsa_user_permission_perm` (`permission_id`);
 
 --
 -- Indexes for table `enquiries`
@@ -955,9 +955,9 @@ ALTER TABLE `faqs`
 --
 ALTER TABLE `loan_applications`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `idx_dsa_id` (`dsa_id`),
   ADD KEY `idx_assigned_staff` (`assigned_staff_id`),
-  ADD KEY `idx_assigned_by` (`assigned_by`);
+  ADD KEY `idx_assigned_by` (`assigned_by`),
+  ADD KEY `idx_dsa_id` (`dsa_id`);
 
 --
 -- Indexes for table `loan_application_docs`
@@ -1102,16 +1102,16 @@ ALTER TABLE `dsa`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
--- AUTO_INCREMENT for table `dsa_profiles`
---
-ALTER TABLE `dsa_profiles`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
-
---
 -- AUTO_INCREMENT for table `dsa_permissions`
 --
 ALTER TABLE `dsa_permissions`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT for table `dsa_profiles`
+--
+ALTER TABLE `dsa_profiles`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `dsa_requests`
