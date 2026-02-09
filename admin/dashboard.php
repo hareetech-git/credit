@@ -6,6 +6,9 @@ function getCount($conn, $table, $where = '') {
     $sql = "SELECT COUNT(*) AS total FROM $table";
     if (!empty($where)) { $sql .= " WHERE $where"; }
     $result = mysqli_query($conn, $sql);
+    if (!$result) {
+        return 0;
+    }
     $row = mysqli_fetch_assoc($result);
     return $row['total'] ?? 0;
 }
@@ -17,6 +20,8 @@ $enquiryCount     = getCount($conn, 'enquiries');
 $customerCount    = getCount($conn,'customers' );
 $departmentCount  = getCount ($conn,'departments');
 $staffCount       = getCount($conn, 'staff');
+$dsaCount         = getCount($conn, 'dsa');
+$pendingDsaRequests = getCount($conn, 'dsa_requests', "status='pending'");
 $loanCount        = getCount($conn, 'loan_applications');
 
 // Status specific counts
@@ -218,6 +223,8 @@ include 'sidebar.php';
                     ['label' => 'Loan Products', 'val' => $serviceCount, 'link' => 'services.php'],
                     ['label' => 'Total Customers', 'val' => $customerCount, 'link' => 'customers.php'],
                     ['label' => 'Active Staff', 'val' => $staffCount, 'link' => 'staff_list.php'],
+                    ['label' => 'DSA Agents', 'val' => $dsaCount, 'link' => 'dsa_list.php'],
+                    ['label' => 'Pending DSA Requests', 'val' => $pendingDsaRequests, 'link' => 'dsa_requests.php'],
                     ['label' => 'Total Enquiries', 'val' => $enquiryCount, 'link' => 'enquiries.php'],
                     ['label' => 'Loan Applications', 'val' => $loanCount, 'link' => 'loan_applications.php'],
                 ];

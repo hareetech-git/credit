@@ -28,6 +28,12 @@ $staff_active = in_array($current_page, [
     'staff_list.php', 
     'manage_permissions.php'
 ]);
+$dsa_active = in_array($current_page, [
+    'dsa_add.php',
+    'dsa_list.php',
+    'dsa_requests.php',
+    'manage_dsa_permissions.php'
+]);
 ?>
 
 <style>
@@ -138,6 +144,19 @@ $staff_active = in_array($current_page, [
                     <li><a href="staff_add.php" class="side-nav-link"><i class="fas fa-plus"></i> Add Staff</a></li>
                     <li><a href="staff_list.php" class="side-nav-link"><i class="fas fa-users-cog"></i> View Staff</a></li>
                     <li><a href="manage_permissions.php" class="side-nav-link"><i class="fas fa-user-shield"></i> Manage Access</a></li>
+                </ul>
+            </li>
+
+            <li class="side-nav-item <?= $dsa_active ? 'active' : '' ?>">
+                <a href="javascript:void(0);" class="side-nav-link has-arrow">
+                    <i class="ri-user-star-line"></i>
+                    <span>DSA Control</span>
+                </a>
+                <ul class="side-nav-second-level">
+                    <li><a href="dsa_add.php" class="side-nav-link"><i class="fas fa-plus"></i> Add DSA</a></li>
+                    <li><a href="dsa_list.php" class="side-nav-link"><i class="fas fa-users"></i> View DSA</a></li>
+                    <li><a href="manage_dsa_permissions.php" class="side-nav-link"><i class="fas fa-key"></i> Manage Access</a></li>
+                    <li><a href="dsa_requests.php" class="side-nav-link"><i class="fas fa-user-check"></i> DSA Requests</a></li>
                 </ul>
             </li>
 

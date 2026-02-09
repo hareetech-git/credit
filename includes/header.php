@@ -159,7 +159,7 @@ option, marquee, div {
             </li>
             
             <li class="nav-item-custom">
-                <a href="#" class="nav-link-custom">Become DSA Partner</a>
+                <a href="dsa-register.php" class="nav-link-custom <?= ($current_page == 'dsa-register.php') ? 'active' : '' ?>">Become DSA Partner</a>
             </li>
             
             <?php foreach($menuTree as $catId => $category): 
@@ -285,7 +285,7 @@ option, marquee, div {
 <div class="mobile-menu-custom" id="mobileMenu">
     <div style="flex: 1; overflow-y: auto;">
         <div class="mobile-nav-item-custom"><a href="index.php" class="mobile-nav-link-custom">Home</a></div>
-        <div class="mobile-nav-item-custom"><a href="#" class="mobile-nav-link-custom">Become DSA Partner</a></div>
+        <div class="mobile-nav-item-custom"><a href="dsa-register.php" class="mobile-nav-link-custom">Become DSA Partner</a></div>
         
         <?php foreach($menuTree as $catId => $category): 
              $hasSub = !empty($category['subcategories']);

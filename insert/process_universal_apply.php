@@ -7,12 +7,36 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST')
     exit;
 
 $session_customer_id = $_SESSION['customer_id'] ?? null;
+$session_dsa_id = $_SESSION['dsa_id'] ?? null;
 $cid = $session_customer_id;
 $mode = $_POST['mode'] ?? 'apply';
 $is_guest_apply = !$session_customer_id && $mode !== 'register';
 mysqli_begin_transaction($conn);
+$has_dsa_column = false;
+$dsa_col_res = mysqli_query($conn, "SHOW COLUMNS FROM loan_applications LIKE 'dsa_id'");
+if ($dsa_col_res && mysqli_num_rows($dsa_col_res) > 0) {
+    $has_dsa_column = true;
+}
+$dsa_perm_tables_ready = false;
+$dsa_perm_tbl_res = mysqli_query($conn, "SHOW TABLES LIKE 'dsa_permissions'");
+$dsa_user_perm_tbl_res = mysqli_query($conn, "SHOW TABLES LIKE 'dsa_user_permissions'");
+if ($dsa_perm_tbl_res && mysqli_num_rows($dsa_perm_tbl_res) > 0 && $dsa_user_perm_tbl_res && mysqli_num_rows($dsa_user_perm_tbl_res) > 0) {
+    $dsa_perm_tables_ready = true;
+}
 
 try {
+    if (!empty($session_dsa_id) && $dsa_perm_tables_ready) {
+        $dsa_id = (int) $session_dsa_id;
+        $dsa_create_perm_res = mysqli_query($conn, "SELECT 1
+            FROM dsa_user_permissions up
+            INNER JOIN dsa_permissions p ON p.id = up.permission_id
+            WHERE up.dsa_id = $dsa_id AND p.perm_key = 'dsa_lead_create'
+            LIMIT 1");
+        if (!$dsa_create_perm_res || mysqli_num_rows($dsa_create_perm_res) === 0) {
+            throw new Exception("Your DSA account does not have permission to create leads.");
+        }
+    }
+
     if (!$cid) {
         $full_name = mysqli_real_escape_string($conn, trim($_POST['full_name']));
         $email = mysqli_real_escape_string($conn, trim($_POST['email']));
@@ -129,7 +153,17 @@ try {
             throw new Exception("Please select a valid loan service and amount.");
         }
 
-        mysqli_query($conn, "INSERT INTO loan_applications (customer_id, service_id, requested_amount, tenure_years, emi_amount, status) VALUES ($cid, $sid, $amt, 0, 0, 'pending')");
+        $dsa_insert_column = '';
+        $dsa_insert_value = '';
+        if ($has_dsa_column && !empty($session_dsa_id)) {
+            $dsa_id = (int) $session_dsa_id;
+            if ($dsa_id > 0) {
+                $dsa_insert_column = ", dsa_id";
+                $dsa_insert_value = ", $dsa_id";
+            }
+        }
+
+        mysqli_query($conn, "INSERT INTO loan_applications (customer_id, service_id, requested_amount, tenure_years, emi_amount, status$dsa_insert_column) VALUES ($cid, $sid, $amt, 0, 0, 'pending'$dsa_insert_value)");
         $loan_id = mysqli_insert_id($conn);
 
         if (!empty($_FILES['loan_docs']['name'])) {

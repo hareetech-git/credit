@@ -81,6 +81,18 @@
 
 <?php
 $current_page = basename($_SERVER['PHP_SELF']);
+$customer_id = (int)($_SESSION['customer_id'] ?? 0);
+$dsa_request_active = ($current_page === 'become-dsa.php');
+$dsa_latest_status = '';
+if (isset($conn) && $customer_id > 0) {
+    $dsaTableRes = mysqli_query($conn, "SHOW TABLES LIKE 'dsa_requests'");
+    if ($dsaTableRes && mysqli_num_rows($dsaTableRes) > 0) {
+        $dsaReqRes = mysqli_query($conn, "SELECT status FROM dsa_requests WHERE customer_id = $customer_id ORDER BY id DESC LIMIT 1");
+        if ($dsaReqRes && mysqli_num_rows($dsaReqRes) > 0) {
+            $dsa_latest_status = strtolower((string)(mysqli_fetch_assoc($dsaReqRes)['status'] ?? ''));
+        }
+    }
+}
 ?>
 
 <div class="leftside-menu">
@@ -146,6 +158,24 @@ $current_page = basename($_SERVER['PHP_SELF']);
                     <span>New Enquiry</span>
                 </a>
             </li>
+
+            <li class="side-nav-title">DSA Partner</li>
+
+            <li class="side-nav-item <?= $dsa_request_active ? 'active' : '' ?>">
+                <a href="become-dsa.php" class="side-nav-link">
+                    <i class="ri-user-star-line"></i>
+                    <span>Become DSA Agent</span>
+                </a>
+            </li>
+
+            <?php if ($dsa_latest_status === 'approved'): ?>
+            <li class="side-nav-item">
+                <a href="../dsa/index.php" class="side-nav-link">
+                    <i class="ri-login-box-line"></i>
+                    <span>DSA Login</span>
+                </a>
+            </li>
+            <?php endif; ?>
 
          <li class="side-nav-item">
                 <a href="db/auth-logout.php" class="side-nav-link" style="color: #ef4444 !important;">

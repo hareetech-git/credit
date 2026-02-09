@@ -194,6 +194,9 @@ $redirect_to = isset($_GET['redirect']) ? $_GET['redirect'] : '';
             <div>
                 Don't have an account? <a href="apply-loan.php?mode=register">Create Account</a>
             </div>
+            <div class="mt-2">
+                Are you a DSA agent? <a href="dsa/index.php">DSA Login</a>
+            </div>
         </div>
 
         <div class="security-text">
