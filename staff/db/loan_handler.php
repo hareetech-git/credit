@@ -204,6 +204,66 @@ if ($action == 'manual_create_assign') {
 
     if (mysqli_query($conn, $sql)) {
         $loan_id = (int)mysqli_insert_id($conn);
+
+        $doc_error = '';
+        $moved_files = [];
+        if (!empty($_FILES['loan_docs']['name'])) {
+            $allowed_exts = ['pdf', 'jpg', 'jpeg', 'png'];
+            $max_size = 5 * 1024 * 1024;
+            $upload_dir = realpath(__DIR__ . '/../../uploads/loans');
+            if ($upload_dir === false) {
+                $doc_error = 'Upload directory not found';
+            } else {
+                foreach ($_FILES['loan_docs']['name'] as $key => $val) {
+                    if (empty($val)) {
+                        continue;
+                    }
+                    $ext = strtolower(pathinfo($val, PATHINFO_EXTENSION));
+                    if (!in_array($ext, $allowed_exts, true)) {
+                        $doc_error = 'Only PDF, JPG, JPEG, PNG files are allowed';
+                        break;
+                    }
+                    $file_size = (int)($_FILES['loan_docs']['size'][$key] ?? 0);
+                    if ($file_size > $max_size) {
+                        $doc_error = 'Each document must be 5 MB or less';
+                        break;
+                    }
+                }
+            }
+
+            if ($doc_error === '') {
+                foreach ($_FILES['loan_docs']['name'] as $key => $val) {
+                    if (empty($val)) {
+                        continue;
+                    }
+                    $ext = strtolower(pathinfo($val, PATHINFO_EXTENSION));
+                    $safe_key = preg_replace('/[^A-Za-z0-9_-]/', '_', (string)$key);
+                    $new_name = "loan_{$loan_id}_" . time() . "_$safe_key.$ext";
+                    $dest = $upload_dir . DIRECTORY_SEPARATOR . $new_name;
+                    if (!move_uploaded_file($_FILES['loan_docs']['tmp_name'][$key], $dest)) {
+                        $doc_error = 'Document upload failed';
+                        break;
+                    }
+                    $moved_files[] = $dest;
+                    $db_path = "uploads/loans/$new_name";
+                    $title = str_replace('_', ' ', (string)$key);
+                    mysqli_query($conn, "INSERT INTO loan_application_docs (loan_application_id, doc_name, doc_path) VALUES ($loan_id, '$title', '$db_path')");
+                }
+            }
+        }
+
+        if ($doc_error !== '') {
+            mysqli_query($conn, "DELETE FROM loan_application_docs WHERE loan_application_id = $loan_id");
+            foreach ($moved_files as $file) {
+                if (is_string($file) && file_exists($file)) {
+                    unlink($file);
+                }
+            }
+            mysqli_query($conn, "DELETE FROM loan_applications WHERE id = $loan_id");
+            header("Location: ../manual_loan_assign.php?err=" . urlencode($doc_error));
+            exit();
+        }
+
         loanNotifyStaffOnAssignment($conn, $loan_id, $new_staff_id, 'Staff');
         header("Location: ../manual_loan_assign.php?msg=Loan created and assigned successfully");
     } else {
