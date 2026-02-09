@@ -7,7 +7,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     die("Invalid access.");
 }
 
-$action = $_POST['action'];
+$action = $_POST['action'] ?? '';
 $interest_type_column_exists = false;
 $interest_col_res = mysqli_query($conn, "SHOW COLUMNS FROM loan_applications LIKE 'interest_type'");
 if ($interest_col_res && mysqli_num_rows($interest_col_res) > 0) {
@@ -66,8 +66,8 @@ if ($action == 'assign_staff') {
         exit;
     }
 
-    if ($staff_id > 0 && (!hasStaffPermission($conn, $staff_id, 'loan_process') || !hasStaffPermission($conn, $staff_id, 'loan_manual_assign'))) {
-        header("Location: {$redirect_to}?err=Selected staff is not eligible for manual loan assignment");
+    if ($staff_id > 0 && !hasStaffPermission($conn, $staff_id, 'loan_process')) {
+        header("Location: {$redirect_to}?err=Selected staff is not eligible for loan assignment");
         exit;
     }
 
@@ -98,7 +98,80 @@ if ($action == 'assign_staff') {
         }
         header("Location: {$redirect_to}?msg=Loan assigned successfully");
     } else {
-        header("Location: {$redirect_to}?err=Assignment failed");
+        $errMsg = 'Assignment failed';
+        $dbErr = trim((string)mysqli_error($conn));
+        if ($dbErr !== '') {
+            $errMsg .= ': ' . $dbErr;
+        }
+        header("Location: {$redirect_to}?err=" . urlencode($errMsg));
+    }
+    exit;
+}
+
+if ($action == 'manual_create_assign') {
+    $customer_id = (int)($_POST['customer_id'] ?? 0);
+    $service_id = (int)($_POST['service_id'] ?? 0);
+    $staff_id = (int)($_POST['staff_id'] ?? 0);
+    $requested_amount = (float)($_POST['requested_amount'] ?? 0);
+    $tenure_months = (int)($_POST['tenure_months'] ?? 0);
+    $interest_rate = (float)($_POST['interest_rate'] ?? 0);
+    $interest_type = normalizeInterestType($_POST['interest_type'] ?? 'year');
+    $status = mysqli_real_escape_string($conn, trim((string)($_POST['status'] ?? 'pending')));
+    $admin_id = isset($_SESSION['admin_id']) ? (int)$_SESSION['admin_id'] : null;
+
+    if ($customer_id <= 0 || $service_id <= 0 || $staff_id <= 0) {
+        header("Location: ../manual_loan_assign.php?err=Please select customer, service and staff");
+        exit;
+    }
+    if ($requested_amount <= 0) {
+        header("Location: ../manual_loan_assign.php?err=Requested amount must be greater than zero");
+        exit;
+    }
+    if ($tenure_months < 0) {
+        header("Location: ../manual_loan_assign.php?err=Tenure cannot be negative");
+        exit;
+    }
+    if ($interest_rate < 0) {
+        header("Location: ../manual_loan_assign.php?err=Interest rate cannot be negative");
+        exit;
+    }
+    if (!in_array($status, ['pending', 'approved', 'rejected', 'disbursed'], true)) {
+        $status = 'pending';
+    }
+    if (!hasStaffPermission($conn, $staff_id, 'loan_process')) {
+        header("Location: ../manual_loan_assign.php?err=Selected staff is not eligible for manual assignment");
+        exit;
+    }
+
+    $custRes = mysqli_query($conn, "SELECT id FROM customers WHERE id = $customer_id LIMIT 1");
+    $svcRes = mysqli_query($conn, "SELECT id FROM services WHERE id = $service_id LIMIT 1");
+    if (!$custRes || mysqli_num_rows($custRes) === 0 || !$svcRes || mysqli_num_rows($svcRes) === 0) {
+        header("Location: ../manual_loan_assign.php?err=Invalid customer or service selection");
+        exit;
+    }
+
+    $emi = ($tenure_months > 0)
+        ? calculateEmiAmount($requested_amount, $tenure_months, $interest_rate, $interest_type)
+        : 0.00;
+
+    $interest_type_insert_sql = '';
+    $interest_type_value_sql = '';
+    if ($interest_type_column_exists) {
+        $interest_type_insert_sql = ', interest_type';
+        $interest_type_value_sql = ", '$interest_type'";
+    }
+
+    $insert = "INSERT INTO loan_applications
+               (customer_id, service_id, requested_amount, tenure_years, emi_amount, status, assigned_staff_id, assigned_by, assigned_at, interest_rate$interest_type_insert_sql)
+               VALUES
+               ($customer_id, $service_id, $requested_amount, $tenure_months, $emi, '$status', $staff_id, " . ($admin_id ?: "NULL") . ", NOW(), $interest_rate$interest_type_value_sql)";
+
+    if (mysqli_query($conn, $insert)) {
+        $loan_id = (int)mysqli_insert_id($conn);
+        loanNotifyStaffOnAssignment($conn, $loan_id, $staff_id, 'Admin');
+        header("Location: ../manual_loan_assign.php?msg=Loan created and assigned successfully");
+    } else {
+        header("Location: ../manual_loan_assign.php?err=Unable to create loan assignment");
     }
     exit;
 }

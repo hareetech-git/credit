@@ -4,11 +4,19 @@ include 'header.php';
 include 'topbar.php';
 include 'sidebar.php';
 
+if (!hasAccess($conn, 'loan_manual_assign')) {
+    header('Location: dashboard.php?err=Access denied');
+    exit();
+}
+$can_assign_others = hasAccess($conn, 'loan_manual_assign_others');
+$current_staff_id = (int)($_SESSION['staff_id'] ?? 0);
+
 $search = mysqli_real_escape_string($conn, trim((string)($_GET['search'] ?? '')));
 $status = mysqli_real_escape_string($conn, trim((string)($_GET['status'] ?? '')));
 
 $staff_list = [];
-$staff_res = mysqli_query($conn, "
+if ($can_assign_others) {
+    $staff_res = mysqli_query($conn, "
     SELECT DISTINCT s.id, s.name, s.email
     FROM staff s
     WHERE s.status='active'
@@ -28,9 +36,15 @@ $staff_res = mysqli_query($conn, "
       )
     ORDER BY s.name
 ");
-if ($staff_res) {
-    while ($row = mysqli_fetch_assoc($staff_res)) {
-        $staff_list[] = $row;
+    if ($staff_res) {
+        while ($row = mysqli_fetch_assoc($staff_res)) {
+            $staff_list[] = $row;
+        }
+    }
+} else {
+    $selfRes = mysqli_query($conn, "SELECT id, name, email FROM staff WHERE id = $current_staff_id LIMIT 1");
+    if ($selfRes && mysqli_num_rows($selfRes) > 0) {
+        $staff_list[] = mysqli_fetch_assoc($selfRes);
     }
 }
 
@@ -77,7 +91,7 @@ $loans = mysqli_query($conn, $query);
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <div>
                     <h2 class="fw-bold text-dark mb-1">Manual Loan Assign</h2>
-                    <p class="text-muted small mb-0">Assign applications manually. Assigned staff receives email immediately.</p>
+                    <p class="text-muted small mb-0">Re-assign loans when you have manual assignment access.</p>
                 </div>
             </div>
 
@@ -87,6 +101,7 @@ $loans = mysqli_query($conn, $query);
             <?php if (!empty($_GET['err'])): ?>
                 <div class="alert alert-danger"><?= htmlspecialchars($_GET['err']) ?></div>
             <?php endif; ?>
+      
 
             <div class="card border mb-3">
                 <div class="card-header bg-white">
@@ -149,14 +164,19 @@ $loans = mysqli_query($conn, $query);
 
                         <div class="col-md-8">
                             <label class="form-label">Assign Staff</label>
-                            <select name="staff_id" class="form-select" required>
-                                <option value="">Select staff</option>
-                                <?php foreach ($staff_list as $s): ?>
-                                    <option value="<?= (int)$s['id'] ?>">
-                                        <?= htmlspecialchars($s['name']) ?> (<?= htmlspecialchars($s['email']) ?>)
-                                    </option>
-                                <?php endforeach; ?>
-                            </select>
+                            <?php if ($can_assign_others): ?>
+                                <select name="staff_id" class="form-select" required>
+                                    <option value="">Select staff</option>
+                                    <?php foreach ($staff_list as $s): ?>
+                                        <option value="<?= (int)$s['id'] ?>" <?= (int)$s['id'] === $current_staff_id ? 'selected' : '' ?>>
+                                            <?= htmlspecialchars($s['name']) ?> (<?= htmlspecialchars($s['email']) ?>)
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            <?php else: ?>
+                                <input type="hidden" name="staff_id" value="<?= $current_staff_id ?>">
+                                <input type="text" class="form-control" value="Self Assignment" readonly>
+                            <?php endif; ?>
                         </div>
                         <div class="col-md-4">
                             <button type="submit" class="btn btn-dark w-100">Create And Assign</button>
@@ -224,20 +244,24 @@ $loans = mysqli_query($conn, $query);
                                         <td><span class="badge bg-light text-dark text-capitalize"><?= htmlspecialchars($loan['status']) ?></span></td>
                                         <td><?= htmlspecialchars($loan['assigned_staff_name'] ?: 'Unassigned') ?></td>
                                         <td class="pe-3" style="min-width:260px;">
-                                            <form action="db/loan_handler.php" method="POST" class="d-flex gap-2">
-                                                <input type="hidden" name="action" value="assign_staff">
-                                                <input type="hidden" name="loan_id" value="<?= (int)$loan['id'] ?>">
-                                                <input type="hidden" name="redirect_to" value="manual">
-                                                <select name="staff_id" class="form-select form-select-sm" required>
-                                                    <option value="0">Unassign</option>
-                                                    <?php foreach ($staff_list as $s): ?>
-                                                        <option value="<?= (int)$s['id'] ?>" <?= (int)$loan['assigned_staff_id'] === (int)$s['id'] ? 'selected' : '' ?>>
-                                                            <?= htmlspecialchars($s['name']) ?> (<?= htmlspecialchars($s['email']) ?>)
-                                                        </option>
-                                                    <?php endforeach; ?>
-                                                </select>
-                                                <button type="submit" class="btn btn-sm btn-dark">Save</button>
-                                            </form>
+                                            <?php if ($can_assign_others): ?>
+                                                <form action="db/loan_handler.php" method="POST" class="d-flex gap-2">
+                                                    <input type="hidden" name="action" value="assign_staff">
+                                                    <input type="hidden" name="loan_id" value="<?= (int)$loan['id'] ?>">
+                                                    <input type="hidden" name="redirect_to" value="manual">
+                                                    <select name="staff_id" class="form-select form-select-sm" required>
+                                                        <option value="0">Unassign</option>
+                                                        <?php foreach ($staff_list as $s): ?>
+                                                            <option value="<?= (int)$s['id'] ?>" <?= (int)$loan['assigned_staff_id'] === (int)$s['id'] ? 'selected' : '' ?>>
+                                                                <?= htmlspecialchars($s['name']) ?> (<?= htmlspecialchars($s['email']) ?>)
+                                                            </option>
+                                                        <?php endforeach; ?>
+                                                    </select>
+                                                    <button type="submit" class="btn btn-sm btn-dark">Save</button>
+                                                </form>
+                                            <?php else: ?>
+                                                <span class="small text-muted">No reassignment access</span>
+                                            <?php endif; ?>
                                         </td>
                                     </tr>
                                 <?php endwhile; ?>

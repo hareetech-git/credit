@@ -37,20 +37,6 @@ $staff_res = mysqli_query($conn, "
             WHERE sp.staff_id = s.id AND p2.perm_key = 'loan_process'
         )
       )
-      AND (
-        EXISTS (
-            SELECT 1
-            FROM role_permissions rp
-            INNER JOIN permissions p ON p.id = rp.permission_id
-            WHERE rp.role_id = s.role_id AND p.perm_key = 'loan_manual_assign'
-        )
-        OR EXISTS (
-            SELECT 1
-            FROM staff_permissions sp
-            INNER JOIN permissions p2 ON p2.id = sp.permission_id
-            WHERE sp.staff_id = s.id AND p2.perm_key = 'loan_manual_assign'
-        )
-      )
     ORDER BY s.name
 ");
 while ($s = mysqli_fetch_assoc($staff_res)) {
@@ -168,6 +154,17 @@ function getSortUrl($col, $next_order, $search, $status, $staff) {
                     <p class="text-muted small mb-0">Review and process incoming loan requests.</p>
                 </div>
             </div>
+
+            <?php if (!empty($_GET['msg'])) : ?>
+                <div class="alert alert-success border-0 shadow-sm mb-4 py-3">
+                    <i class="fas fa-check-circle me-2"></i> <?= htmlspecialchars($_GET['msg']) ?>
+                </div>
+            <?php endif; ?>
+            <?php if (!empty($_GET['err'])) : ?>
+                <div class="alert alert-danger border-0 shadow-sm mb-4 py-3">
+                    <i class="fas fa-exclamation-circle me-2"></i> <?= htmlspecialchars($_GET['err']) ?>
+                </div>
+            <?php endif; ?>
 
             <div class="card card-modern mb-4">
                 <div class="card-body p-3">

@@ -11,7 +11,8 @@ $customer_active = in_array($current_page, [
 // 2. Loan Active Logic
 $loan_active = in_array($current_page, [
     'loan_applications.php', 
-    'loan_view.php'
+    'loan_view.php',
+    'manual_loan_assign.php'
 ]);
 
 $enquiry_active = in_array($current_page, [
@@ -101,14 +102,19 @@ $faq_active = ($current_page == 'faqs.php');
             </li>
             <?php endif; ?>
 
-            <?php if (hasAccess($conn, 'loan_view')): ?>
+            <?php if (hasAccess($conn, 'loan_view') || hasAccess($conn, 'loan_process') || hasAccess($conn, 'loan_manual_assign')): ?>
             <li class="side-nav-item <?= $loan_active ? 'active' : '' ?>">
                 <a href="javascript:void(0);" class="side-nav-link has-arrow">
                     <i class="ri-bank-card-2-line"></i>
                     <span>Loan Management</span>
                 </a>
                 <ul class="side-nav-second-level">
-                    <li><a href="loan_applications.php" class="side-nav-link"><i class="fas fa-file-invoice-dollar"></i> Assigned Applications</a></li>
+                    <?php if (hasAccess($conn, 'loan_view')): ?>
+                        <li><a href="loan_applications.php" class="side-nav-link"><i class="fas fa-file-invoice-dollar"></i> Assigned Applications</a></li>
+                    <?php endif; ?>
+                    <?php if (hasAccess($conn, 'loan_manual_assign')): ?>
+                        <li><a href="manual_loan_assign.php" class="side-nav-link"><i class="fas fa-user-check"></i> Manual Assign</a></li>
+                    <?php endif; ?>
                 </ul>
             </li>
             <?php endif; ?>

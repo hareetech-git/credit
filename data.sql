@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 09, 2026 at 09:44 AM
+-- Generation Time: Feb 09, 2026 at 12:44 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -43,7 +43,7 @@ CREATE TABLE `admin` (
 --
 
 INSERT INTO `admin` (`id`, `uuid`, `name`, `email`, `password`, `role`, `created_at`, `updated_at`) VALUES
-(1, '', 'admin', 'admin@gmail.com', '$2y$10$d.HjZm4Xs3kIhH7FrbPEhOj9T9ueD7lXn6UhCStB9LR8pv6UE5B5O', 'admin', '2026-01-28 06:44:17', '2026-02-07 05:53:41');
+(1, '', 'admin', 'srivastavasanyam8052@gmail.com', '$2y$10$d.HjZm4Xs3kIhH7FrbPEhOj9T9ueD7lXn6UhCStB9LR8pv6UE5B5O', 'admin', '2026-01-28 06:44:17', '2026-02-07 05:53:41');
 
 -- --------------------------------------------------------
 
@@ -80,7 +80,7 @@ INSERT INTO `customers` (`id`, `full_name`, `email`, `phone`, `password`, `aadha
 CREATE TABLE `customer_profiles` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `customer_id` bigint(20) UNSIGNED NOT NULL,
-  `pan_number` varchar(20) DEFAULT NULL,
+  `pan_number` varchar(255) DEFAULT NULL,
   `birth_date` date DEFAULT NULL,
   `state` varchar(100) DEFAULT NULL,
   `city` varchar(100) DEFAULT NULL,
@@ -89,9 +89,9 @@ CREATE TABLE `customer_profiles` (
   `company_name` varchar(255) DEFAULT NULL,
   `monthly_income` decimal(12,2) DEFAULT NULL,
   `reference1_name` varchar(255) DEFAULT NULL,
-  `reference1_phone` varchar(20) DEFAULT NULL,
+  `reference1_phone` varchar(255) DEFAULT NULL,
   `reference2_name` varchar(255) DEFAULT NULL,
-  `reference2_phone` varchar(20) DEFAULT NULL,
+  `reference2_phone` varchar(255) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -183,13 +183,13 @@ CREATE TABLE `dsa_profiles` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `dsa_id` bigint(20) UNSIGNED NOT NULL,
   `firm_name` varchar(255) DEFAULT NULL,
-  `pan_number` varchar(20) DEFAULT NULL,
+  `pan_number` varchar(255) DEFAULT NULL,
   `city` varchar(100) DEFAULT NULL,
   `state` varchar(100) DEFAULT NULL,
   `pin_code` varchar(10) DEFAULT NULL,
   `bank_name` varchar(255) DEFAULT NULL,
-  `account_number` varchar(50) DEFAULT NULL,
-  `ifsc_code` varchar(20) DEFAULT NULL,
+  `account_number` varchar(255) DEFAULT NULL,
+  `ifsc_code` varchar(255) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -214,13 +214,13 @@ CREATE TABLE `dsa_requests` (
   `email` varchar(255) NOT NULL,
   `phone` varchar(20) NOT NULL,
   `firm_name` varchar(255) NOT NULL,
-  `pan_number` varchar(20) DEFAULT NULL,
+  `pan_number` varchar(255) DEFAULT NULL,
   `city` varchar(100) DEFAULT NULL,
   `state` varchar(100) DEFAULT NULL,
   `pin_code` varchar(10) DEFAULT NULL,
   `bank_name` varchar(255) DEFAULT NULL,
-  `account_number` varchar(50) DEFAULT NULL,
-  `ifsc_code` varchar(20) DEFAULT NULL,
+  `account_number` varchar(255) DEFAULT NULL,
+  `ifsc_code` varchar(255) DEFAULT NULL,
   `message` text DEFAULT NULL,
   `status` enum('pending','approved','rejected') NOT NULL DEFAULT 'pending',
   `admin_note` text DEFAULT NULL,
@@ -462,13 +462,14 @@ INSERT INTO `permissions` (`id`, `perm_key`, `description`) VALUES
 (5, 'loan_view', 'View Loan Apps'),
 (6, 'loan_process', 'Approve/Reject Loans'),
 (7, 'loan_delete', 'Delete Loan Applications'),
-(14, 'loan_manual_assign', 'Manually assign loans to staff'),
 (8, 'enquiry_view_assigned', 'View Assigned Enquiries'),
 (9, 'enquiry_view_all', 'View All Enquiries'),
 (10, 'enquiry_delete', 'Delete Enquiries'),
 (11, 'enquiry_status_change', 'Change Enquiry Status'),
 (12, 'faq_create', 'Create FAQs'),
-(13, 'faq_delete', 'Delete FAQs');
+(13, 'faq_delete', 'Delete FAQs'),
+(14, 'loan_manual_assign', 'Manually assign loans to staff'),
+(15, 'loan_manual_assign_others', 'Allow staff to assign/reassign loans to other staff');
 
 -- --------------------------------------------------------
 
@@ -515,7 +516,8 @@ INSERT INTO `role_permissions` (`role_id`, `permission_id`) VALUES
 (1, 9),
 (1, 10),
 (1, 11),
-(1, 12);
+(1, 12),
+(1, 14);
 
 -- --------------------------------------------------------
 
@@ -1166,7 +1168,7 @@ ALTER TABLE `loan_application_docs`
 -- AUTO_INCREMENT for table `permissions`
 --
 ALTER TABLE `permissions`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT for table `roles`
