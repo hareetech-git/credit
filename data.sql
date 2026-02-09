@@ -462,6 +462,7 @@ INSERT INTO `permissions` (`id`, `perm_key`, `description`) VALUES
 (5, 'loan_view', 'View Loan Apps'),
 (6, 'loan_process', 'Approve/Reject Loans'),
 (7, 'loan_delete', 'Delete Loan Applications'),
+(14, 'loan_manual_assign', 'Manually assign loans to staff'),
 (8, 'enquiry_view_assigned', 'View Assigned Enquiries'),
 (9, 'enquiry_view_all', 'View All Enquiries'),
 (10, 'enquiry_delete', 'Delete Enquiries'),
@@ -1165,7 +1166,7 @@ ALTER TABLE `loan_application_docs`
 -- AUTO_INCREMENT for table `permissions`
 --
 ALTER TABLE `permissions`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT for table `roles`

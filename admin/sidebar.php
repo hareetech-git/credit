@@ -13,7 +13,8 @@ $customer_active = in_array($current_page, [
 
 $loan_active = in_array($current_page, [
     'loan_applications.php', 
-    'loan_view.php', 
+    'loan_view.php',
+    'manual_loan_assign.php',
     'rejected_loans.php'
 ]);
 
@@ -191,6 +192,7 @@ $dsa_active = in_array($current_page, [
                 </a>
                 <ul class="side-nav-second-level">
                     <li><a href="loan_applications.php" class="side-nav-link"><i class="fas fa-file-invoice-dollar"></i> All Applications</a></li>
+                    <li><a href="manual_loan_assign.php" class="side-nav-link"><i class="fas fa-user-check"></i> Manual Assign</a></li>
                     <li><a href="loan_applications.php?status=rejected" class="side-nav-link"><i class="fas fa-ban"></i> Rejected Apps</a></li>
                 </ul>
             </li>

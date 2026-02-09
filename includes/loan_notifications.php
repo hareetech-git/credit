@@ -146,3 +146,43 @@ function loanNotifyCustomerDecision(mysqli $conn, int $loan_id, string $status, 
 
     sendEnquiryEmail($loan['email'], $loan['full_name'], $subject, $body);
 }
+
+function loanNotifyStaffOnAssignment(mysqli $conn, int $loan_id, int $staff_id, string $assignedBy = 'Admin'): void {
+    $loan_id = (int)$loan_id;
+    $staff_id = (int)$staff_id;
+    if ($loan_id <= 0 || $staff_id <= 0) {
+        return;
+    }
+
+    $staffRes = mysqli_query($conn, "SELECT name, email FROM staff WHERE id = $staff_id LIMIT 1");
+    if (!$staffRes || mysqli_num_rows($staffRes) === 0) {
+        return;
+    }
+    $staff = mysqli_fetch_assoc($staffRes);
+    $toEmail = trim((string)($staff['email'] ?? ''));
+    if ($toEmail === '') {
+        return;
+    }
+
+    $loan = loanGetApplicationPayload($conn, $loan_id);
+    if (!$loan) {
+        return;
+    }
+
+    $subject = "Loan Assignment - Application #L-" . (int)$loan['id'];
+    $body = renderLoanEmailTemplate(
+        "New Loan Assigned",
+        "Hi {$staff['name']}, a loan application has been manually assigned to you for review.",
+        [
+            'Application ID' => 'L-' . (int)$loan['id'],
+            'Customer' => (string)$loan['full_name'],
+            'Customer Phone' => (string)$loan['phone'],
+            'Service' => (string)$loan['service_name'],
+            'Amount' => 'INR ' . format_inr((float)$loan['requested_amount'], 2),
+            'Assigned By' => $assignedBy,
+        ],
+        '<p style="margin:12px 0 0 0;color:#334155;">Please login to your staff dashboard and process this application.</p>'
+    );
+
+    sendEnquiryEmail($toEmail, (string)$staff['name'], $subject, $body);
+}

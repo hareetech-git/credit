@@ -39,10 +39,44 @@ function calculateEmiAmount($principal, $tenure_months, $interest_rate, $interes
     return round($emi, 2);
 }
 
+function hasStaffPermission(mysqli $conn, int $staff_id, string $perm_key): bool {
+    if ($staff_id <= 0) {
+        return false;
+    }
+    $q = "SELECT 1
+          FROM permissions p
+          LEFT JOIN role_permissions rp ON rp.permission_id = p.id
+          LEFT JOIN staff s ON s.role_id = rp.role_id
+          LEFT JOIN staff_permissions sp ON sp.permission_id = p.id
+          WHERE p.perm_key = '" . mysqli_real_escape_string($conn, $perm_key) . "'
+            AND (s.id = $staff_id OR sp.staff_id = $staff_id)
+          LIMIT 1";
+    $res = mysqli_query($conn, $q);
+    return ($res && mysqli_num_rows($res) > 0);
+}
+
 if ($action == 'assign_staff') {
     $loan_id = (int)$_POST['loan_id'];
     $staff_id = (int)$_POST['staff_id'];
     $admin_id = isset($_SESSION['admin_id']) ? (int)$_SESSION['admin_id'] : null;
+    $redirect_to = ($_POST['redirect_to'] ?? '') === 'manual' ? '../manual_loan_assign.php' : '../loan_applications.php';
+
+    if ($loan_id <= 0) {
+        header("Location: {$redirect_to}?err=Invalid loan");
+        exit;
+    }
+
+    if ($staff_id > 0 && (!hasStaffPermission($conn, $staff_id, 'loan_process') || !hasStaffPermission($conn, $staff_id, 'loan_manual_assign'))) {
+        header("Location: {$redirect_to}?err=Selected staff is not eligible for manual loan assignment");
+        exit;
+    }
+
+    $prev_staff_id = 0;
+    $prevRes = mysqli_query($conn, "SELECT assigned_staff_id FROM loan_applications WHERE id = $loan_id LIMIT 1");
+    if ($prevRes && mysqli_num_rows($prevRes) > 0) {
+        $prevRow = mysqli_fetch_assoc($prevRes);
+        $prev_staff_id = (int)($prevRow['assigned_staff_id'] ?? 0);
+    }
 
     if ($staff_id > 0) {
         $sql = "UPDATE loan_applications
@@ -59,9 +93,12 @@ if ($action == 'assign_staff') {
     }
 
     if (mysqli_query($conn, $sql)) {
-        header("Location: ../loan_applications.php?msg=Loan assigned successfully");
+        if ($staff_id > 0 && $staff_id !== $prev_staff_id) {
+            loanNotifyStaffOnAssignment($conn, $loan_id, $staff_id, 'Admin');
+        }
+        header("Location: {$redirect_to}?msg=Loan assigned successfully");
     } else {
-        header("Location: ../loan_applications.php?err=Assignment failed");
+        header("Location: {$redirect_to}?err=Assignment failed");
     }
     exit;
 }

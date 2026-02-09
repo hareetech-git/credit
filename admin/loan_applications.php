@@ -17,9 +17,42 @@ $sort_column = $_GET['sort'] ?? 'l.id';
 $sort_order = $_GET['order'] ?? 'DESC'; 
 $next_order = ($sort_order == 'ASC') ? 'DESC' : 'ASC';
 
-// Staff list for filter
+// Staff list for filter/assignment (only staff with loan processing access)
 $staff_list = [];
-$staff_res = mysqli_query($conn, "SELECT id, name FROM staff WHERE status='active' ORDER BY name");
+$staff_res = mysqli_query($conn, "
+    SELECT DISTINCT s.id, s.name
+    FROM staff s
+    WHERE s.status='active'
+      AND (
+        EXISTS (
+            SELECT 1
+            FROM role_permissions rp
+            INNER JOIN permissions p ON p.id = rp.permission_id
+            WHERE rp.role_id = s.role_id AND p.perm_key = 'loan_process'
+        )
+        OR EXISTS (
+            SELECT 1
+            FROM staff_permissions sp
+            INNER JOIN permissions p2 ON p2.id = sp.permission_id
+            WHERE sp.staff_id = s.id AND p2.perm_key = 'loan_process'
+        )
+      )
+      AND (
+        EXISTS (
+            SELECT 1
+            FROM role_permissions rp
+            INNER JOIN permissions p ON p.id = rp.permission_id
+            WHERE rp.role_id = s.role_id AND p.perm_key = 'loan_manual_assign'
+        )
+        OR EXISTS (
+            SELECT 1
+            FROM staff_permissions sp
+            INNER JOIN permissions p2 ON p2.id = sp.permission_id
+            WHERE sp.staff_id = s.id AND p2.perm_key = 'loan_manual_assign'
+        )
+      )
+    ORDER BY s.name
+");
 while ($s = mysqli_fetch_assoc($staff_res)) {
     $staff_list[] = $s;
 }
