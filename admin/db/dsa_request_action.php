@@ -53,12 +53,14 @@ try {
         }
 
         $firm_name = mysqli_real_escape_string($conn, (string)$request['firm_name']);
-        $pan_number = mysqli_real_escape_string($conn, (string)$request['pan_number']);
+        $pan_plain = uc_decrypt_sensitive((string)$request['pan_number']);
+        $pan_number = mysqli_real_escape_string($conn, uc_encrypt_sensitive($pan_plain));
         $city = mysqli_real_escape_string($conn, (string)$request['city']);
         $state = mysqli_real_escape_string($conn, (string)$request['state']);
         $pin_code = mysqli_real_escape_string($conn, (string)$request['pin_code']);
         $bank_name = mysqli_real_escape_string($conn, (string)$request['bank_name']);
-        $account_number = mysqli_real_escape_string($conn, (string)$request['account_number']);
+        $account_plain = uc_decrypt_sensitive((string)$request['account_number']);
+        $account_number = mysqli_real_escape_string($conn, uc_encrypt_sensitive($account_plain));
         $ifsc_code = mysqli_real_escape_string($conn, (string)$request['ifsc_code']);
 
         $profileRes = mysqli_query($conn, "SELECT id FROM dsa_profiles WHERE dsa_id = $dsa_id LIMIT 1");

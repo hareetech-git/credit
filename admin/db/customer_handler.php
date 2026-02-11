@@ -25,7 +25,7 @@ if ($action == 'create' || $action == 'update') {
     }
 
     // Update Profile Data
-    $pan = $_POST['pan_number'];
+    $pan = mysqli_real_escape_string($conn, uc_encrypt_sensitive(strtoupper(trim((string)($_POST['pan_number'] ?? '')))));
     $dob = $_POST['birth_date'];
     $city = $_POST['city'];
     $state = $_POST['state'];

@@ -1,7 +1,7 @@
 <?php
 // Make sure connection exists
 if (!isset($conn)) {
-    include 'config.php';
+    include 'config.php'
 }
 
 $webSettings = [

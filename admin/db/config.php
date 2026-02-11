@@ -1,5 +1,6 @@
 <?php
 require_once realpath(__DIR__ . '/../../core/db_master.php');
+require_once realpath(__DIR__ . '/../../core/crypto_helper.php');
 require_once realpath(__DIR__ . '/../../includes/format_helpers.php');
 
 $conn = mysqli_connect(

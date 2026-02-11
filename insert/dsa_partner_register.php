@@ -23,16 +23,18 @@ $full_name = mysqli_real_escape_string($conn, trim($_POST['full_name'] ?? ''));
 $email = mysqli_real_escape_string($conn, trim($_POST['email'] ?? ''));
 $phone = mysqli_real_escape_string($conn, trim($_POST['phone'] ?? ''));
 $firm_name = mysqli_real_escape_string($conn, trim($_POST['firm_name'] ?? ''));
-$pan_number = mysqli_real_escape_string($conn, strtoupper(trim($_POST['pan_number'] ?? '')));
+$pan_plain = strtoupper(trim((string)($_POST['pan_number'] ?? '')));
+$pan_number = mysqli_real_escape_string($conn, uc_encrypt_sensitive($pan_plain));
 $city = mysqli_real_escape_string($conn, trim($_POST['city'] ?? ''));
 $state = mysqli_real_escape_string($conn, trim($_POST['state'] ?? ''));
 $pin_code = mysqli_real_escape_string($conn, trim($_POST['pin_code'] ?? ''));
 $bank_name = mysqli_real_escape_string($conn, trim($_POST['bank_name'] ?? ''));
-$account_number = mysqli_real_escape_string($conn, trim($_POST['account_number'] ?? ''));
+$account_plain = trim((string)($_POST['account_number'] ?? ''));
+$account_number = mysqli_real_escape_string($conn, uc_encrypt_sensitive($account_plain));
 $ifsc_code = mysqli_real_escape_string($conn, strtoupper(trim($_POST['ifsc_code'] ?? '')));
 $message = mysqli_real_escape_string($conn, trim($_POST['message'] ?? ''));
 
-if ($full_name === '' || $email === '' || $phone === '' || $firm_name === '' || $pan_number === '' || $city === '' || $state === '' || $pin_code === '' || $bank_name === '' || $account_number === '' || $ifsc_code === '') {
+if ($full_name === '' || $email === '' || $phone === '' || $firm_name === '' || $pan_plain === '' || $city === '' || $state === '' || $pin_code === '' || $bank_name === '' || $account_plain === '' || $ifsc_code === '') {
     header('Location: ../dsa-register.php?err=Please fill all required fields');
     exit;
 }

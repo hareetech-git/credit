@@ -32,6 +32,9 @@ if ($id) {
     $customer = mysqli_fetch_assoc($c_res);
     $p_res = mysqli_query($conn, "SELECT * FROM customer_profiles WHERE customer_id=$id");
     $profile = mysqli_fetch_assoc($p_res);
+    if (!empty($profile['pan_number'])) {
+        $profile['pan_number'] = uc_decrypt_sensitive($profile['pan_number']);
+    }
 }
 ?>
 

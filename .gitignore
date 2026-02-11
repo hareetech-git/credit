@@ -1,2 +1,4 @@
 core/db_master.php
-core/db_master.php
+.env
+admin/.env
+staff/.env
