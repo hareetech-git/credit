@@ -110,8 +110,9 @@
 
     <div class="col-lg-6 col-md-12">
         <div class="map-container" style="border-radius: 15px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); height: 200px;">
+      
             <iframe 
-               src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3508.136847287864!2d77.497722!3d28.474722!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390ceb8c00e7e3b3%3A0x7c8b6c7b5c8c8c8c!2sKasana%20Tower%2C%20Alpha-I%20Commercial%20Belt%2C%20Greater%20Noida%2C%20Uttar%20Pradesh%20201310!5e0!3m2!1sen!2sin!4v1641234567890!5m2!1sen!2sin" 
+               src="https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d12584.172480502648!2d80.98895420485427!3d26.890442876563796!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zMjbCsDUzJzMyLjYiTiA4McKwMDAnMjYuOCJF!5e1!3m2!1sen!2sin!4v1770789581193!5m2!1sen!2sin" 
                 width="100%" 
                 height="100%" 
                 style="border:0;" 

@@ -11,7 +11,6 @@ echo '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-a
 include 'topbar.php';
 include 'sidebar.php';
 
-// --- FILTERS & SORTING LOGIC ---
 $search_query = $_GET['search'] ?? '';
 $status_filter = $_GET['status'] ?? '';
 
