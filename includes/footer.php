@@ -91,14 +91,14 @@
         <h5 class="fw-bold mb-3" style="color: #f1f5f9;">Contact Info</h5>
         <ul class="list-unstyled footer-contact-list">
             <li class="mb-3">
-                <i class="fas fa-map-marker-alt me-2" style="color: var(--primary-color);"></i>
+                <i class="fas fa-map-marker-alt me-2" style="color: white;"></i>
                <span class="footer-contact-text">
     <?php echo htmlspecialchars($webSettings['site_address']); ?>
 </span>
 
             </li>
             <li class="mb-3">
-                <i class="fas fa-phone-alt me-2" style="color: var(--primary-color);"></i>
+                <i class="fas fa-phone-alt me-2" style="color: white;"></i>
 <a href="tel:<?php echo htmlspecialchars($webSettings['site_phone']); ?>" 
    class="footer-contact-link text-decoration-none">
    <?php echo htmlspecialchars($webSettings['site_phone']); ?>
@@ -106,7 +106,7 @@
 
             </li>
             <li class="mb-3">
-                <i class="fas fa-envelope me-2" style="color: var(--primary-color);"></i>
+                <i class="fas fa-envelope me-2" style="color: white;"></i>
 <a href="mailto:<?php echo htmlspecialchars($webSettings['site_email']); ?>" 
    class="footer-contact-link text-decoration-none">
    <?php echo htmlspecialchars($webSettings['site_email']); ?>
@@ -114,7 +114,7 @@
 
             </li>
             <li class="mb-3">
-                <i class="fas fa-clock me-2" style="color: var(--primary-color);"></i>
+                <i class="fas fa-clock me-2" style="color: white;"></i>
                 <span class="footer-contact-text">Mon - Sat: 9 AM - 7 PM</span>
             </li>
         </ul>

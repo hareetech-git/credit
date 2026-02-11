@@ -270,7 +270,7 @@ $team = mysqli_query($conn, "SELECT * FROM team_members WHERE status=1 ORDER BY 
         left: 0;
         right: 0;
         bottom: 0;
-        background: url('data:image/svg+xml,<svg width="200" height="200" xmlns="http://www.w3.org/2000/svg"><circle cx="100" cy="100" r="80" fill="rgba(255,255,255,0.1)"/></svg>') center/cover;
+      
     }
     
     .team-image i {
