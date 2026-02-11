@@ -7,18 +7,85 @@ include 'sidebar.php';
 $services = mysqli_query($conn, "SELECT id, service_name FROM services ORDER BY service_name ASC");
 ?>
 <style>
-    .card-modern { border: 1px solid #e2e8f0; border-radius: 14px; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.03); }
-    .form-label { font-weight: 700; font-size: 0.75rem; text-transform: uppercase; color: #475569; letter-spacing: 0.04em; }
+    .content-page { background: #f8fafc; }
+    .page-wrap { max-width: 1100px; }
+    .title-hero {
+        background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        padding: 18px 20px;
+    }
+    .card-modern {
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        background: #fff;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+        overflow: hidden;
+    }
+    .card-header {
+        border-bottom: 1px solid #e2e8f0 !important;
+        padding: 14px 18px !important;
+        background: #f8fafc !important;
+    }
+    .card-header h5 {
+        font-size: 0.95rem;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: #0f172a;
+    }
+    .form-label {
+        font-weight: 700;
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        color: #64748b;
+        letter-spacing: 0.06em;
+        margin-bottom: 6px;
+    }
+    .form-control, .form-select {
+        border: 1px solid #dbe2ea;
+        border-radius: 10px;
+        min-height: 42px;
+    }
+    .form-control:focus, .form-select:focus {
+        border-color: #0f172a;
+        box-shadow: 0 0 0 0.18rem rgba(15, 23, 42, 0.08);
+    }
+    .block-note {
+        font-size: 0.78rem;
+        color: #64748b;
+    }
+    .doc-box {
+        border: 1px dashed #cbd5e1;
+        border-radius: 12px;
+        padding: 12px;
+        background: #ffffff;
+        transition: all 0.2s ease;
+    }
+    .doc-box:hover {
+        border-color: #64748b;
+        background: #f8fafc;
+    }
+    .submit-bar {
+        position: sticky;
+        bottom: 0;
+        background: rgba(248,250,252,0.95);
+        backdrop-filter: blur(6px);
+        border-top: 1px solid #e2e8f0;
+        padding: 12px 0;
+        margin-top: 14px;
+        z-index: 20;
+    }
 </style>
 
 <div class="content-page">
     <div class="content">
-        <div class="container-fluid pt-4">
-            <div class="d-flex justify-content-between align-items-center mb-4">
+        <div class="container-fluid pt-4 page-wrap">
+            <div class="title-hero d-flex justify-content-between align-items-center mb-4">
                 <div>
                     <h2 class="fw-bold text-dark mb-1">Add New Lead</h2>
-                    <p class="text-muted small mb-0">Create customer lead and submit loan request from DSA panel.</p>
+                    <p class="text-muted small mb-0">Create customer, capture complete profile, and submit loan request.</p>
                 </div>
+                <a href="my-applications.php" class="btn btn-outline-dark btn-sm">View My Leads</a>
             </div>
 
             <?php if (!empty($_GET['msg'])): ?>
@@ -50,6 +117,7 @@ $services = mysqli_query($conn, "SELECT id, service_name FROM services ORDER BY 
                             <div class="col-md-4">
                                 <label class="form-label">PAN Number</label>
                                 <input type="text" name="pan_number" id="pan_number" class="form-control" maxlength="10" style="text-transform: uppercase;" pattern="[A-Z]{5}[0-9]{4}[A-Z]{1}" title="Enter valid PAN (e.g., ABCDE1234F)" required>
+                                <small class="block-note">Example: ABCDE1234F</small>
                             </div>
                             <div class="col-md-4">
                                 <label class="form-label">Birth Date</label>
@@ -113,6 +181,7 @@ $services = mysqli_query($conn, "SELECT id, service_name FROM services ORDER BY 
 
                             <div class="col-12">
                                 <small id="referenceError" class="text-danger d-none">Reference 1 and Reference 2 must be different (name and phone).</small>
+                                <small class="block-note d-block mt-1">Use two different persons with different mobile numbers.</small>
                             </div>
                         </div>
                     </div>
@@ -144,10 +213,12 @@ $services = mysqli_query($conn, "SELECT id, service_name FROM services ORDER BY 
                             <div id="docContainer" class="row g-3"></div>
                             <small class="text-muted d-block mt-2">Allowed: PDF/JPG/JPEG/PNG, max 5 MB per file.</small>
                         </div>
+                    </div>
+                </div>
 
-                        <div class="mt-4 text-end">
-                            <button type="submit" class="btn btn-dark px-4" id="submitBtn">Submit Lead</button>
-                        </div>
+                <div class="submit-bar">
+                    <div class="d-flex justify-content-end">
+                        <button type="submit" class="btn btn-dark px-4" id="submitBtn">Submit Lead</button>
                     </div>
                 </div>
             </form>
@@ -226,7 +297,7 @@ function renderDocFields(docs) {
         const note = String(doc.disclaimer || '').trim();
         const html = `
             <div class="col-md-6">
-                <div class="border rounded p-3 bg-light-subtle">
+                <div class="doc-box">
                     <label class="form-label">${rawName}</label>
                     <input type="file" name="loan_docs[${fieldKey}]" class="form-control form-control-sm" accept=".pdf,.jpg,.jpeg,.png" required>
                     ${note ? `<small class="text-muted d-block mt-1">${note}</small>` : ''}
