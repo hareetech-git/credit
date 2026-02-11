@@ -271,7 +271,7 @@ new Chart(document.getElementById('leadStatusChart'), {
                 <?= (int)($stats['rejected'] ?? 0) ?>,
                 <?= (int)($stats['disbursed'] ?? 0) ?>
             ],
-            backgroundColor: ['#f59e0b', '#10b981', '#ef4444', '#3b82f6'],
+            backgroundColor: ['#f59e0b', '#130330', '#ef4444', '#3b82f6'],
             borderWidth: 0
         }]
     },

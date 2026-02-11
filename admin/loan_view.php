@@ -18,11 +18,13 @@ while ($s = mysqli_fetch_assoc($staff_res)) {
 }
 
 // Fetch Loan Details
-$loan_sql = "SELECT l.*, c.full_name, c.email, c.phone, s.service_name, st.name AS staff_name
+$loan_sql = "SELECT l.*, c.full_name, c.email, c.phone, s.service_name, st.name AS staff_name,
+                    d.id AS dsa_agent_id, d.name AS dsa_agent_name, d.phone AS dsa_agent_phone, d.email AS dsa_agent_email
              FROM loan_applications l
              JOIN customers c ON l.customer_id = c.id
              JOIN services s ON l.service_id = s.id
              LEFT JOIN staff st ON l.assigned_staff_id = st.id
+             LEFT JOIN dsa d ON l.dsa_id = d.id
              WHERE l.id = $loan_id";
 $loan = mysqli_fetch_assoc(mysqli_query($conn, $loan_sql));
 
@@ -119,6 +121,17 @@ $docs_res = mysqli_query($conn, "SELECT * FROM loan_application_docs WHERE loan_
                             <div class="data-item">
                                 <span class="data-label">Assigned Agent</span>
                                 <span class="data-value text-primary"><?= $loan['staff_name'] ? htmlspecialchars($loan['staff_name']) : 'Not Assigned' ?></span>
+                            </div>
+                            <div class="data-item">
+                                <span class="data-label">Lead Source</span>
+                                <span class="data-value">
+                                    <?php if (!empty($loan['dsa_agent_id'])): ?>
+                                        DSA - <?= htmlspecialchars((string)$loan['dsa_agent_name']) ?>
+                                        <a href="dsa_view.php?id=<?= (int)$loan['dsa_agent_id'] ?>" class="ms-1 small text-decoration-none">View</a>
+                                    <?php else: ?>
+                                        Direct / Website Lead
+                                    <?php endif; ?>
+                                </span>
                             </div>
 
                             <hr class="my-4">

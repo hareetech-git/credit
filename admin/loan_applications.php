@@ -44,11 +44,13 @@ while ($s = mysqli_fetch_assoc($staff_res)) {
 }
 
 // Build Query
-$query = "SELECT l.*, c.full_name, c.phone, s.service_name, st.name AS staff_name
+$query = "SELECT l.*, c.full_name, c.phone, s.service_name, st.name AS staff_name,
+                 d.id AS dsa_agent_id, d.name AS dsa_agent_name, d.phone AS dsa_agent_phone
           FROM loan_applications l
           JOIN customers c ON l.customer_id = c.id
           JOIN services s ON l.service_id = s.id
           LEFT JOIN staff st ON l.assigned_staff_id = st.id
+          LEFT JOIN dsa d ON l.dsa_id = d.id
           WHERE 1=1";
 
 if ($search != '') {
@@ -219,6 +221,7 @@ function getSortUrl($col, $next_order, $search, $status, $staff) {
                                         </a>
                                     </th>
                                     <th>Status</th>
+                                    <th>Lead Source</th>
                                     <th>Assigned To</th>
                                     <th class="text-end">Manage</th>
                                 </tr>
@@ -243,6 +246,16 @@ function getSortUrl($col, $next_order, $search, $status, $staff) {
                                                 <span class="badge-soft badge-<?= $row['status'] ?>">
                                                     <?= ucfirst($row['status']) ?>
                                                 </span>
+                                            </td>
+                                            <td>
+                                                <?php if (!empty($row['dsa_agent_id'])): ?>
+                                                    <div class="small fw-bold text-dark">DSA: <?= htmlspecialchars((string)$row['dsa_agent_name']) ?></div>
+                                                    <a href="dsa_view.php?id=<?= (int)$row['dsa_agent_id'] ?>" class="small text-decoration-none">
+                                                        View DSA Details
+                                                    </a>
+                                                <?php else: ?>
+                                                    <span class="text-muted small">Direct / Website Lead</span>
+                                                <?php endif; ?>
                                             </td>
                                             <td>
                                                 <form action="db/loan_handler.php" method="POST" class="d-flex gap-1 align-items-center">
@@ -273,7 +286,7 @@ function getSortUrl($col, $next_order, $search, $status, $staff) {
                                     <?php endwhile; ?>
                                 <?php else : ?>
                                     <tr>
-                                        <td colspan="7" class="text-center py-5 text-muted">
+                                        <td colspan="8" class="text-center py-5 text-muted">
                                             <i class="fas fa-file-invoice-dollar fa-3x mb-3 text-light"></i>
                                             <p>No loan applications found.</p>
                                         </td>

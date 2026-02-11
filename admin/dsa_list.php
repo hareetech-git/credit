@@ -45,6 +45,7 @@ $result = mysqli_query($conn, $query);
                         <td><span class="small text-muted"><?= htmlspecialchars($row['creator_name'] ?? 'System') ?></span></td>
                         <td class="small text-muted"><?= date('d M, Y', strtotime($row['created_at'])) ?></td>
                         <td class="text-end pe-3">
+                            <a href="dsa_view.php?id=<?= (int)$row['id'] ?>" class="btn btn-sm btn-light border me-1" title="View Profile"><i class="fas fa-eye text-dark"></i></a>
                             <a href="manage_dsa_permissions.php?dsa_id=<?= (int)$row['id'] ?>" class="btn btn-sm btn-light border me-1" title="Manage Access"><i class="fas fa-key text-primary"></i></a>
                             <a href="dsa_add.php?id=<?= (int)$row['id'] ?>" class="btn btn-sm btn-light border me-1"><i class="fas fa-pen text-primary"></i></a>
                             <a href="db/delete/dsa_delete.php?id=<?= (int)$row['id'] ?>" onclick="return confirm('Delete this DSA account?')" class="btn btn-sm btn-outline-danger"><i class="fas fa-trash-alt"></i></a>
