@@ -972,15 +972,15 @@ unset($_SESSION['success_message']);
                 
                 <div class="hero-stats">
                     <div class="stat-item">
-                        <span class="stat-number">10 Min</span>
+                        <span class="stat-number">48 Min</span>
                         <span class="stat-label">Approval Time</span>
                     </div>
                     <div class="stat-item">
-                        <span class="stat-number">₹25L</span>
+                        <span class="stat-number">upto 5CR</span>
                         <span class="stat-label">Max Amount</span>
                     </div>
                     <div class="stat-item">
-                        <span class="stat-number">10.5%</span>
+                        <span class="stat-number">9.75%</span>
                         <span class="stat-label">Interest Rate</span>
                     </div>
                 </div>

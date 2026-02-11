@@ -700,21 +700,21 @@ include 'includes/connection.php';
             
             <div class="col-lg-3 col-md-6">
                 <div class="stat-box">
-                    <span class="stat-number">₹<span data-count="100">0</span>Cr+</span>
+                    <span class="stat-number">₹<span data-count="250">0</span>Cr+</span>
                     <span class="stat-label">Loans Disbursed</span>
                 </div>
             </div>
             
             <div class="col-lg-3 col-md-6">
                 <div class="stat-box">
-                    <span class="stat-number"><span data-count="15">0</span>+</span>
+                    <span class="stat-number"><span data-count="18">0</span>+</span>
                     <span class="stat-label">Cities Covered</span>
                 </div>
             </div>
             
             <div class="col-lg-3 col-md-6">
                 <div class="stat-box">
-                    <span class="stat-number"><span data-count="98">0</span>%</span>
+                    <span class="stat-number"><span data-count="100">0</span>%</span>
                     <span class="stat-label">Customer Satisfaction</span>
                 </div>
             </div>
