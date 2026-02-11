@@ -22,14 +22,50 @@ if ($permTbl && mysqli_num_rows($permTbl) > 0 && $userPermTbl && mysqli_num_rows
     }
 }
 
-$firm_name = mysqli_real_escape_string($conn, trim($_POST['firm_name'] ?? ''));
-$pan_number = mysqli_real_escape_string($conn, strtoupper(trim($_POST['pan_number'] ?? '')));
-$city = mysqli_real_escape_string($conn, trim($_POST['city'] ?? ''));
-$state = mysqli_real_escape_string($conn, trim($_POST['state'] ?? ''));
-$pin_code = mysqli_real_escape_string($conn, trim($_POST['pin_code'] ?? ''));
-$bank_name = mysqli_real_escape_string($conn, trim($_POST['bank_name'] ?? ''));
-$account_number = mysqli_real_escape_string($conn, trim($_POST['account_number'] ?? ''));
-$ifsc_code = mysqli_real_escape_string($conn, strtoupper(trim($_POST['ifsc_code'] ?? '')));
+$firm_name_raw = trim((string)($_POST['firm_name'] ?? ''));
+$pan_plain = strtoupper(trim((string)($_POST['pan_number'] ?? '')));
+$city_raw = trim((string)($_POST['city'] ?? ''));
+$state_raw = trim((string)($_POST['state'] ?? ''));
+$pin_code_raw = trim((string)($_POST['pin_code'] ?? ''));
+$bank_name_raw = trim((string)($_POST['bank_name'] ?? ''));
+$account_plain = trim((string)($_POST['account_number'] ?? ''));
+$ifsc_raw = strtoupper(trim((string)($_POST['ifsc_code'] ?? '')));
+
+if ($firm_name_raw === '' || $pan_plain === '' || $city_raw === '' || $state_raw === '' || $pin_code_raw === '' || $bank_name_raw === '' || $account_plain === '' || $ifsc_raw === '') {
+    header('Location: ../profile.php?err=Please fill all required fields');
+    exit;
+}
+
+if (!preg_match('/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/', $pan_plain)) {
+    header('Location: ../profile.php?err=Enter valid PAN number');
+    exit;
+}
+
+if (!preg_match('/^[A-Z]{4}0[A-Z0-9]{6}$/', $ifsc_raw)) {
+    header('Location: ../profile.php?err=Enter valid IFSC code');
+    exit;
+}
+
+$pin_digits = preg_replace('/\D+/', '', $pin_code_raw);
+if (strlen($pin_digits) < 6 || strlen($pin_digits) > 10) {
+    header('Location: ../profile.php?err=Enter valid pin code');
+    exit;
+}
+
+$account_digits = preg_replace('/\D+/', '', $account_plain);
+if (strlen($account_digits) < 6 || strlen($account_digits) > 20) {
+    header('Location: ../profile.php?err=Enter valid account number');
+    exit;
+}
+
+$firm_name = mysqli_real_escape_string($conn, $firm_name_raw);
+$pan_number = mysqli_real_escape_string($conn, uc_encrypt_sensitive($pan_plain));
+$city = mysqli_real_escape_string($conn, $city_raw);
+$state = mysqli_real_escape_string($conn, $state_raw);
+$pin_code = mysqli_real_escape_string($conn, $pin_code_raw);
+$bank_name = mysqli_real_escape_string($conn, $bank_name_raw);
+$account_number = mysqli_real_escape_string($conn, uc_encrypt_sensitive($account_plain));
+$ifsc_code = mysqli_real_escape_string($conn, $ifsc_raw);
 
 $existsRes = mysqli_query($conn, "SELECT id FROM dsa_profiles WHERE dsa_id = $dsa_id LIMIT 1");
 if ($existsRes && mysqli_num_rows($existsRes) > 0) {
