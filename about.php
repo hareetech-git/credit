@@ -5,6 +5,7 @@ session_start();
 // Include database connection
 require_once 'includes/header.php';
 include 'includes/connection.php';
+$team = mysqli_query($conn, "SELECT * FROM team_members WHERE status=1 ORDER BY id ASC");
 ?>
 
 <head>
@@ -808,79 +809,39 @@ include 'includes/connection.php';
             <p class="text-muted">Dedicated professionals committed to your financial success</p>
         </div>
         
-        <div class="row g-4">
-            <div class="col-lg-3 col-md-6 fade-in-up">
-                <div class="team-card">
-                    <div class="team-image">
-                        <i class="fas fa-user-tie"></i>
-                    </div>
-                    <div class="team-info">
-                        <h5 class="team-name">Rajesh Kumar</h5>
-                        <p class="team-role">Founder & CEO</p>
-                        <p class="text-muted small mb-0">15+ years in financial services</p>
-                        <div class="team-social">
-                            <a href="#"><i class="fab fa-linkedin-in"></i></a>
-                            <a href="#"><i class="fab fa-twitter"></i></a>
-                            <a href="#"><i class="fas fa-envelope"></i></a>
-                        </div>
-                    </div>
-                </div>
-            </div>
+<div class="row g-4">
+<?php while($member = mysqli_fetch_assoc($team)): ?>
+<div class="col-lg-3 col-md-6 fade-in-up">
+    <div class="team-card">
+        <div class="team-image" style="background: #f3f4f6;">
+            <img src="<?php echo htmlspecialchars($member['image']); ?>" 
+                 alt="<?php echo htmlspecialchars($member['name']); ?>"
+                 style="width:100%; height:100%; object-fit:cover;">
+        </div>
+        <div class="team-info">
+            <h5 class="team-name"><?php echo htmlspecialchars($member['name']); ?></h5>
+            <p class="team-role"><?php echo htmlspecialchars($member['designation']); ?></p>
+            <p class="text-muted small"><?php echo htmlspecialchars($member['short_description']); ?></p>
             
-            <div class="col-lg-3 col-md-6 fade-in-up delay-1">
-                <div class="team-card">
-                    <div class="team-image" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
-                        <i class="fas fa-user-tie"></i>
-                    </div>
-                    <div class="team-info">
-                        <h5 class="team-name">Priya Sharma</h5>
-                        <p class="team-role">Chief Operations Officer</p>
-                        <p class="text-muted small mb-0">Expert in operations management</p>
-                        <div class="team-social">
-                            <a href="#"><i class="fab fa-linkedin-in"></i></a>
-                            <a href="#"><i class="fab fa-twitter"></i></a>
-                            <a href="#"><i class="fas fa-envelope"></i></a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-lg-3 col-md-6 fade-in-up delay-2">
-                <div class="team-card">
-                    <div class="team-image" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
-                        <i class="fas fa-user-tie"></i>
-                    </div>
-                    <div class="team-info">
-                        <h5 class="team-name">Amit Patel</h5>
-                        <p class="team-role">Head of Technology</p>
-                        <p class="text-muted small mb-0">Fintech innovation specialist</p>
-                        <div class="team-social">
-                            <a href="#"><i class="fab fa-linkedin-in"></i></a>
-                            <a href="#"><i class="fab fa-twitter"></i></a>
-                            <a href="#"><i class="fas fa-envelope"></i></a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-lg-3 col-md-6 fade-in-up delay-3">
-                <div class="team-card">
-                    <div class="team-image" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
-                        <i class="fas fa-user-tie"></i>
-                    </div>
-                    <div class="team-info">
-                        <h5 class="team-name">Sneha Reddy</h5>
-                        <p class="team-role">Customer Success Lead</p>
-                        <p class="text-muted small mb-0">Customer satisfaction expert</p>
-                        <div class="team-social">
-                            <a href="#"><i class="fab fa-linkedin-in"></i></a>
-                            <a href="#"><i class="fab fa-twitter"></i></a>
-                            <a href="#"><i class="fas fa-envelope"></i></a>
-                        </div>
-                    </div>
-                </div>
+            <div class="team-social">
+                <?php if($member['linkedin_link']): ?>
+                <a href="<?php echo $member['linkedin_link']; ?>"><i class="fab fa-linkedin-in"></i></a>
+                <?php endif; ?>
+
+                <?php if($member['twitter_link']): ?>
+                <a href="<?php echo $member['twitter_link']; ?>"><i class="fab fa-twitter"></i></a>
+                <?php endif; ?>
+
+                <?php if($member['email_link']): ?>
+                <a href="mailto:<?php echo $member['email_link']; ?>"><i class="fas fa-envelope"></i></a>
+                <?php endif; ?>
             </div>
         </div>
+    </div>
+</div>
+<?php endwhile; ?>
+</div>
+
     </div>
 </section>
 

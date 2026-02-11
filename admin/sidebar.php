@@ -141,7 +141,12 @@ $dsa_active = in_array($current_page, [
         <span>Web Settings</span>
     </a>
 </li>
-
+<li class="side-nav-item <?= $websettings_active ? 'active' : '' ?>">
+    <a href="team_members.php" class="side-nav-link">
+        <i class="ri-settings-3-line"></i>
+        <span>Manage Team Mambers</span>
+    </a>
+</li>
             <li class="side-nav-item <?= $staff_active ? 'active' : '' ?>">
                 <a href="javascript:void(0);" class="side-nav-link has-arrow">
                     <i class="ri-user-settings-line"></i>
