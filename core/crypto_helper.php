@@ -57,10 +57,9 @@ if (!function_exists('uc_load_env_files')) {
                     $value = substr($value, 1, -1);
                 }
 
-                if (getenv($name) === false) {
-                    putenv($name . '=' . $value);
-                    $_ENV[$name] = $value;
-                }
+                // Always prefer values from project env files for crypto keys.
+                putenv($name . '=' . $value);
+                $_ENV[$name] = $value;
             }
         }
     }
@@ -99,6 +98,32 @@ if (!function_exists('uc_get_crypto_key')) {
 
         $binaryKey = $raw === '' ? '' : hash('sha256', $raw, true);
         return $binaryKey;
+    }
+}
+
+if (!function_exists('uc_get_crypto_keys_for_decrypt')) {
+    function uc_get_crypto_keys_for_decrypt(): array
+    {
+        $keys = [];
+        $primary = uc_get_crypto_key();
+        if ($primary !== '') {
+            $keys[] = $primary;
+        }
+
+        $oldRaw = uc_get_env_value('APP_AES_KEY_OLD');
+        if ($oldRaw === '') {
+            return $keys;
+        }
+
+        $parts = array_filter(array_map('trim', explode(',', $oldRaw)));
+        foreach ($parts as $part) {
+            $k = hash('sha256', $part, true);
+            if (!in_array($k, $keys, true)) {
+                $keys[] = $k;
+            }
+        }
+
+        return $keys;
     }
 }
 
@@ -143,8 +168,8 @@ if (!function_exists('uc_decrypt_sensitive')) {
             return $cipherText;
         }
 
-        $key = uc_get_crypto_key();
-        if ($key === '') {
+        $keys = uc_get_crypto_keys_for_decrypt();
+        if (empty($keys)) {
             return $cipherText;
         }
 
@@ -157,19 +182,25 @@ if (!function_exists('uc_decrypt_sensitive')) {
 
         $raw = base64_decode($payload, true);
         if ($raw === false || strlen($raw) <= 48) {
-            return '';
+            return $cipherText;
         }
 
         $iv = substr($raw, 0, 16);
         $mac = substr($raw, 16, 32);
         $cipherRaw = substr($raw, 48);
-        $calcMac = hash_hmac('sha256', $iv . $cipherRaw, $key, true);
 
-        if (!hash_equals($mac, $calcMac)) {
-            return '';
+        foreach ($keys as $key) {
+            $calcMac = hash_hmac('sha256', $iv . $cipherRaw, $key, true);
+            if (!hash_equals($mac, $calcMac)) {
+                continue;
+            }
+
+            $plainText = openssl_decrypt($cipherRaw, 'aes-256-cbc', $key, OPENSSL_RAW_DATA, $iv);
+            if ($plainText !== false) {
+                return $plainText;
+            }
         }
 
-        $plainText = openssl_decrypt($cipherRaw, 'aes-256-cbc', $key, OPENSSL_RAW_DATA, $iv);
-        return $plainText === false ? '' : $plainText;
+        return $cipherText;
     }
 }

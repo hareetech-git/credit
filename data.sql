@@ -2,8 +2,8 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1:3307
--- Generation Time: Feb 11, 2026 at 09:27 AM
+-- Host: 127.0.0.1
+-- Generation Time: Feb 11, 2026 at 11:33 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -48,6 +48,31 @@ INSERT INTO `admin` (`id`, `uuid`, `name`, `email`, `password`, `role`, `created
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `career_applications`
+--
+
+CREATE TABLE `career_applications` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `email` varchar(191) NOT NULL,
+  `resume_path` varchar(255) NOT NULL,
+  `resume_original_name` varchar(255) NOT NULL,
+  `status` enum('new','assigned','closed') NOT NULL DEFAULT 'new',
+  `assigned_staff_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `assigned_by` bigint(20) UNSIGNED DEFAULT NULL,
+  `assigned_at` datetime DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `career_applications`
+--
+
+INSERT INTO `career_applications` (`id`, `email`, `resume_path`, `resume_original_name`, `status`, `assigned_staff_id`, `assigned_by`, `assigned_at`, `created_at`) VALUES
+(1, 'srivastavasanyam8052@gmail.com', 'uploads/careers/career_1770802726_fd3a743c_Borrower_Terms_and_Conditions.pdf', 'Borrower_Terms_and_Conditions.pdf', 'new', NULL, NULL, NULL, '2026-02-11 09:38:46');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `customers`
 --
 
@@ -68,9 +93,7 @@ CREATE TABLE `customers` (
 --
 
 INSERT INTO `customers` (`id`, `full_name`, `email`, `phone`, `password`, `aadhaar_number`, `status`, `created_at`, `updated_at`) VALUES
-(2, 'Sanyam Srivastava', 'sanyam.fullstackdev@gmail.com', '9984278970', '$2y$10$fYMqxeGHcz5uS2QCzZ7yIueQ7KQMsa1vhyzzW.ePsDqhfHiDIUwJ.', NULL, 'active', '2026-02-07 06:06:11', '2026-02-07 06:08:38'),
-(3, 'Sanyam Srivastava', 'srivastavasanyadafsm8052@gmail.com', '9984278971', '$2y$10$TK6FLY30IiOgP0x1uJFxIOpJFrMmriONPsPzLR67El/vPf2ZOIe8y', NULL, 'active', '2026-02-07 09:09:41', '2026-02-07 09:09:41'),
-(4, 'new test', 'devkratika8726@gmail.com', '9898989898', '$2y$10$oyukplwafvjmYC5X2MgKFuM3Cz.9oQxqigsuGvFR5gBMmMiXiBRsa', NULL, 'active', '2026-02-09 09:00:21', '2026-02-11 06:56:41');
+(1, 'Sanyam Srivastava', 'srivastavasanyam8052@gmail.com', '9984278970', '$2y$10$SFB4qjz.GVs5zHxYw2K8mOn6.72GYpzrUWrAZiQP7O2/2jsjClZmS', NULL, 'active', '2026-02-11 10:32:50', '2026-02-11 10:32:50');
 
 -- --------------------------------------------------------
 
@@ -81,7 +104,7 @@ INSERT INTO `customers` (`id`, `full_name`, `email`, `phone`, `password`, `aadha
 CREATE TABLE `customer_profiles` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `customer_id` bigint(20) UNSIGNED NOT NULL,
-  `pan_number` varchar(20) DEFAULT NULL,
+  `pan_number` varchar(255) DEFAULT NULL,
   `birth_date` date DEFAULT NULL,
   `state` varchar(100) DEFAULT NULL,
   `city` varchar(100) DEFAULT NULL,
@@ -102,9 +125,7 @@ CREATE TABLE `customer_profiles` (
 --
 
 INSERT INTO `customer_profiles` (`id`, `customer_id`, `pan_number`, `birth_date`, `state`, `city`, `pin_code`, `employee_type`, `company_name`, `monthly_income`, `reference1_name`, `reference1_phone`, `reference2_name`, `reference2_phone`, `created_at`, `updated_at`) VALUES
-(2, 2, 'ABCDE1234F', '2026-02-26', 'Uttar Pradesh', 'Lakhimpur', '261506', 'business', 'Random Pvt Ltd', 89998.00, 'Sanyam Srivastava', '9984278970', 'Sanyam Srivastava', '9984278970', '2026-02-07 06:06:11', '2026-02-07 06:06:11'),
-(3, 3, 'ABCDE1234F', '2008-01-31', 'Uttar Pradesh', 'Lakhimpur', '261506', 'business', 'Hareetech Development Pvt Ltd', 8000.00, 'Sanyam Srivastava', '9984278970', 'Sanyam Srivastavaa', '9984278971', '2026-02-07 09:09:41', '2026-02-07 09:09:41'),
-(4, 4, 'ABCDE1234F', '2008-02-06', 'uttar pradesh', 'lmp', '253433', 'salaried', '', 9000.00, 'nhnh', '8787878787', 'sanskrati', '9984278787', '2026-02-09 09:00:21', '2026-02-11 06:55:10');
+(1, 1, 'enc:v1:e_E_iZ7UU40fOd1lEbyUjo-zRKYelUhgHad-pgrIXF019bpjFpl745mK47mX2k9QjxrXUCthC4Tw_dP0GGASUA', '2008-02-02', 'Uttar Pradesh', 'Lakhimpur', '261506', 'salaried', '', 90000.00, 'dfsaf', '9984278970', 'Sanyam Srivastavaa', '9984278976', '2026-02-11 10:32:50', '2026-02-11 10:32:50');
 
 -- --------------------------------------------------------
 
@@ -186,12 +207,12 @@ CREATE TABLE `dsa_profiles` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `dsa_id` bigint(20) UNSIGNED NOT NULL,
   `firm_name` varchar(255) DEFAULT NULL,
-  `pan_number` varchar(20) DEFAULT NULL,
+  `pan_number` varchar(255) DEFAULT NULL,
   `city` varchar(100) DEFAULT NULL,
   `state` varchar(100) DEFAULT NULL,
   `pin_code` varchar(10) DEFAULT NULL,
   `bank_name` varchar(255) DEFAULT NULL,
-  `account_number` varchar(50) DEFAULT NULL,
+  `account_number` varchar(255) DEFAULT NULL,
   `ifsc_code` varchar(20) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
@@ -218,12 +239,12 @@ CREATE TABLE `dsa_requests` (
   `email` varchar(255) NOT NULL,
   `phone` varchar(20) NOT NULL,
   `firm_name` varchar(255) NOT NULL,
-  `pan_number` varchar(20) DEFAULT NULL,
+  `pan_number` varchar(255) NOT NULL,
   `city` varchar(100) DEFAULT NULL,
   `state` varchar(100) DEFAULT NULL,
   `pin_code` varchar(10) DEFAULT NULL,
   `bank_name` varchar(255) DEFAULT NULL,
-  `account_number` varchar(50) DEFAULT NULL,
+  `account_number` varchar(255) NOT NULL,
   `ifsc_code` varchar(20) DEFAULT NULL,
   `message` text DEFAULT NULL,
   `status` enum('pending','approved','rejected') NOT NULL DEFAULT 'pending',
@@ -240,7 +261,10 @@ CREATE TABLE `dsa_requests` (
 --
 
 INSERT INTO `dsa_requests` (`id`, `customer_id`, `full_name`, `email`, `phone`, `firm_name`, `pan_number`, `city`, `state`, `pin_code`, `bank_name`, `account_number`, `ifsc_code`, `message`, `status`, `admin_note`, `reviewed_by`, `reviewed_at`, `dsa_id`, `created_at`, `updated_at`) VALUES
-(1, 0, 'Kratika Gupta', 'devkratika8726@gmail.com', '8726677450', 'techspark', 'ABCDE1234G', 'lakhimpur', 'uttar pradesh', '262701', 'Unino Bank Of India', '12345678', 'UNFB00201234', 'ok', 'approved', '', 1, '2026-02-09 09:16:58', 2, '2026-02-09 09:16:10', '2026-02-09 09:16:58');
+(1, 0, 'Kratika Gupta', 'devkratika8726@gmail.com', '8726677450', 'techspark', 'ABCDE1234G', 'lakhimpur', 'uttar pradesh', '262701', 'Unino Bank Of India', '12345678', 'UNFB00201234', 'ok', 'approved', '', 1, '2026-02-09 09:16:58', 2, '2026-02-09 09:16:10', '2026-02-09 09:16:58'),
+(2, 0, 'Sanyam Srivastava', 'srivastavasanyam8052@gmail.com', '9984278970', 'Sanyam pvt ltd', 'enc:v1:4j0uXIDnrq3D1', 'Lakhimpur', 'Uttar Pradesh', '261506', 'jgg', 'enc:v1:-Wu2TyWr34NO0RTWb3R4yuBj6xVq-xHvUuM3itusuHm', 'IPOS0000002', '', 'pending', NULL, NULL, NULL, NULL, '2026-02-11 09:32:50', '2026-02-11 09:32:50'),
+(3, 0, 'Sanyam Srivastava', 'srivastavajjgjjghhjhjhsanyam8052@gmail.com', '9984278971', 'Sanyam pvt ltd', 'enc:v1:3RohAC30bU-UA', 'Lakhimpur', 'Uttar Pradesh', '261506', '32443DSFDG', 'enc:v1:wrY56aBu9DSvNuuJ-Ie1fMtmW1OaLAq1GlRH9g3n_93', 'IPOS0000002', '', 'pending', NULL, NULL, NULL, NULL, '2026-02-11 09:59:32', '2026-02-11 09:59:32'),
+(4, 0, 'Sanyam Srivastava', 'srivastavafsdfsdsanyam8052@gmail.com', '9984278972', 'aaaaaaaaaaaaaaaaaaaaaaa', 'enc:v1:osbAoAlmYGTn2', 'Lakhimpur', 'Uttar Pradesh', '261506', 'Kotak Mahindra Bank', 'enc:v1:Gg_rk1nxZU0ZkS4Ze-NGSfqE1txI-fiF0j-rmpTPnNs', 'IPOS0000002', 'aaaaaaaaaaaaaaaaaaaa', 'pending', NULL, NULL, NULL, NULL, '2026-02-11 10:07:20', '2026-02-11 10:07:20');
 
 -- --------------------------------------------------------
 
@@ -431,7 +455,11 @@ INSERT INTO `loan_applications` (`id`, `customer_id`, `service_id`, `dsa_id`, `a
 (4, 4, 3, 1, NULL, NULL, NULL, 0.00, 'year', 5000000.00, 0, 0.00, 'pending', '2026-02-09 09:00:21', NULL),
 (5, 2, 4, NULL, 1, 1, '2026-02-09 12:16:54', 7.00, 'year', 200000.00, 12, 17305.35, 'pending', '2026-02-09 12:16:54', NULL),
 (6, 4, 5, NULL, 1, 1, '2026-02-09 12:54:07', 10.00, 'year', 2000000.00, 36, 64534.37, 'pending', '2026-02-09 12:54:07', NULL),
-(7, 4, 5, NULL, NULL, NULL, NULL, 5.00, 'year', 900000.00, 56, 18052.59, 'approved', '2026-02-11 06:55:10', '');
+(7, 4, 5, NULL, NULL, NULL, NULL, 5.00, 'year', 900000.00, 56, 18052.59, 'approved', '2026-02-11 06:55:10', ''),
+(8, 2, 7, NULL, NULL, NULL, NULL, 0.00, 'year', 900000.00, 0, 0.00, 'pending', '2026-02-11 09:47:40', NULL),
+(9, 1, 3, NULL, NULL, NULL, NULL, 0.00, 'year', 9000.00, 0, 0.00, 'pending', '2026-02-11 10:19:08', NULL),
+(10, 2, 3, NULL, NULL, NULL, NULL, 0.00, 'year', 90000.00, 0, 0.00, 'pending', '2026-02-11 10:28:53', NULL),
+(11, 1, 3, NULL, NULL, NULL, NULL, 0.00, 'year', 89997.00, 0, 0.00, 'pending', '2026-02-11 10:32:50', NULL);
 
 -- --------------------------------------------------------
 
@@ -922,6 +950,15 @@ ALTER TABLE `admin`
   ADD UNIQUE KEY `unique_admin_uuid` (`uuid`);
 
 --
+-- Indexes for table `career_applications`
+--
+ALTER TABLE `career_applications`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_career_status` (`status`),
+  ADD KEY `idx_career_assigned_staff` (`assigned_staff_id`),
+  ADD KEY `idx_career_created_at` (`created_at`);
+
+--
 -- Indexes for table `customers`
 --
 ALTER TABLE `customers`
@@ -1161,16 +1198,22 @@ ALTER TABLE `admin`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
+-- AUTO_INCREMENT for table `career_applications`
+--
+ALTER TABLE `career_applications`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
 -- AUTO_INCREMENT for table `customers`
 --
 ALTER TABLE `customers`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `customer_profiles`
 --
 ALTER TABLE `customer_profiles`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `departments`
@@ -1200,7 +1243,7 @@ ALTER TABLE `dsa_profiles`
 -- AUTO_INCREMENT for table `dsa_requests`
 --
 ALTER TABLE `dsa_requests`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `enquiries`
@@ -1236,7 +1279,7 @@ ALTER TABLE `faqs`
 -- AUTO_INCREMENT for table `loan_applications`
 --
 ALTER TABLE `loan_applications`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `loan_application_docs`
