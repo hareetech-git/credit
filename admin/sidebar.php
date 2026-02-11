@@ -136,16 +136,12 @@ $dsa_active = in_array($current_page, [
                     <span>Dashboard</span>
                 </a>
             </li>
-<li class="side-nav-item <?= $websettings_active ? 'active' : '' ?>">
-    <a href="web_settings.php" class="side-nav-link">
-        <i class="ri-settings-3-line"></i>
-        <span>Web Settings</span>
-    </a>
-</li>
+
 <li class="side-nav-item <?= $websettings_active ? 'active' : '' ?>">
     <a href="team_members.php" class="side-nav-link">
-        <i class="ri-settings-3-line"></i>
-        <span>Manage Team Mambers</span>
+    <i class="fas fa-users"></i>
+
+        <span>Manage Team </span>
     </a>
 </li>
             <li class="side-nav-item <?= $staff_active ? 'active' : '' ?>">
@@ -265,7 +261,12 @@ $dsa_active = in_array($current_page, [
                     <span>FAQs</span>
                 </a>
             </li>
-
+<li class="side-nav-item <?= $websettings_active ? 'active' : '' ?>">
+    <a href="web_settings.php" class="side-nav-link">
+        <i class="ri-settings-3-line"></i>
+        <span>Web Settings</span>
+    </a>
+</li>
             <li class="side-nav-item">
                 <a href="db/auth-logout.php" class="side-nav-link text-danger">
                     <i class="ri-logout-box-line"></i>
