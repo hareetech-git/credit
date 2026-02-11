@@ -17,7 +17,7 @@ $result = mysqli_query($conn, $query);
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div><h2 class="fw-bold text-dark mb-1">My Leads</h2><p class="text-muted small mb-0">Loan applications submitted through your DSA account.</p></div>
         <?php if (dsaHasAccess($conn, 'dsa_lead_create')): ?>
-        <a href="../apply-loan.php" class="btn btn-dark">Add New Lead</a>
+        <a href="add-lead.php" class="btn btn-dark">Add New Lead</a>
         <?php endif; ?>
     </div>
     <div class="card border"><div class="card-body p-0"><div class="table-responsive">

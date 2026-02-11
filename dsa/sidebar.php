@@ -35,8 +35,8 @@ $current_page = basename($_SERVER['PHP_SELF']);
             <?php endif; ?>
 
             <?php if (dsaHasAccess($conn, 'dsa_lead_create')): ?>
-            <li class="side-nav-item">
-                <a href="../apply-loan.php" class="side-nav-link"><i class="ri-add-circle-line"></i><span>Add New Lead</span></a>
+            <li class="side-nav-item <?= ($current_page == 'add-lead.php') ? 'active' : '' ?>">
+                <a href="add-lead.php" class="side-nav-link"><i class="ri-add-circle-line"></i><span>Add New Lead</span></a>
             </li>
             <?php endif; ?>
 
