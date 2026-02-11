@@ -140,8 +140,8 @@ $dsa_active = in_array($current_page, [
 <li class="side-nav-item <?= $websettings_active ? 'active' : '' ?>">
     <a href="team_members.php" class="side-nav-link">
     <i class="fas fa-users"></i>
-    
-        <span>Manage Team Mambers</span>
+
+        <span>Manage Team </span>
     </a>
 </li>
             <li class="side-nav-item <?= $staff_active ? 'active' : '' ?>">
