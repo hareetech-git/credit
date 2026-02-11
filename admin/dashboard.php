@@ -23,6 +23,7 @@ $staffCount       = getCount($conn, 'staff');
 $dsaCount         = getCount($conn, 'dsa');
 $pendingDsaRequests = getCount($conn, 'dsa_requests', "status='pending'");
 $loanCount        = getCount($conn, 'loan_applications');
+$teamCount = getCount($conn, 'team_members');
 
 // Status specific counts
 $loanPending = getCount($conn, 'loan_applications', "status='pending'");
@@ -227,6 +228,7 @@ include 'sidebar.php';
                     ['label' => 'Pending DSA Requests', 'val' => $pendingDsaRequests, 'link' => 'dsa_requests.php'],
                     ['label' => 'Total Enquiries', 'val' => $enquiryCount, 'link' => 'enquiries.php'],
                     ['label' => 'Loan Applications', 'val' => $loanCount, 'link' => 'loan_applications.php'],
+                     ['label' => 'Team Members', 'val' => $teamCount, 'link' => 'team_members.php']
                 ];
 
                 foreach($cards as $c): ?>
