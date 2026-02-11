@@ -14,6 +14,7 @@ if (!function_exists('uc_load_env_files')) {
             realpath(__DIR__ . '/../admin/.env'),
             realpath(__DIR__ . '/../staff/.env'),
         ];
+        $allowedKeys = ['APP_AES_KEY', 'AES_SECRET_KEY', 'ENCRYPTION_KEY'];
 
         foreach ($paths as $path) {
             if (!$path || !is_readable($path)) {
@@ -43,6 +44,9 @@ if (!function_exists('uc_load_env_files')) {
                 $name = trim(substr($line, 0, $eqPos));
                 $value = trim(substr($line, $eqPos + 1));
                 if ($name === '') {
+                    continue;
+                }
+                if (!in_array($name, $allowedKeys, true)) {
                     continue;
                 }
 
@@ -169,4 +173,3 @@ if (!function_exists('uc_decrypt_sensitive')) {
         return $plainText === false ? '' : $plainText;
     }
 }
-
