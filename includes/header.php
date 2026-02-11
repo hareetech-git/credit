@@ -16,24 +16,6 @@ include 'includes/connection.php';
 
 $current_page = basename($_SERVER['PHP_SELF']);
 
-// Show enquiry popup on every visit to homepage for guests
-$showEnquiryPopup = (!$isCustomerLoggedIn && $current_page === 'index.php');
-
-// Fetch loan types for popup if needed
-$popup_loan_types = [];
-if ($showEnquiryPopup && isset($conn)) {
-    $popup_query = "SELECT id, sub_category_name 
-                    FROM services_subcategories 
-                    WHERE status = 'active' AND live = 1 
-                    ORDER BY sequence ASC";
-    $popup_result = mysqli_query($conn, $popup_query);
-    if ($popup_result && mysqli_num_rows($popup_result) > 0) {
-        while ($row = mysqli_fetch_assoc($popup_result)) {
-            $popup_loan_types[] = $row;
-        }
-    }
-}
-
 // --- 1. FETCH MENU STRUCTURE (UPDATED) ---
 // Changed JOIN to LEFT JOIN to show Categories even if they have no services yet.
 $menu_sql = "SELECT 
