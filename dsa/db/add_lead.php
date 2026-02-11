@@ -37,10 +37,27 @@ if ($dsaColRes && mysqli_num_rows($dsaColRes) > 0) {
 $full_name = mysqli_real_escape_string($conn, trim((string)($_POST['full_name'] ?? '')));
 $phone = mysqli_real_escape_string($conn, trim((string)($_POST['phone'] ?? '')));
 $email = mysqli_real_escape_string($conn, trim((string)($_POST['email'] ?? '')));
+$pan_plain = strtoupper(trim((string)($_POST['pan_number'] ?? '')));
+$birth_date = trim((string)($_POST['birth_date'] ?? ''));
+$employee_type = mysqli_real_escape_string($conn, trim((string)($_POST['employee_type'] ?? 'salaried')));
+$company_name = mysqli_real_escape_string($conn, trim((string)($_POST['company_name'] ?? '')));
+$monthly_income = (float)($_POST['monthly_income'] ?? 0);
+$state = mysqli_real_escape_string($conn, trim((string)($_POST['state'] ?? '')));
+$city = mysqli_real_escape_string($conn, trim((string)($_POST['city'] ?? '')));
+$pin_code = mysqli_real_escape_string($conn, trim((string)($_POST['pin_code'] ?? '')));
+$reference1_name = mysqli_real_escape_string($conn, trim((string)($_POST['reference1_name'] ?? '')));
+$reference1_phone = mysqli_real_escape_string($conn, trim((string)($_POST['reference1_phone'] ?? '')));
+$reference2_name = mysqli_real_escape_string($conn, trim((string)($_POST['reference2_name'] ?? '')));
+$reference2_phone = mysqli_real_escape_string($conn, trim((string)($_POST['reference2_phone'] ?? '')));
+
 $service_id = (int)($_POST['service_id'] ?? 0);
 $requested_amount = (float)($_POST['requested_amount'] ?? 0);
 
-if ($full_name === '' || $phone === '' || $email === '' || $service_id <= 0 || $requested_amount <= 0) {
+if (
+    $full_name === '' || $phone === '' || $email === '' || $pan_plain === '' || $birth_date === '' ||
+    $state === '' || $city === '' || $pin_code === '' || $reference1_name === '' || $reference1_phone === '' ||
+    $reference2_name === '' || $reference2_phone === '' || $service_id <= 0 || $requested_amount <= 0
+) {
     header('Location: ../add-lead.php?err=Please fill all required fields');
     exit;
 }
@@ -52,6 +69,56 @@ if (!preg_match('/^[6-9][0-9]{9}$/', $phone)) {
 
 if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
     header('Location: ../add-lead.php?err=Enter valid email address');
+    exit;
+}
+
+if (!preg_match('/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/', $pan_plain)) {
+    header('Location: ../add-lead.php?err=Enter valid PAN number');
+    exit;
+}
+
+$dob_ts = strtotime($birth_date);
+if (!$dob_ts) {
+    header('Location: ../add-lead.php?err=Invalid birth date');
+    exit;
+}
+
+$age_years = (int)date_diff(new DateTime(date('Y-m-d', $dob_ts)), new DateTime(date('Y-m-d')))->y;
+if ($age_years < 18) {
+    header('Location: ../add-lead.php?err=Applicant must be at least 18 years old');
+    exit;
+}
+
+if (!in_array($employee_type, ['salaried', 'business', 'self_employed', 'professional'], true)) {
+    $employee_type = 'salaried';
+}
+
+if ($employee_type === 'business' && $company_name === '') {
+    header('Location: ../add-lead.php?err=Company or business name is required');
+    exit;
+}
+
+if ($monthly_income < 0) {
+    header('Location: ../add-lead.php?err=Monthly income cannot be negative');
+    exit;
+}
+
+if (!preg_match('/^[0-9]{6}$/', $pin_code)) {
+    header('Location: ../add-lead.php?err=Enter valid 6-digit pin code');
+    exit;
+}
+
+if (!preg_match('/^[6-9][0-9]{9}$/', $reference1_phone) || !preg_match('/^[6-9][0-9]{9}$/', $reference2_phone)) {
+    header('Location: ../add-lead.php?err=Enter valid reference mobile numbers');
+    exit;
+}
+
+$r1n_norm = strtolower(preg_replace('/\s+/', ' ', trim((string)($_POST['reference1_name'] ?? ''))));
+$r2n_norm = strtolower(preg_replace('/\s+/', ' ', trim((string)($_POST['reference2_name'] ?? ''))));
+$r1p_norm = preg_replace('/\D+/', '', (string)($_POST['reference1_phone'] ?? ''));
+$r2p_norm = preg_replace('/\D+/', '', (string)($_POST['reference2_phone'] ?? ''));
+if (($r1n_norm !== '' && $r1n_norm === $r2n_norm) || ($r1p_norm !== '' && $r1p_norm === $r2p_norm)) {
+    header('Location: ../add-lead.php?err=Reference 1 and Reference 2 must be different');
     exit;
 }
 
@@ -79,6 +146,49 @@ try {
 
     if ($customer_id <= 0) {
         throw new Exception('Unable to create customer');
+    }
+
+    mysqli_query($conn, "UPDATE enquiries SET customer_id = $customer_id WHERE customer_id IS NULL AND email = '$email'");
+
+    $pan_encrypted = function_exists('uc_encrypt_sensitive')
+        ? mysqli_real_escape_string($conn, uc_encrypt_sensitive($pan_plain))
+        : mysqli_real_escape_string($conn, $pan_plain);
+
+    $profileRes = mysqli_query($conn, "SELECT id FROM customer_profiles WHERE customer_id = $customer_id LIMIT 1");
+    if ($profileRes && mysqli_num_rows($profileRes) > 0) {
+        $profileId = (int)(mysqli_fetch_assoc($profileRes)['id'] ?? 0);
+        if ($profileId > 0) {
+            $profileSql = "UPDATE customer_profiles SET
+                           pan_number = '$pan_encrypted',
+                           birth_date = '$birth_date',
+                           state = '$state',
+                           city = '$city',
+                           pin_code = '$pin_code',
+                           employee_type = '$employee_type',
+                           company_name = '$company_name',
+                           monthly_income = $monthly_income,
+                           reference1_name = '$reference1_name',
+                           reference1_phone = '$reference1_phone',
+                           reference2_name = '$reference2_name',
+                           reference2_phone = '$reference2_phone'
+                           WHERE customer_id = $customer_id";
+            if (!mysqli_query($conn, $profileSql)) {
+                throw new Exception('Unable to update customer profile');
+            }
+        }
+    } else {
+        $profileInsert = "INSERT INTO customer_profiles (
+                            customer_id, pan_number, birth_date, state, city, pin_code,
+                            employee_type, company_name, monthly_income,
+                            reference1_name, reference1_phone, reference2_name, reference2_phone
+                          ) VALUES (
+                            $customer_id, '$pan_encrypted', '$birth_date', '$state', '$city', '$pin_code',
+                            '$employee_type', '$company_name', $monthly_income,
+                            '$reference1_name', '$reference1_phone', '$reference2_name', '$reference2_phone'
+                          )";
+        if (!mysqli_query($conn, $profileInsert)) {
+            throw new Exception('Unable to save customer profile');
+        }
     }
 
     $dsaInsertCol = $hasDsaColumn ? ', dsa_id' : '';
