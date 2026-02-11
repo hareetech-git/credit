@@ -78,7 +78,7 @@
         <h5 class="fw-bold mb-3" style="color: #f1f5f9;">Quick Links</h5>
         <ul class="list-unstyled footer-links-list">
             <li class="mb-2"><a href="index.php" class="footer-quick-link text-decoration-none"><i class="fas fa-angle-right me-2"></i>Home</a></li>
-            <li class="mb-2"><a href="about.php" class="footer-quick-link text-decoration-none"><i class="fas fa-angle-right me-2"></i>About Us</a></li>
+            <li class="mb-2"><a href="about.php" class="footer-quick-link text-decoration-none"><i class="fas fa-angle-right me-2"></i>About </a></li>
             <li class="mb-2"><a href="services.php" class="footer-quick-link text-decoration-none"><i class="fas fa-angle-right me-2"></i>Our Services</a></li>
             <li class="mb-2"><a href="contact.php" class="footer-quick-link text-decoration-none"><i class="fas fa-angle-right me-2"></i>Contact Us</a></li>
             <li class="mb-2"><a href="terms.php" class="footer-quick-link text-decoration-none"><i class="fas fa-angle-right me-2"></i>Terms & Conditions</a></li>

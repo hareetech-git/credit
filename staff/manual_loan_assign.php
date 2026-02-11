@@ -108,7 +108,7 @@ $loans = mysqli_query($conn, $query);
                     <h5 class="mb-0 fw-bold">Create Manual Loan Assignment</h5>
                 </div>
                 <div class="card-body">
-                    <form action="db/loan_handler.php" method="POST" class="row g-3 align-items-end">
+                    <form action="db/loan_handler.php" method="POST" class="row g-3 align-items-end" enctype="multipart/form-data">
                         <input type="hidden" name="action" value="manual_create_assign">
 
                         <div class="col-md-6">
@@ -136,6 +136,9 @@ $loans = mysqli_query($conn, $query);
                         <div class="col-md-3">
                             <label class="form-label">Requested Amount</label>
                             <input type="number" step="0.01" min="1" name="requested_amount" class="form-control" required>
+                        </div>
+                        <div class="col-12">
+                            <div id="doc_container" class="row g-3"></div>
                         </div>
                         <div class="col-md-3">
                             <label class="form-label">Tenure (Months)</label>
@@ -278,5 +281,83 @@ $loans = mysqli_query($conn, $query);
         </div>
     </div>
 </div>
+
+<script>
+    function validateLoanDocs() {
+        const container = document.getElementById('doc_container');
+        if (!container) return true;
+        const fileInputs = container.querySelectorAll('input[type="file"][name^="loan_docs["]');
+        if (!fileInputs || fileInputs.length === 0) return true;
+
+        let valid = true;
+        const maxBytes = 5 * 1024 * 1024;
+        const allowedExt = ['pdf', 'jpg', 'jpeg', 'png'];
+
+        fileInputs.forEach((input) => {
+            input.setCustomValidity('');
+            input.classList.remove('is-invalid');
+            if (!input.files || input.files.length === 0) return;
+            const file = input.files[0];
+            const ext = ((file.name || '').split('.').pop() || '').toLowerCase();
+            if (!allowedExt.includes(ext)) {
+                input.setCustomValidity('Only PDF, JPG, JPEG, PNG files are allowed.');
+                input.classList.add('is-invalid');
+                valid = false;
+                return;
+            }
+            if (file.size > maxBytes) {
+                input.setCustomValidity('File size must be 5 MB or less.');
+                input.classList.add('is-invalid');
+                valid = false;
+            }
+        });
+        return valid;
+    }
+
+    async function fetchDocs(serviceId) {
+        const container = document.getElementById('doc_container');
+        if (!container) return;
+        container.innerHTML = '';
+        if (!serviceId) return;
+        try {
+            const res = await fetch(`../api/get_service_docs.php?service_id=${serviceId}`);
+            const docs = await res.json();
+            docs.forEach(d => {
+                const key = (d.doc_name || '').replace(/ /g, '_');
+                container.innerHTML += `
+                    <div class="col-md-6">
+                        <div class="p-3 border rounded bg-white text-center">
+                            <label class="form-label small">${d.doc_name}</label>
+                            <input type="file" name="loan_docs[${key}]" class="form-control form-control-sm" accept=".pdf,.jpg,.jpeg,.png" required>
+                            <small class="text-muted d-block mt-1">Allowed: PDF/JPG/JPEG/PNG, max 5 MB</small>
+                        </div>
+                    </div>`;
+            });
+            container.querySelectorAll('input[type="file"]').forEach((input) => {
+                input.addEventListener('change', validateLoanDocs);
+            });
+        } catch (e) {
+            console.error('Error fetching docs', e);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const serviceSelect = document.querySelector('select[name="service_id"]');
+        if (serviceSelect) {
+            serviceSelect.addEventListener('change', (e) => fetchDocs(e.target.value));
+            if (serviceSelect.value) {
+                fetchDocs(serviceSelect.value);
+            }
+        }
+        const form = document.querySelector('form[action="db/loan_handler.php"]');
+        if (form) {
+            form.addEventListener('submit', (e) => {
+                if (!validateLoanDocs()) {
+                    e.preventDefault();
+                }
+            });
+        }
+    });
+</script>
 
 <?php include 'footer.php'; ?>
