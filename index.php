@@ -1302,7 +1302,7 @@ unset($_SESSION['success_message']);
         
         <!-- CTA Button -->
         <div class="text-center mt-5 pt-3">
-            <a href="#loanForm" class="btn btn-primary btn-lg rounded-pill px-5">
+            <a href="apply-loan.php" class="btn btn-primary btn-lg rounded-pill px-5">
                 <i class="fas fa-play-circle me-2"></i> Start Your Journey
             </a>
         </div>
