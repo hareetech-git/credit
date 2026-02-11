@@ -22,6 +22,7 @@ $cat_active      = in_array($current_page, ['category_add.php', 'category.php'])
 $subcat_active   = in_array($current_page, ['subcategory_add.php', 'subcategory.php']);
 $service_active  = in_array($current_page, ['service_add.php', 'services.php', 'service_edit.php', 'service_details.php', 'plan-work.php']);
 $faq_active = ($current_page == 'faqs.php');
+$career_active = ($current_page == 'career_applications.php');
 
 // 2. NEW: Staff & Permissions Active Logic
 $staff_active = in_array($current_page, [
@@ -248,6 +249,13 @@ $dsa_active = in_array($current_page, [
                 <a href="enquiries.php" class="side-nav-link">
                     <i class="ri-question-answer-line"></i>
                     <span>Enquiry</span>
+                </a>
+            </li>
+
+            <li class="side-nav-item <?= $career_active ? 'active' : '' ?>">
+                <a href="career_applications.php" class="side-nav-link">
+                    <i class="ri-briefcase-4-line"></i>
+                    <span>Careers</span>
                 </a>
             </li>
 
