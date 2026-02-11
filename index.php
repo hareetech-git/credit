@@ -990,7 +990,7 @@ unset($_SESSION['success_message']);
                         <i class="fas fa-file-contract me-2"></i> Apply For Loan
                     </a>
                     
-                    <a href="#" class="btn btn-outline-light btn-lg rounded-pill px-5">
+                    <a href="dsa-register.php" class="btn btn-outline-light btn-lg rounded-pill px-5">
                         <i class="fas fa-handshake me-2"></i> Become a DSA Partner
                     </a>
                 </div>
