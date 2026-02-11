@@ -1,7 +1,7 @@
 <?php
 // Make sure connection exists
 if (!isset($conn)) {
-    require_once __DIR__ . '/../../includes/connection.php';
+  include 'config.php';
 }
 
 $webSettings = [

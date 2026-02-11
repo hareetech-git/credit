@@ -22,11 +22,6 @@ $query = "SELECT c.*, cp.pan_number,
           LEFT JOIN customer_profiles cp ON c.id = cp.customer_id 
           WHERE 1=1";
 
-if (!empty($search_query)) {
-    $search_safe = mysqli_real_escape_string($conn, $search_query);
-    $query .= " AND (c.full_name LIKE '%$search_safe%' OR c.phone LIKE '%$search_safe%' OR cp.pan_number LIKE '%$search_safe%')";
-}
-
 if (!empty($status_filter)) {
     $status_safe = mysqli_real_escape_string($conn, $status_filter);
     $query .= " AND c.status = '$status_safe'";
@@ -34,6 +29,25 @@ if (!empty($status_filter)) {
 
 $query .= " ORDER BY c.id DESC";
 $result = mysqli_query($conn, $query);
+
+$rows = [];
+$searchNeedle = strtolower(trim((string)$search_query));
+if ($result) {
+    while ($row = mysqli_fetch_assoc($result)) {
+        $row['pan_number'] = uc_decrypt_sensitive((string)($row['pan_number'] ?? ''));
+
+        if ($searchNeedle !== '') {
+            $nameMatch = str_contains(strtolower((string)($row['full_name'] ?? '')), $searchNeedle);
+            $phoneMatch = str_contains(strtolower((string)($row['phone'] ?? '')), $searchNeedle);
+            $panMatch = str_contains(strtolower((string)($row['pan_number'] ?? '')), $searchNeedle);
+            if (!$nameMatch && !$phoneMatch && !$panMatch) {
+                continue;
+            }
+        }
+
+        $rows[] = $row;
+    }
+}
 ?>
 
 <style>
@@ -165,8 +179,8 @@ $result = mysqli_query($conn, $query);
                                 </tr>
                             </thead>
                             <tbody>
-                                <?php if (mysqli_num_rows($result) > 0) : ?>
-                                    <?php while ($row = mysqli_fetch_assoc($result)) : ?>
+                                <?php if (count($rows) > 0) : ?>
+                                    <?php foreach ($rows as $row) : ?>
                                         <tr>
                                             <td class="text-muted fw-bold">#<?= $row['id'] ?></td>
                                             <td>
@@ -225,7 +239,7 @@ $result = mysqli_query($conn, $query);
     </div>
 </td>
                                         </tr>
-                                    <?php endwhile; ?>
+                                    <?php endforeach; ?>
                                 <?php else : ?>
                                     <tr>
                                         <td colspan="6" class="text-center py-5 text-muted">

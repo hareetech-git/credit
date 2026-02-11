@@ -73,7 +73,8 @@ try {
         // Link any existing enquiries by email to this customer
         mysqli_query($conn, "UPDATE enquiries SET customer_id = $cid WHERE customer_id IS NULL AND email = '$email'");
 
-        $pan = strtoupper(mysqli_real_escape_string($conn, $_POST['pan_number']));
+        $panPlain = strtoupper(trim((string)($_POST['pan_number'] ?? '')));
+        $pan = mysqli_real_escape_string($conn, uc_encrypt_sensitive($panPlain));
         $dob = mysqli_real_escape_string($conn, $_POST['birth_date']);
         $dob_ts = strtotime($dob);
         if (!$dob_ts) {

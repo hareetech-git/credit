@@ -92,6 +92,10 @@ if ($tableReady) {
                             <tbody>
                                 <?php if ($result && mysqli_num_rows($result) > 0): ?>
                                     <?php while ($row = mysqli_fetch_assoc($result)): ?>
+                                        <?php
+                                            $row['pan_number'] = uc_decrypt_sensitive((string)($row['pan_number'] ?? ''));
+                                            $row['account_number'] = uc_decrypt_sensitive((string)($row['account_number'] ?? ''));
+                                        ?>
                                         <tr>
                                             <td class="ps-3">
                                                 <div class="fw-bold"><?= htmlspecialchars($row['full_name']) ?></div>

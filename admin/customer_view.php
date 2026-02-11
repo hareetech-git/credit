@@ -20,6 +20,9 @@ $result = mysqli_query($conn, $query);
 $cust = mysqli_fetch_assoc($result);
 
 if (!$cust) die("Customer not found.");
+if (!empty($cust['pan_number'])) {
+    $cust['pan_number'] = uc_decrypt_sensitive($cust['pan_number']);
+}
 
 // 2. Fetch Loan History
 $loan_query = "SELECT l.*, s.service_name 

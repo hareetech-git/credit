@@ -44,7 +44,8 @@ if ($action == 'create' || $action == 'update') {
     }
 
     // --- UPDATE PROFILE DATA (Common for Create & Update) ---
-    $pan = mysqli_real_escape_string($conn, $_POST['pan_number']);
+    $pan_plain = strtoupper(trim((string)($_POST['pan_number'] ?? '')));
+    $pan = mysqli_real_escape_string($conn, uc_encrypt_sensitive($pan_plain));
     $dob = mysqli_real_escape_string($conn, $_POST['birth_date']);
     $city = mysqli_real_escape_string($conn, $_POST['city']);
     $state = mysqli_real_escape_string($conn, $_POST['state']);
