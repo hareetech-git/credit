@@ -1445,7 +1445,7 @@ unset($_SESSION['success_message']);
 
                     <div class="faq-stats">
                         <div class="faq-stat">
-                            <h5>10 min</h5>
+                            <h5>48 min</h5>
                             <span>Fast approvals</span>
                         </div>
                         <div class="faq-stat">
@@ -1453,11 +1453,11 @@ unset($_SESSION['success_message']);
                             <span>Support access</span>
                         </div>
                         <div class="faq-stat">
-                            <h5>₹25L</h5>
+                            <h5>₹250CR</h5>
                             <span>Max amount</span>
                         </div>
                         <div class="faq-stat">
-                            <h5>10.5%</h5>
+                            <h5>9.75%</h5>
                             <span>Rates from</span>
                         </div>
                     </div>
