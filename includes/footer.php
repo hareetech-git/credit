@@ -91,15 +91,26 @@
         <ul class="list-unstyled footer-contact-list">
             <li class="mb-3">
                 <i class="fas fa-map-marker-alt me-2" style="color: var(--primary-color);"></i>
-                <span class="footer-contact-text">123 Business Tower, Mumbai, India</span>
+               <span class="footer-contact-text">
+    <?php echo htmlspecialchars($webSettings['site_address']); ?>
+</span>
+
             </li>
             <li class="mb-3">
                 <i class="fas fa-phone-alt me-2" style="color: var(--primary-color);"></i>
-                <a href="tel:+911800XXXXXX" class="footer-contact-link text-decoration-none">+91 1800-XXX-XXXX</a>
+<a href="tel:<?php echo htmlspecialchars($webSettings['site_phone']); ?>" 
+   class="footer-contact-link text-decoration-none">
+   <?php echo htmlspecialchars($webSettings['site_phone']); ?>
+</a>
+
             </li>
             <li class="mb-3">
                 <i class="fas fa-envelope me-2" style="color: var(--primary-color);"></i>
-                <a href="mailto:support@udharcapital.com" class="footer-contact-link text-decoration-none">support@udharcapital.com</a>
+<a href="mailto:<?php echo htmlspecialchars($webSettings['site_email']); ?>" 
+   class="footer-contact-link text-decoration-none">
+   <?php echo htmlspecialchars($webSettings['site_email']); ?>
+</a>
+
             </li>
             <li class="mb-3">
                 <i class="fas fa-clock me-2" style="color: var(--primary-color);"></i>

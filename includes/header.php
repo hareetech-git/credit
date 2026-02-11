@@ -11,6 +11,7 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 $isCustomerLoggedIn = isset($_SESSION['customer_id']);
 $customerName = $_SESSION['customer_name'] ?? '';
+require_once __DIR__ . '/../admin/db/web_settings.php';
 
 include 'includes/connection.php'; 
 

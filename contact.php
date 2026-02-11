@@ -646,8 +646,9 @@ if (isset($conn)) {
                         </div>
                         <div class="detail-content">
                             <h4>Call us anytime</h4>
-                            <p>+91 8810380146</p>
-                            <a href="tel:+918810380146"><i class="fas fa-phone-alt me-1"></i>Call now</a>
+<p><?php echo htmlspecialchars($webSettings['site_phone']); ?></p>
+<a href="tel:<?php echo htmlspecialchars($webSettings['site_phone']); ?>">
+<i class="fas fa-phone-alt me-1"></i>Call now</a>
                         </div>
                     </div>
 
@@ -655,10 +656,12 @@ if (isset($conn)) {
                         <div class="detail-icon">
                             <i class="fas fa-envelope"></i>
                         </div>
+
                         <div class="detail-content">
                             <h4>Email us</h4>
-                            <p>contact@taxesquire.in</p>
-                            <a href="mailto:contact@taxesquire.in"><i class="fas fa-envelope me-1"></i>Send email</a>
+<p><?php echo htmlspecialchars($webSettings['site_email']); ?></p>
+<a href="mailto:<?php echo htmlspecialchars($webSettings['site_email']); ?>">
+
                         </div>
                     </div>
 
@@ -668,10 +671,10 @@ if (isset($conn)) {
                         </div>
                         <div class="detail-content">
                             <h4>Visit our office</h4>
-                            <p>
-                                Kasana Tower, 712-A, Alpha-1 Commercial Belt,<br>
-                                Block A, Alpha 1, Greater Noida, Uttar Pradesh 201310
-                            </p>
+                          <p>
+    <?php echo nl2br(htmlspecialchars($webSettings['site_address'])); ?>
+</p>
+
                             <a href="https://maps.google.com/?q=Kasana+Tower+Greater+Noida" target="_blank">
                                 <i class="fas fa-map me-1"></i>View on map
                             </a>

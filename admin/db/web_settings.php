@@ -1,0 +1,19 @@
+<?php
+// Make sure connection exists
+if (!isset($conn)) {
+    require_once __DIR__ . '/../../includes/connection.php';
+}
+
+$webSettings = [
+    'site_phone'   => '',
+    'site_email'   => '',
+    'site_address' => '',
+    'hr_email' => ''
+];
+
+$result = mysqli_query($conn, "SELECT * FROM web_settings LIMIT 1");
+
+if ($result && mysqli_num_rows($result) > 0) {
+    $webSettings = mysqli_fetch_assoc($result);
+}
+?>
