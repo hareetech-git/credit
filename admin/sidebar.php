@@ -11,12 +11,18 @@ $customer_active = in_array($current_page, [
     'customer_view.php'
 ]);
 
+// ... existing code ...
 $loan_active = in_array($current_page, [
     'loan_applications.php', 
     'loan_view.php',
     'manual_loan_assign.php',
     'rejected_loans.php'
 ]);
+
+// NEW: Add category filter detection
+$loan_category_filter = isset($_GET['category_id']) && $_GET['category_id'] == 2;
+$short_term_loan_active = ($current_page == 'loan_applications.php' && $loan_category_filter);
+// ... existing code ...
 
 $cat_active      = in_array($current_page, ['category_add.php', 'category.php']);
 $subcat_active   = in_array($current_page, ['subcategory_add.php', 'subcategory.php']);
@@ -200,6 +206,10 @@ $dsa_active = in_array($current_page, [
                 </a>
                 <ul class="side-nav-second-level">
                     <li><a href="loan_applications.php" class="side-nav-link"><i class="fas fa-file-invoice-dollar"></i> All Applications</a></li>
+                    <li><a href="loan_applications.php?category_id=2" class="side-nav-link <?= $short_term_loan_active ? 'active' : '' ?>">
+            <i class="fas fa-clock"></i> Short Term / PayDay Loan
+        </a></li>
+
                     <li><a href="manual_loan_assign.php" class="side-nav-link"><i class="fas fa-user-check"></i> Manual Assign</a></li>
                     <li><a href="loan_applications.php?status=rejected" class="side-nav-link"><i class="fas fa-ban"></i> Rejected Apps</a></li>
                 </ul>

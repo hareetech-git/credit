@@ -11,6 +11,8 @@ include 'sidebar.php';
 $search = mysqli_real_escape_string($conn, $_GET['search'] ?? '');
 $status = mysqli_real_escape_string($conn, $_GET['status'] ?? '');
 $staff  = mysqli_real_escape_string($conn, $_GET['staff'] ?? '');
+// NEW: Add category filter
+$category_id = isset($_GET['category_id']) ? (int)$_GET['category_id'] : 0;
 
 // Sorting Logic
 $sort_column = $_GET['sort'] ?? 'l.id'; 
@@ -62,6 +64,10 @@ if ($status != '') {
 if ($staff != '') {
     $query .= " AND l.assigned_staff_id = '$staff'";
 }
+// NEW: Add category filter
+if ($category_id > 0) {
+    $query .= " AND s.category_id = $category_id";
+}
 
 $query .= " ORDER BY $sort_column $sort_order";
 $result = mysqli_query($conn, $query);
@@ -69,80 +75,34 @@ $result = mysqli_query($conn, $query);
 // Serial Number Counter
 $sr_no = 1;
 
-// Helper function for sort links
-function getSortUrl($col, $next_order, $search, $status, $staff) {
-    return "loan_applications.php?sort=$col&order=$next_order&search=" . urlencode($search) . "&status=" . urlencode($status) . "&staff=" . urlencode($staff);
+// Helper function for sort links - MODIFIED to include category_id
+function getSortUrl($col, $next_order, $search, $status, $staff, $category_id) {
+    $params = [
+        'sort' => $col,
+        'order' => $next_order,
+        'search' => $search,
+        'status' => $status,
+        'staff' => $staff
+    ];
+    // Only add category_id if it exists
+    if ($category_id > 0) {
+        $params['category_id'] = $category_id;
+    }
+    return "loan_applications.php?" . http_build_query($params);
 }
 ?>
 
 <style>
-    :root {
-        --slate-900: #0f172a;
-        --slate-600: #475569;
-        --slate-200: #e2e8f0;
-        --blue-500: #3b82f6;
-    }
-    .content-page { background-color: #fcfcfd; }
+    /* ... (keep all your existing styles) ... */
     
-    .card-modern {
-        border: 1px solid var(--slate-200);
-        border-radius: 12px;
-        background: #ffffff;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.02);
-        overflow: hidden;
-    }
-
-    /* Table Styling */
-    .table-modern thead th {
-        background: #f8fafc;
-        text-transform: uppercase;
-        font-size: 0.72rem;
-        font-weight: 700;
-        letter-spacing: 0.05em;
-        color: var(--slate-600);
-        padding: 16px 20px;
-        border: none;
-    }
-
-    .sort-link { color: var(--slate-600); text-decoration: none; display: flex; align-items: center; gap: 5px; }
-    .sort-link:hover { color: var(--slate-900); }
-    
-    .table-modern tbody td {
-        padding: 16px 20px;
-        font-size: 0.88rem;
-        color: var(--slate-900);
-        border-bottom: 1px solid var(--slate-200);
-        vertical-align: middle;
-    }
-
-    /* Status Badges */
-    .badge-soft {
-        padding: 5px 12px; border-radius: 6px; font-weight: 700; font-size: 0.7rem;
-        text-transform: uppercase; border: 1px solid transparent;
-    }
-    .badge-pending { background: #fffbeb; color: #92400e; border-color: #fef3c7; }
-    .badge-approved { background: #f0fdf4; color: #16a34a; border-color: #dcfce7; }
-    .badge-rejected { background: #fef2f2; color: #dc2626; border-color: #fee2e2; }
-    .badge-disbursed { background: #eff6ff; color: #1d4ed8; border-color: #dbeafe; }
-
-    /* Action Buttons */
-    .btn-action {
-        width: 32px; height: 32px;
-        display: inline-flex; align-items: center; justify-content: center;
-        border-radius: 8px; border: 1px solid var(--slate-200);
-        background: white; color: var(--slate-600);
-        transition: all 0.2s; text-decoration: none;
-    }
-    .btn-view:hover { background: var(--blue-500); color: white; border-color: var(--blue-500); }
-    .btn-delete:hover { background: #ef4444; color: white; border-color: #ef4444; }
-
-    .avatar-init {
-        width: 35px; height: 35px;
-        background: var(--slate-200);
-        color: var(--slate-900);
-        border-radius: 8px;
-        display: flex; align-items: center; justify-content: center;
-        font-weight: 700; font-size: 0.8rem;
+    /* NEW: Add a style to show active filter indicator */
+    .active-filter-badge {
+        background: var(--blue-500);
+        color: white;
+        padding: 2px 10px;
+        border-radius: 4px;
+        font-size: 0.7rem;
+        margin-left: 10px;
     }
 </style>
 
@@ -152,8 +112,19 @@ function getSortUrl($col, $next_order, $search, $status, $staff) {
 
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <div>
-                    <h2 class="fw-bold text-dark mb-1">Loan Applications</h2>
-                    <p class="text-muted small mb-0">Review and process incoming loan requests.</p>
+                    <h2 class="fw-bold text-dark mb-1">
+                        Loan Applications
+                        <?php if ($category_id == 2): ?>
+                            <span class="active-filter-badge">Short Term / PayDay Loan</span>
+                        <?php endif; ?>
+                    </h2>
+                    <p class="text-muted small mb-0">
+                        <?php if ($category_id == 2): ?>
+                            Showing only Short Term / PayDay Loan applications
+                        <?php else: ?>
+                            Review and process incoming loan requests.
+                        <?php endif; ?>
+                    </p>
                 </div>
             </div>
 
@@ -195,8 +166,16 @@ function getSortUrl($col, $next_order, $search, $status, $staff) {
                             </select>
                         </div>
                         <div class="col-md-4 d-flex gap-2">
+                            <?php if ($category_id > 0): ?>
+                                <!-- Preserve category_id when applying filters -->
+                                <input type="hidden" name="category_id" value="<?= $category_id ?>">
+                            <?php endif; ?>
                             <button class="btn btn-sm btn-dark w-100 shadow-sm"><i class="fas fa-filter me-1"></i> Apply Filters</button>
-                            <a href="loan_applications.php" class="btn btn-sm btn-outline-secondary w-50">Reset</a>
+                            <?php if ($category_id == 2): ?>
+                                <a href="loan_applications.php?category_id=2" class="btn btn-sm btn-outline-secondary w-50">Reset</a>
+                            <?php else: ?>
+                                <a href="loan_applications.php" class="btn btn-sm btn-outline-secondary w-50">Reset</a>
+                            <?php endif; ?>
                         </div>
                     </form>
                 </div>
@@ -210,13 +189,13 @@ function getSortUrl($col, $next_order, $search, $status, $staff) {
                                 <tr>
                                     <th width="70">Sr.</th>
                                     <th>
-                                        <a href="<?= getSortUrl('full_name', $next_order, $search, $status, $staff) ?>" class="sort-link">
+                                        <a href="<?= getSortUrl('full_name', $next_order, $search, $status, $staff, $category_id) ?>" class="sort-link">
                                             Customer <?= $sort_column == 'full_name' ? ($sort_order == 'ASC' ? '↑' : '↓') : '' ?>
                                         </a>
                                     </th>
                                     <th>Service</th>
                                     <th>
-                                        <a href="<?= getSortUrl('requested_amount', $next_order, $search, $status, $staff) ?>" class="sort-link">
+                                        <a href="<?= getSortUrl('requested_amount', $next_order, $search, $status, $staff, $category_id) ?>" class="sort-link">
                                             Amount <?= $sort_column == 'requested_amount' ? ($sort_order == 'ASC' ? '↑' : '↓') : '' ?>
                                         </a>
                                     </th>
@@ -288,7 +267,11 @@ function getSortUrl($col, $next_order, $search, $status, $staff) {
                                     <tr>
                                         <td colspan="8" class="text-center py-5 text-muted">
                                             <i class="fas fa-file-invoice-dollar fa-3x mb-3 text-light"></i>
-                                            <p>No loan applications found.</p>
+                                            <?php if ($category_id == 2): ?>
+                                                <p>No Short Term / PayDay Loan applications found.</p>
+                                            <?php else: ?>
+                                                <p>No loan applications found.</p>
+                                            <?php endif; ?>
                                         </td>
                                     </tr>
                                 <?php endif; ?>
