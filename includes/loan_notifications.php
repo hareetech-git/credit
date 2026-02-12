@@ -2,6 +2,7 @@
 require_once __DIR__ . '/mailer.php';
 require_once __DIR__ . '/loan_email_template.php';
 require_once __DIR__ . '/format_helpers.php';
+require_once __DIR__ . '/app_env.php';
 
 function loanGetApplicationPayload(mysqli $conn, int $loan_id): ?array {
     $sql = "SELECT l.id, l.requested_amount, l.status, l.rejection_note, l.tenure_years, l.interest_rate, l.created_at,
@@ -112,7 +113,7 @@ function loanNotifyCustomerDecision(mysqli $conn, int $loan_id, string $status, 
                     <div style="font-size:14px;font-weight:700;color:#1e3a8a;margin-bottom:6px;">Login Credentials</div>
                     <div style="font-size:13px;color:#0f172a;"><strong>Email:</strong> ' . htmlspecialchars($loan['email']) . '</div>
                     <div style="font-size:13px;color:#0f172a;"><strong>Password:</strong> ' . htmlspecialchars($plainPassword) . '</div>
-                    <div style="font-size:13px;margin-top:8px;"><a href="http://localhost/credit/login.php">Login to your account</a></div>
+                    <div style="font-size:13px;margin-top:8px;"><a href="' . htmlspecialchars(uc_base_url('/login.php')) . '">Login to your account</a></div>
                 </div>
             ';
         }

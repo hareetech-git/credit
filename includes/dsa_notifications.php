@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/mailer.php';
 require_once __DIR__ . '/loan_email_template.php';
+require_once __DIR__ . '/app_env.php';
 
 function dsaGetRequestPayload(mysqli $conn, int $request_id): ?array {
     $sql = "SELECT r.*, c.full_name AS customer_name, c.email AS customer_email, c.phone AS customer_phone
@@ -45,7 +46,7 @@ function dsaNotifyAdminsOnNewRequest(mysqli $conn, int $request_id): void {
             'Firm Name' => (string)($request['firm_name'] ?? '-'),
             'Submitted At' => (string)$request['created_at'],
         ],
-        '<p style="margin:12px 0 0 0;"><a href="http://localhost/credit/admin/dsa_requests.php">Review request in admin panel</a></p>'
+        '<p style="margin:12px 0 0 0;"><a href="' . htmlspecialchars(uc_base_url('/admin/dsa_requests.php')) . '">Review request in admin panel</a></p>'
     );
 
     foreach ($admins as $admin) {
@@ -84,7 +85,7 @@ function dsaNotifyApplicantDecision(mysqli $conn, int $request_id, string $statu
                     <div style="font-size:14px;font-weight:700;color:#1e3a8a;margin-bottom:6px;">Your DSA Login Credentials</div>
                     <div style="font-size:13px;color:#0f172a;"><strong>Login Email:</strong> ' . htmlspecialchars($dsaEmail) . '</div>
                     <div style="font-size:13px;color:#0f172a;"><strong>Password:</strong> ' . htmlspecialchars($plainPassword) . '</div>
-                    <div style="font-size:13px;margin-top:8px;"><a href="http://localhost/credit/dsa/index.php">Login to DSA Portal</a></div>
+                    <div style="font-size:13px;margin-top:8px;"><a href="' . htmlspecialchars(uc_base_url('/dsa/index.php')) . '">Login to DSA Portal</a></div>
                 </div>
             ';
         }
@@ -116,5 +117,35 @@ function dsaNotifyApplicantDecision(mysqli $conn, int $request_id, string $statu
         );
         sendEnquiryEmail($toEmail, $toName, $subject, $body);
     }
+}
+
+function dsaNotifyCreatedByAdmin(string $toEmail, string $toName, string $plainPassword): bool {
+    $toEmail = trim($toEmail);
+    $toName = trim($toName);
+    $plainPassword = trim($plainPassword);
+
+    if ($toEmail === '' || $plainPassword === '') {
+        return false;
+    }
+
+    $subject = 'Your DSA Account Has Been Created';
+    $body = renderLoanEmailTemplate(
+        'DSA Account Created',
+        'Hi ' . ($toName !== '' ? $toName : 'DSA Partner') . ', your DSA account has been created by admin.',
+        [
+            'Account Status' => 'Active',
+            'Login Email' => $toEmail,
+        ],
+        '
+            <div style="margin-top:14px;padding:14px;border:1px solid #dbeafe;background:#eff6ff;border-radius:10px;">
+                <div style="font-size:14px;font-weight:700;color:#1e3a8a;margin-bottom:6px;">Your DSA Login Credentials</div>
+                <div style="font-size:13px;color:#0f172a;"><strong>Email:</strong> ' . htmlspecialchars($toEmail) . '</div>
+                <div style="font-size:13px;color:#0f172a;"><strong>Password:</strong> ' . htmlspecialchars($plainPassword) . '</div>
+                <div style="font-size:13px;margin-top:8px;"><a href="' . htmlspecialchars(uc_base_url('/dsa/index.php')) . '">Login to DSA Portal</a></div>
+            </div>
+        '
+    );
+
+    return sendEnquiryEmail($toEmail, ($toName !== '' ? $toName : 'DSA Partner'), $subject, $body);
 }
 ?>
