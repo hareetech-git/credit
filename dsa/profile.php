@@ -105,7 +105,7 @@ if ($data) {
                         <div class="card-body p-4">
                             <div class="mb-3">
                                 <label class="form-label">Full Name</label>
-                                <input type="text" class="form-control readonly-field" value="<?= htmlspecialchars($data['name']) ?>" readonly>
+                                <input type="text" name="name" class="form-control" value="<?= htmlspecialchars($data['name']) ?>" required>
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Email (Not Editable)</label>
@@ -113,7 +113,7 @@ if ($data) {
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Phone</label>
-                                <input type="text" class="form-control readonly-field" value="<?= htmlspecialchars($data['phone']) ?>" readonly>
+                                <input type="text" name="phone" class="form-control" value="<?= htmlspecialchars($data['phone']) ?>" maxlength="10" pattern="[6-9]{1}[0-9]{9}" title="Enter valid 10-digit mobile number starting with 6-9" required>
                             </div>
                             <div>
                                 <label class="form-label">Firm Name</label>
@@ -132,19 +132,19 @@ if ($data) {
                             <div class="row g-3">
                                 <div class="col-md-6">
                                     <label class="form-label">PAN Number</label>
-                                    <input type="text" name="pan_number" class="form-control" maxlength="10" pattern="[A-Z]{5}[0-9]{4}[A-Z]{1}" style="text-transform: uppercase;" value="<?= htmlspecialchars($data['pan_number'] ?? '') ?>" required>
+                                    <input type="text" class="form-control readonly-field" maxlength="10" style="text-transform: uppercase;" value="<?= htmlspecialchars($data['pan_number'] ?? '') ?>" readonly>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label">Pin Code</label>
-                                    <input type="text" name="pin_code" class="form-control" maxlength="10" value="<?= htmlspecialchars($data['pin_code'] ?? '') ?>" required>
+                                    <input type="text" class="form-control readonly-field" maxlength="10" value="<?= htmlspecialchars($data['pin_code'] ?? '') ?>" readonly>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label">City</label>
-                                    <input type="text" name="city" class="form-control" value="<?= htmlspecialchars($data['city'] ?? '') ?>" required>
+                                    <input type="text" class="form-control readonly-field" value="<?= htmlspecialchars($data['city'] ?? '') ?>" readonly>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label">State</label>
-                                    <input type="text" name="state" class="form-control" value="<?= htmlspecialchars($data['state'] ?? '') ?>" required>
+                                    <input type="text" class="form-control readonly-field" value="<?= htmlspecialchars($data['state'] ?? '') ?>" readonly>
                                 </div>
                             </div>
                         </div>
@@ -158,15 +158,15 @@ if ($data) {
                             <div class="row g-3">
                                 <div class="col-md-6">
                                     <label class="form-label">Bank Name</label>
-                                    <input type="text" name="bank_name" class="form-control" value="<?= htmlspecialchars($data['bank_name'] ?? '') ?>" required>
+                                    <input type="text" class="form-control readonly-field" value="<?= htmlspecialchars($data['bank_name'] ?? '') ?>" readonly>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label">IFSC Code</label>
-                                    <input type="text" name="ifsc_code" class="form-control" maxlength="20" style="text-transform: uppercase;" value="<?= htmlspecialchars($data['ifsc_code'] ?? '') ?>" required>
+                                    <input type="text" class="form-control readonly-field" maxlength="20" style="text-transform: uppercase;" value="<?= htmlspecialchars($data['ifsc_code'] ?? '') ?>" readonly>
                                 </div>
                                 <div class="col-12">
                                     <label class="form-label">Account Number</label>
-                                    <input type="text" name="account_number" class="form-control" value="<?= htmlspecialchars($data['account_number'] ?? '') ?>" required>
+                                    <input type="text" class="form-control readonly-field" value="<?= htmlspecialchars($data['account_number'] ?? '') ?>" readonly>
                                 </div>
                             </div>
                         </div>

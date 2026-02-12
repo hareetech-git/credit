@@ -22,62 +22,56 @@ if ($permTbl && mysqli_num_rows($permTbl) > 0 && $userPermTbl && mysqli_num_rows
     }
 }
 
+$name_raw = trim((string)($_POST['name'] ?? ''));
+$phone_raw = trim((string)($_POST['phone'] ?? ''));
 $firm_name_raw = trim((string)($_POST['firm_name'] ?? ''));
-$pan_plain = strtoupper(trim((string)($_POST['pan_number'] ?? '')));
-$city_raw = trim((string)($_POST['city'] ?? ''));
-$state_raw = trim((string)($_POST['state'] ?? ''));
-$pin_code_raw = trim((string)($_POST['pin_code'] ?? ''));
-$bank_name_raw = trim((string)($_POST['bank_name'] ?? ''));
-$account_plain = trim((string)($_POST['account_number'] ?? ''));
-$ifsc_raw = strtoupper(trim((string)($_POST['ifsc_code'] ?? '')));
 
-if ($firm_name_raw === '' || $pan_plain === '' || $city_raw === '' || $state_raw === '' || $pin_code_raw === '' || $bank_name_raw === '' || $account_plain === '' || $ifsc_raw === '') {
-    header('Location: ../profile.php?err=Please fill all required fields');
+if ($name_raw === '' || $phone_raw === '' || $firm_name_raw === '') {
+    header('Location: ../profile.php?err=Name, phone and firm name are required');
     exit;
 }
 
-if (!preg_match('/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/', $pan_plain)) {
-    header('Location: ../profile.php?err=Enter valid PAN number');
+$phone_digits = preg_replace('/\D+/', '', $phone_raw);
+if (!preg_match('/^[6-9][0-9]{9}$/', $phone_digits)) {
+    header('Location: ../profile.php?err=Enter valid 10-digit mobile number');
     exit;
 }
 
-if (!preg_match('/^[A-Z]{4}0[A-Z0-9]{6}$/', $ifsc_raw)) {
-    header('Location: ../profile.php?err=Enter valid IFSC code');
-    exit;
-}
-
-$pin_digits = preg_replace('/\D+/', '', $pin_code_raw);
-if (strlen($pin_digits) < 6 || strlen($pin_digits) > 10) {
-    header('Location: ../profile.php?err=Enter valid pin code');
-    exit;
-}
-
-$account_digits = preg_replace('/\D+/', '', $account_plain);
-if (strlen($account_digits) < 6 || strlen($account_digits) > 20) {
-    header('Location: ../profile.php?err=Enter valid account number');
-    exit;
-}
-
+$name = mysqli_real_escape_string($conn, $name_raw);
+$phone = mysqli_real_escape_string($conn, $phone_digits);
 $firm_name = mysqli_real_escape_string($conn, $firm_name_raw);
-$pan_number = mysqli_real_escape_string($conn, uc_encrypt_sensitive($pan_plain));
-$city = mysqli_real_escape_string($conn, $city_raw);
-$state = mysqli_real_escape_string($conn, $state_raw);
-$pin_code = mysqli_real_escape_string($conn, $pin_code_raw);
-$bank_name = mysqli_real_escape_string($conn, $bank_name_raw);
-$account_number = mysqli_real_escape_string($conn, uc_encrypt_sensitive($account_plain));
-$ifsc_code = mysqli_real_escape_string($conn, $ifsc_raw);
 
-$existsRes = mysqli_query($conn, "SELECT id FROM dsa_profiles WHERE dsa_id = $dsa_id LIMIT 1");
-if ($existsRes && mysqli_num_rows($existsRes) > 0) {
-    $sql = "UPDATE dsa_profiles SET firm_name='$firm_name', pan_number='$pan_number', city='$city', state='$state', pin_code='$pin_code', bank_name='$bank_name', account_number='$account_number', ifsc_code='$ifsc_code' WHERE dsa_id=$dsa_id";
-} else {
-    $sql = "INSERT INTO dsa_profiles (dsa_id, firm_name, pan_number, city, state, pin_code, bank_name, account_number, ifsc_code) VALUES ($dsa_id, '$firm_name', '$pan_number', '$city', '$state', '$pin_code', '$bank_name', '$account_number', '$ifsc_code')";
-}
+mysqli_begin_transaction($conn);
 
-if (mysqli_query($conn, $sql)) {
+try {
+    $dupeRes = mysqli_query($conn, "SELECT id FROM dsa WHERE phone = '$phone' AND id != $dsa_id LIMIT 1");
+    if ($dupeRes && mysqli_num_rows($dupeRes) > 0) {
+        throw new Exception('Phone number already used by another DSA account');
+    }
+
+    if (!mysqli_query($conn, "UPDATE dsa SET name='$name', phone='$phone' WHERE id=$dsa_id")) {
+        throw new Exception('Unable to update DSA account');
+    }
+
+    $existsRes = mysqli_query($conn, "SELECT id FROM dsa_profiles WHERE dsa_id = $dsa_id LIMIT 1");
+    if ($existsRes && mysqli_num_rows($existsRes) > 0) {
+        $sql = "UPDATE dsa_profiles SET firm_name='$firm_name' WHERE dsa_id=$dsa_id";
+    } else {
+        $sql = "INSERT INTO dsa_profiles (dsa_id, firm_name) VALUES ($dsa_id, '$firm_name')";
+    }
+
+    if (!mysqli_query($conn, $sql)) {
+        throw new Exception('Unable to update profile');
+    }
+
+    $_SESSION['dsa_name'] = $name_raw;
+
+    mysqli_commit($conn);
     header('Location: ../profile.php?msg=Profile updated successfully');
-} else {
-    header('Location: ../profile.php?err=Unable to update profile');
+    exit;
+} catch (Throwable $e) {
+    mysqli_rollback($conn);
+    header('Location: ../profile.php?err=' . urlencode($e->getMessage()));
+    exit;
 }
-exit;
 ?>
