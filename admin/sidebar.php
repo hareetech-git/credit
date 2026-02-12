@@ -19,9 +19,28 @@ $loan_active = in_array($current_page, [
     'rejected_loans.php'
 ]);
 
-// NEW: Add category filter detection
-$loan_category_filter = isset($_GET['category_id']) && $_GET['category_id'] == 2;
-$short_term_loan_active = ($current_page == 'loan_applications.php' && $loan_category_filter);
+// Loan category filter + dynamic category list for sidebar.
+$active_loan_category_id = 0;
+if (isset($_GET['cat_id'])) {
+    $active_loan_category_id = (int)$_GET['cat_id'];
+} elseif (isset($_GET['category_id'])) {
+    $active_loan_category_id = (int)$_GET['category_id'];
+}
+$loan_categories = [];
+if (isset($conn) && $conn instanceof mysqli) {
+    $loanCatRes = mysqli_query(
+        $conn,
+        "SELECT id, category_name
+         FROM service_categories
+         WHERE active = 1
+         ORDER BY sequence ASC, category_name ASC"
+    );
+    if ($loanCatRes) {
+        while ($catRow = mysqli_fetch_assoc($loanCatRes)) {
+            $loan_categories[] = $catRow;
+        }
+    }
+}
 // ... existing code ...
 
 $cat_active      = in_array($current_page, ['category_add.php', 'category.php']);
@@ -206,9 +225,14 @@ $dsa_active = in_array($current_page, [
                 </a>
                 <ul class="side-nav-second-level">
                     <li><a href="loan_applications.php" class="side-nav-link"><i class="fas fa-file-invoice-dollar"></i> All Applications</a></li>
-                    <li><a href="loan_applications.php?category_id=2" class="side-nav-link <?= $short_term_loan_active ? 'active' : '' ?>">
-            <i class="fas fa-clock"></i> Short Term / PayDay Loan
-        </a></li>
+                    <?php foreach ($loan_categories as $loanCat): ?>
+                        <?php $catId = (int)$loanCat['id']; ?>
+                        <li>
+                            <a href="loan_applications.php?cat_id=<?= $catId ?>" class="side-nav-link <?= ($current_page === 'loan_applications.php' && $active_loan_category_id === $catId) ? 'active' : '' ?>">
+                                <i class="fas fa-angle-right"></i> <?= htmlspecialchars((string)$loanCat['category_name']) ?>
+                            </a>
+                        </li>
+                    <?php endforeach; ?>
 
                     <li><a href="manual_loan_assign.php" class="side-nav-link"><i class="fas fa-user-check"></i> Manual Assign</a></li>
                     <li><a href="loan_applications.php?status=rejected" class="side-nav-link"><i class="fas fa-ban"></i> Rejected Apps</a></li>

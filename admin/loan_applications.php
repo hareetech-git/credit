@@ -11,8 +11,23 @@ include 'sidebar.php';
 $search = mysqli_real_escape_string($conn, $_GET['search'] ?? '');
 $status = mysqli_real_escape_string($conn, $_GET['status'] ?? '');
 $staff  = mysqli_real_escape_string($conn, $_GET['staff'] ?? '');
-// NEW: Add category filter
-$category_id = isset($_GET['category_id']) ? (int)$_GET['category_id'] : 0;
+// Category filter supports both cat_id and legacy category_id.
+$category_id = isset($_GET['cat_id']) ? (int)$_GET['cat_id'] : (isset($_GET['category_id']) ? (int)$_GET['category_id'] : 0);
+$active_category_name = '';
+$category_list = [];
+if ($category_id > 0) {
+    $catNameRes = mysqli_query($conn, "SELECT category_name FROM service_categories WHERE id = $category_id LIMIT 1");
+    if ($catNameRes && mysqli_num_rows($catNameRes) > 0) {
+        $active_category_name = (string)(mysqli_fetch_assoc($catNameRes)['category_name'] ?? '');
+    }
+}
+// Category list for filter dropdown.
+$catListRes = mysqli_query($conn, "SELECT id, category_name FROM service_categories WHERE active = 1 ORDER BY sequence ASC, category_name ASC");
+if ($catListRes) {
+    while ($catRow = mysqli_fetch_assoc($catListRes)) {
+        $category_list[] = $catRow;
+    }
+}
 
 // Sorting Logic
 $sort_column = $_GET['sort'] ?? 'l.id'; 
@@ -75,7 +90,7 @@ $result = mysqli_query($conn, $query);
 // Serial Number Counter
 $sr_no = 1;
 
-// Helper function for sort links - MODIFIED to include category_id
+// Helper function for sort links.
 function getSortUrl($col, $next_order, $search, $status, $staff, $category_id) {
     $params = [
         'sort' => $col,
@@ -84,9 +99,9 @@ function getSortUrl($col, $next_order, $search, $status, $staff, $category_id) {
         'status' => $status,
         'staff' => $staff
     ];
-    // Only add category_id if it exists
+    // Keep category filter in URL.
     if ($category_id > 0) {
-        $params['category_id'] = $category_id;
+        $params['cat_id'] = $category_id;
     }
     return "loan_applications.php?" . http_build_query($params);
 }
@@ -114,13 +129,13 @@ function getSortUrl($col, $next_order, $search, $status, $staff, $category_id) {
                 <div>
                     <h2 class="fw-bold text-dark mb-1">
                         Loan Applications
-                        <?php if ($category_id == 2): ?>
-                            <span class="active-filter-badge">Short Term / PayDay Loan</span>
+                        <?php if ($category_id > 0 && $active_category_name !== ''): ?>
+                            <span class="active-filter-badge"><?= htmlspecialchars($active_category_name) ?></span>
                         <?php endif; ?>
                     </h2>
                     <p class="text-muted small mb-0">
-                        <?php if ($category_id == 2): ?>
-                            Showing only Short Term / PayDay Loan applications
+                        <?php if ($category_id > 0 && $active_category_name !== ''): ?>
+                            Showing only <?= htmlspecialchars($active_category_name) ?> applications
                         <?php else: ?>
                             Review and process incoming loan requests.
                         <?php endif; ?>
@@ -156,7 +171,7 @@ function getSortUrl($col, $next_order, $search, $status, $staff, $category_id) {
                                 <option value="disbursed" <?= $status == 'disbursed' ? 'selected' : '' ?>>Disbursed</option>
                             </select>
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-2">
                             <label class="form-label text-muted small fw-bold uppercase">Assigned Staff</label>
                             <select name="staff" class="form-select form-select-sm">
                                 <option value="">All Staff</option>
@@ -165,14 +180,21 @@ function getSortUrl($col, $next_order, $search, $status, $staff, $category_id) {
                                 <?php endforeach; ?>
                             </select>
                         </div>
-                        <div class="col-md-4 d-flex gap-2">
-                            <?php if ($category_id > 0): ?>
-                                <!-- Preserve category_id when applying filters -->
-                                <input type="hidden" name="category_id" value="<?= $category_id ?>">
-                            <?php endif; ?>
+                        <div class="col-md-2">
+                            <label class="form-label text-muted small fw-bold uppercase">Category</label>
+                            <select name="cat_id" class="form-select form-select-sm">
+                                <option value="">All Categories</option>
+                                <?php foreach ($category_list as $cat): ?>
+                                    <option value="<?= (int)$cat['id'] ?>" <?= ($category_id === (int)$cat['id']) ? 'selected' : '' ?>>
+                                        <?= htmlspecialchars((string)$cat['category_name']) ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <div class="col-md-3 d-flex gap-2">
                             <button class="btn btn-sm btn-dark w-100 shadow-sm"><i class="fas fa-filter me-1"></i> Apply Filters</button>
-                            <?php if ($category_id == 2): ?>
-                                <a href="loan_applications.php?category_id=2" class="btn btn-sm btn-outline-secondary w-50">Reset</a>
+                            <?php if ($category_id > 0): ?>
+                                <a href="loan_applications.php?cat_id=<?= $category_id ?>" class="btn btn-sm btn-outline-secondary w-50">Reset</a>
                             <?php else: ?>
                                 <a href="loan_applications.php" class="btn btn-sm btn-outline-secondary w-50">Reset</a>
                             <?php endif; ?>
@@ -267,8 +289,8 @@ function getSortUrl($col, $next_order, $search, $status, $staff, $category_id) {
                                     <tr>
                                         <td colspan="8" class="text-center py-5 text-muted">
                                             <i class="fas fa-file-invoice-dollar fa-3x mb-3 text-light"></i>
-                                            <?php if ($category_id == 2): ?>
-                                                <p>No Short Term / PayDay Loan applications found.</p>
+                                            <?php if ($category_id > 0 && $active_category_name !== ''): ?>
+                                                <p>No <?= htmlspecialchars($active_category_name) ?> applications found.</p>
                                             <?php else: ?>
                                                 <p>No loan applications found.</p>
                                             <?php endif; ?>
