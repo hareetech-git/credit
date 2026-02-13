@@ -28,6 +28,11 @@ $depts = mysqli_query($conn, "SELECT id, name FROM departments ORDER BY name ASC
         </div>
         <a href="dsa_list.php" class="btn btn-outline-secondary px-4">Back to DSA List</a>
     </div>
+    <?php if (!empty($_GET['err'])): ?>
+        <div class="alert alert-danger border-0 shadow-sm mb-4">
+            <?= htmlspecialchars((string)$_GET['err']) ?>
+        </div>
+    <?php endif; ?>
     <form action="db/insert/dsa_handler.php" method="POST">
         <?php if($isEdit): ?><input type="hidden" name="dsa_id" value="<?= (int)$id ?>"><?php endif; ?>
         <div class="card border p-4">
