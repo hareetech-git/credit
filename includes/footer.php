@@ -254,6 +254,7 @@
             border-radius: 50%;
             background: rgba(255, 255, 255, 0.08);
             position: relative;
+            text-decoration: none;
         }
 
         .social-icon::before {
