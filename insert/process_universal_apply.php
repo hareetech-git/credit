@@ -175,6 +175,7 @@ if ($r1p_norm === $r2p_norm) {
         mysqli_query($conn, "INSERT INTO loan_applications (customer_id, service_id, requested_amount, tenure_years, emi_amount, status$dsa_insert_column) VALUES ($cid, $sid, $amt, 0, 0, 'pending'$dsa_insert_value)");
         $loan_id = mysqli_insert_id($conn);
 
+        $uploaded_docs = [];
         if (!empty($_FILES['loan_docs']['name'])) {
             $allowed_exts = ['pdf', 'jpg', 'jpeg', 'png'];
             $max_size = 5 * 1024 * 1024; // 5 MB
@@ -194,17 +195,50 @@ if ($r1p_norm === $r2p_norm) {
                     $db_path = "uploads/loans/$new_name";
                     $title = str_replace('_', ' ', $key);
                     mysqli_query($conn, "INSERT INTO loan_application_docs (loan_application_id, doc_name, doc_path) VALUES ($loan_id, '$title', '$db_path')");
+                    $uploaded_docs[] = $title;
                 }
             }
         }
+
+        $service_name = 'Loan Service';
+        $service_res = mysqli_query($conn, "SELECT service_name FROM services WHERE id = $sid LIMIT 1");
+        if ($service_res && ($service_row = mysqli_fetch_assoc($service_res)) && !empty($service_row['service_name'])) {
+            $service_name = (string) $service_row['service_name'];
+        }
+
+        $summary_query = mysqli_query($conn, "SELECT c.full_name, c.email, c.phone, cp.employee_type, cp.company_name, cp.monthly_income, cp.state, cp.city, cp.pin_code, cp.reference1_name, cp.reference1_phone, cp.reference2_name, cp.reference2_phone
+            FROM customers c
+            LEFT JOIN customer_profiles cp ON cp.customer_id = c.id
+            WHERE c.id = $cid
+            LIMIT 1");
+        $summary_row = $summary_query ? mysqli_fetch_assoc($summary_query) : [];
+
         mysqli_commit($conn);
         loanNotifyAdminsOnNewApplication($conn, (int) $loan_id);
 
-        if ($is_guest_apply) {
-            header("Location: ../apply-loan.php?msg=" . urlencode("Application submitted successfully. Our team will review and contact you by email."));
-        } else {
-            header("Location: ../customer/dashboard.php?msg=" . urlencode("Application Submitted"));
-        }
+        $_SESSION['loan_submit_success'] = [
+            'loan_id' => (int) $loan_id,
+            'submitted_at' => date('Y-m-d H:i:s'),
+            'status' => 'pending',
+            'service_name' => $service_name,
+            'requested_amount' => (float) $amt,
+            'full_name' => (string) ($summary_row['full_name'] ?? ''),
+            'email' => (string) ($summary_row['email'] ?? ''),
+            'phone' => (string) ($summary_row['phone'] ?? ''),
+            'employee_type' => (string) ($summary_row['employee_type'] ?? ''),
+            'company_name' => (string) ($summary_row['company_name'] ?? ''),
+            'monthly_income' => (string) ($summary_row['monthly_income'] ?? ''),
+            'state' => (string) ($summary_row['state'] ?? ''),
+            'city' => (string) ($summary_row['city'] ?? ''),
+            'pin_code' => (string) ($summary_row['pin_code'] ?? ''),
+            'reference1_name' => (string) ($summary_row['reference1_name'] ?? ''),
+            'reference1_phone' => (string) ($summary_row['reference1_phone'] ?? ''),
+            'reference2_name' => (string) ($summary_row['reference2_name'] ?? ''),
+            'reference2_phone' => (string) ($summary_row['reference2_phone'] ?? ''),
+            'uploaded_docs' => $uploaded_docs
+        ];
+
+        header("Location: ../application-submit.php");
         exit;
     }
 } catch (Exception $e) {
