@@ -100,16 +100,24 @@ try {
         if (trim($r1n) === '' || trim($r2n) === '') {
             throw new Exception("Both reference person names are required.");
         }
-        $r1n_norm = strtolower(preg_replace('/\s+/', ' ', trim((string) ($_POST['reference1_name'] ?? ''))));
-        $r2n_norm = strtolower(preg_replace('/\s+/', ' ', trim((string) ($_POST['reference2_name'] ?? ''))));
-        $r1p_norm = preg_replace('/\D+/', '', (string) ($_POST['reference1_phone'] ?? ''));
-        $r2p_norm = preg_replace('/\D+/', '', (string) ($_POST['reference2_phone'] ?? ''));
-        if ($r1n_norm !== '' && $r1n_norm === $r2n_norm) {
-            throw new Exception("Reference 1 and Reference 2 names must be different.");
-        }
-        if ($r1p_norm !== '' && $r1p_norm === $r2p_norm) {
-            throw new Exception("Reference 1 and Reference 2 phone numbers must be different.");
-        }
+      $r1n = trim($_POST['reference1_name'] ?? '');
+$r2n = trim($_POST['reference2_name'] ?? '');
+
+$r1p_norm = preg_replace('/\D+/', '', $_POST['reference1_phone'] ?? '');
+$r2p_norm = preg_replace('/\D+/', '', $_POST['reference2_phone'] ?? '');
+
+if ($r1n === '' || $r2n === '') {
+    throw new Exception("Both reference person names are required.");
+}
+
+if (!preg_match('/^[6-9][0-9]{9}$/', $r1p_norm) || !preg_match('/^[6-9][0-9]{9}$/', $r2p_norm)) {
+    throw new Exception("Reference mobile numbers must be valid 10-digit numbers starting with 6-9.");
+}
+
+if ($r1p_norm === $r2p_norm) {
+    throw new Exception("Reference 1 and Reference 2 phone numbers must be different.");
+}
+
 
         $profileRes = mysqli_query($conn, "SELECT id FROM customer_profiles WHERE customer_id = $cid LIMIT 1");
         if ($profileRes && mysqli_num_rows($profileRes) > 0) {

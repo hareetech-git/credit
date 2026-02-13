@@ -381,36 +381,28 @@ include 'includes/header.php';
         return valid;
     }
 
-    function validateReferencesDifferent() {
-        const r1n = document.querySelector('input[name="reference1_name"]');
-        const r2n = document.querySelector('input[name="reference2_name"]');
-        const r1p = document.querySelector('input[name="reference1_phone"]');
-        const r2p = document.querySelector('input[name="reference2_phone"]');
-        const dupError = document.getElementById('referenceDupError');
+  function validateReferencesDifferent() {
+    const r1p = document.querySelector('input[name="reference1_phone"]');
+    const r2p = document.querySelector('input[name="reference2_phone"]');
+    const dupError = document.getElementById('referenceDupError');
 
-        if (!r1n || !r2n || !r1p || !r2p) return true;
+    if (!r1p || !r2p) return true;
 
-        const n1 = (r1n.value || '').trim().toLowerCase();
-        const n2 = (r2n.value || '').trim().toLowerCase();
-        const p1 = (r1p.value || '').replace(/\D+/g, '');
-        const p2 = (r2p.value || '').replace(/\D+/g, '');
+    const p1 = (r1p.value || '').replace(/\D+/g, '');
+    const p2 = (r2p.value || '').replace(/\D+/g, '');
 
-        r2n.classList.remove('is-invalid');
-        r2p.classList.remove('is-invalid');
-        if (dupError) dupError.classList.add('d-none');
+    r2p.classList.remove('is-invalid');
+    if (dupError) dupError.classList.add('d-none');
 
-        const sameName = n1 !== '' && n2 !== '' && n1 === n2;
-        const samePhone = p1 !== '' && p2 !== '' && p1 === p2;
-
-        if (sameName || samePhone) {
-            r2n.classList.add('is-invalid');
-            r2p.classList.add('is-invalid');
-            if (dupError) dupError.classList.remove('d-none');
-            return false;
-        }
-
-        return true;
+    // ❗ Only phone number comparison
+    if (p1 !== '' && p2 !== '' && p1 === p2) {
+        r2p.classList.add('is-invalid');
+        if (dupError) dupError.classList.remove('d-none');
+        return false;
     }
+
+    return true;
+}
 
     /**
      * Manages the Submit button state based on checkboxes
