@@ -1453,6 +1453,278 @@ unset($_SESSION['success_message']);
         </div>
     </div>
 </section>
+<!-- Partner Benefits Network Section -->
+<section class="partner-benefits-section py-5">
+    <div class="container py-3">
+        <div class="text-center mb-4">
+            <span class="badge bg-light text-dark px-3 py-2 rounded-pill mb-3">
+                <i class="fas fa-star me-2"></i> Why Choose Us
+            </span>
+            <h2 class="fw-bold text-white mb-2">Built For Growth, Trust, and Speed</h2>
+            <p class="text-white-50 mb-0">A complete ecosystem designed for better performance and better customer outcomes.</p>
+        </div>
+
+        <div class="benefit-network">
+            <div class="network-line"></div>
+
+            <div class="network-item left">
+                <div class="network-node"><i class="fas fa-laptop-medical"></i></div>
+                <div class="network-card">
+                    <h6>Easy On-boarding</h6>
+                    <p>Quick activation and smooth start for every partner.</p>
+                </div>
+            </div>
+
+            <div class="network-item right">
+                <div class="network-node"><i class="fas fa-cubes"></i></div>
+                <div class="network-card">
+                    <h6>Multiple Products</h6>
+                    <p>Wide product basket to match every customer profile.</p>
+                </div>
+            </div>
+
+            <div class="network-item left">
+                <div class="network-node"><i class="fas fa-circle-check"></i></div>
+                <div class="network-card">
+                    <h6>Instant Approvals</h6>
+                    <p>Faster decisioning pipeline for better conversion.</p>
+                </div>
+            </div>
+
+            <div class="network-item right">
+                <div class="network-node"><i class="fas fa-wallet"></i></div>
+                <div class="network-card">
+                    <h6>Prompt Payouts</h6>
+                    <p>Reliable and transparent payout tracking system.</p>
+                </div>
+            </div>
+
+            <div class="network-item left">
+                <div class="network-node"><i class="fas fa-shield-halved"></i></div>
+                <div class="network-card">
+                    <h6>Secure Data</h6>
+                    <p>Strong security and compliance-led data handling.</p>
+                </div>
+            </div>
+
+            <div class="network-item right">
+                <div class="network-node"><i class="fas fa-chart-line"></i></div>
+                <div class="network-card">
+                    <h6>Unified Dashboard</h6>
+                    <p>Single view of leads, status, payouts, and insights.</p>
+                </div>
+            </div>
+
+            <div class="network-item left">
+                <div class="network-node"><i class="fas fa-gem"></i></div>
+                <div class="network-card">
+                    <h6>Rewards &amp; Loyalty</h6>
+                    <p>Growth-linked incentives and lifetime partner value.</p>
+                </div>
+            </div>
+
+            <div class="network-item right">
+                <div class="network-node"><i class="fas fa-headset"></i></div>
+                <div class="network-card">
+                    <h6>Excellent Customer Support</h6>
+                    <p>Dedicated assistance from onboarding to disbursal.</p>
+                </div>
+            </div>
+
+            <div class="network-item left">
+                <div class="network-node"><i class="fas fa-handshake-angle"></i></div>
+                <div class="network-card">
+                    <h6>Training Programs</h6>
+                    <p>Skill-building sessions to improve quality and output.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<style>
+    .partner-benefits-section {
+        position: relative;
+        background:
+            radial-gradient(circle at 15% 20%, rgba(255, 255, 255, 0.14), transparent 32%),
+            radial-gradient(circle at 85% 80%, rgba(255, 255, 255, 0.09), transparent 28%),
+            linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        overflow: hidden;
+    }
+
+    .partner-benefits-section::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background-image:
+            linear-gradient(30deg, rgba(255, 255, 255, 0.08) 12%, transparent 12.5%, transparent 87%, rgba(255, 255, 255, 0.08) 87.5%, rgba(255, 255, 255, 0.08)),
+            linear-gradient(150deg, rgba(255, 255, 255, 0.08) 12%, transparent 12.5%, transparent 87%, rgba(255, 255, 255, 0.08) 87.5%, rgba(255, 255, 255, 0.08)),
+            linear-gradient(90deg, rgba(255, 255, 255, 0.06) 2%, transparent 2.5%, transparent 97%, rgba(255, 255, 255, 0.06) 97.5%, rgba(255, 255, 255, 0.06));
+        background-size: 80px 140px;
+        background-position: 0 0, 0 0, 40px 70px;
+        opacity: 0.3;
+        pointer-events: none;
+    }
+
+    .partner-benefits-section .container {
+        position: relative;
+        z-index: 1;
+    }
+
+    .benefit-network {
+        position: relative;
+        max-width: 980px;
+        margin: 20px auto 0;
+        padding: 10px 0;
+    }
+
+    .network-line {
+        position: absolute;
+        left: 50%;
+        top: 0;
+        bottom: 0;
+        width: 4px;
+        transform: translateX(-50%);
+        background: linear-gradient(180deg, rgba(255,255,255,0.2), rgba(255,255,255,0.72), rgba(255,255,255,0.2));
+        border-radius: 99px;
+    }
+
+    .network-item {
+        position: relative;
+        display: flex;
+        align-items: center;
+        width: 50%;
+        margin: 0 0 12px 0;
+        z-index: 1;
+    }
+
+    .network-item.left {
+        margin-right: auto;
+        justify-content: flex-end;
+        padding-right: 44px;
+    }
+
+    .network-item.right {
+        margin-left: auto;
+        justify-content: flex-start;
+        padding-left: 44px;
+    }
+
+    .network-item.left::after,
+    .network-item.right::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        width: 44px;
+        height: 2px;
+        background: rgba(255, 255, 255, 0.72);
+    }
+
+    .network-item.left::after {
+        right: 0;
+    }
+
+    .network-item.right::after {
+        left: 0;
+    }
+
+    .network-node {
+        width: 62px;
+        height: 62px;
+        border-radius: 50%;
+        background: #ffffff;
+        border: 2px solid rgba(11, 8, 27, 0.2);
+        box-shadow: 0 8px 18px rgba(2, 6, 23, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        z-index: 2;
+    }
+
+    .network-node i {
+        font-size: 1.55rem;
+        color: var(--primary-color);
+    }
+
+    .network-card {
+        background: rgba(255, 255, 255, 0.96);
+        border: 1px solid rgba(11, 8, 27, 0.16);
+        border-radius: 16px;
+        padding: 14px 16px;
+        min-width: 260px;
+        max-width: 350px;
+        box-shadow: 0 10px 22px rgba(2, 6, 23, 0.16);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .network-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 16px 28px rgba(2, 6, 23, 0.22);
+    }
+
+    .network-card h6 {
+        margin: 0;
+        color: #0f172a;
+        font-size: 1rem;
+        font-weight: 700;
+    }
+
+    .network-card p {
+        margin: 6px 0 0;
+        font-size: 0.88rem;
+        color: #475569;
+        line-height: 1.45;
+    }
+
+    @media (max-width: 1199.98px) {
+        .network-card {
+            min-width: 220px;
+        }
+    }
+
+    @media (max-width: 767.98px) {
+        .network-line {
+            left: 20px;
+            transform: none;
+        }
+
+        .network-item,
+        .network-item.left,
+        .network-item.right {
+            width: 100%;
+            margin-left: 0;
+            margin-right: 0;
+            justify-content: flex-start;
+            padding-left: 54px;
+            padding-right: 0;
+        }
+
+        .network-item.left::after,
+        .network-item.right::after {
+            left: 20px;
+            width: 34px;
+        }
+
+        .network-card {
+            min-width: 0;
+            width: 100%;
+            max-width: 100%;
+        }
+
+        .network-node {
+            width: 48px;
+            height: 48px;
+            position: absolute;
+            left: -2px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .network-node i {
+            font-size: 1.2rem;
+        }
+    }
+</style>
 <!-- Brands Section -->
 <section class="py-5" style="background-color: #ffffff;">
     <div class="container">
