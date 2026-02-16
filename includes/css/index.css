@@ -869,15 +869,15 @@
 /* Testimonials Section CSS Start Here */
 .partner-stories-section {
     background:
-        radial-gradient(circle at 12% 20%, rgba(11, 8, 27, 0.06), transparent 35%),
-        radial-gradient(circle at 88% 85%, rgba(11, 8, 27, 0.05), transparent 30%),
-        #efefef;
-    border-top: 1px solid rgba(11, 8, 27, 0.12);
-    border-bottom: 1px solid rgba(11, 8, 27, 0.12);
+        radial-gradient(circle at 12% 20%, rgba(11, 8, 27, 0.12), transparent 36%),
+        radial-gradient(circle at 88% 85%, rgba(16, 11, 44, 0.1), transparent 32%),
+        linear-gradient(135deg, #f6f7fb 0%, #ffffff 50%, #f2f4fb 100%);
+    border-top: 1px solid rgba(11, 8, 27, 0.14);
+    border-bottom: 1px solid rgba(11, 8, 27, 0.14);
 }
 
 .testimonial-section-title {
-    color: #0f172a;
+    color: var(--primary-dark);
     letter-spacing: -0.01em;
 }
 
@@ -918,15 +918,18 @@
 }
 
 .testimonial-row {
-    background: transparent;
+    background: rgba(255, 255, 255, 0.88);
+    border: 1px solid rgba(11, 8, 27, 0.1);
+    border-radius: 16px;
+    box-shadow: 0 18px 34px rgba(11, 8, 27, 0.1);
+    overflow: hidden;
 }
 
 .testimonial-image-wrapper {
     height: 320px;
     overflow: hidden;
     background: #d1d5db;
-    border-radius: 4px;
-    margin-right: 24px;
+    margin-right: 0;
 }
 
 .testimonial-image {
@@ -948,7 +951,8 @@
     min-height: 320px;
     display: flex;
     align-items: center;
-    padding: 6px 6px 6px 26px !important;
+    background: linear-gradient(180deg, rgba(11, 8, 27, 0.02) 0%, rgba(11, 8, 27, 0.06) 100%);
+    padding: 18px 20px 18px 28px !important;
 }
 
 .testimonial-text {
