@@ -1442,7 +1442,7 @@ unset($_SESSION['success_message']);
         </div>
         
         <?php
-        // Fetch brands from database
+        // Fetch all brands from database (no limit in query)
         $brands_query = "SELECT id, brand_name, brand_img FROM brands WHERE active = 1 ORDER BY id DESC";
         $brands_result = mysqli_query($conn, $brands_query);
         $all_brands = [];
@@ -1452,10 +1452,21 @@ unset($_SESSION['success_message']);
             }
         }
         
-        // Get first 8 brands for display (4 per row × 2 rows = 8)
-        $display_brands = array_slice($all_brands, 0, 8);
-        $remaining_brands = array_slice($all_brands, 8);
-        $has_more = count($all_brands) > 8;
+        // UI LIMIT: Only show first 16 brands maximum on the frontend
+        $total_brands = count($all_brands);
+        $ui_limit = 16;
+        
+        // Get first 8 brands for display (or less if total is less)
+        $display_count = min(8, $total_brands);
+        $display_brands = array_slice($all_brands, 0, $display_count);
+        
+        // Remaining brands (up to 8 more, but not exceeding UI limit of 16)
+        $remaining_brands = array_slice($all_brands, 8, 8); // Show next 8 only (total max 16)
+        $has_more = count($remaining_brands) > 0 && $total_brands > 8;
+        
+        // Check if we've reached the UI limit
+        $total_displayed = count($display_brands) + count($remaining_brands);
+        $reached_limit = $total_displayed >= $ui_limit;
         ?>
         
         <!-- Brands Grid - First 8 (4 per row) -->
@@ -1485,8 +1496,8 @@ unset($_SESSION['success_message']);
             <?php endif; ?>
         </div>
         
-        <!-- Remaining Brands (Hidden initially) -->
-        <?php if ($has_more): ?>
+        <!-- Remaining Brands (Hidden initially) - Only show if within UI limit -->
+        <?php if ($has_more && !$reached_limit): ?>
             <div class="row g-4 justify-content-center mt-2" id="moreBrands" style="display: none;">
                 <?php foreach ($remaining_brands as $brand): ?>
                     <div class="col-lg-3 col-md-4 col-6">
@@ -1504,6 +1515,12 @@ unset($_SESSION['success_message']);
                         </div>
                     </div>
                 <?php endforeach; ?>
+                
+                <?php if ($total_displayed >= $ui_limit): ?>
+                    <div class="col-12 text-center text-muted mt-3">
+                        <small><i class="fas fa-info-circle me-1"></i> Showing <?= $ui_limit ?> of <?= $total_brands ?> brands</small>
+                    </div>
+                <?php endif; ?>
             </div>
             
             <!-- View All Button -->
@@ -1511,6 +1528,10 @@ unset($_SESSION['success_message']);
                 <button class="btn btn-outline-primary rounded-pill px-4" onclick="toggleBrands()">
                     <span id="btnText">VIEW ALL</span> <i class="fas fa-chevron-down ms-2" id="btnIcon"></i>
                 </button>
+            </div>
+        <?php elseif ($total_brands > 16): ?>
+            <div class="text-center text-muted mt-4">
+                <small><i class="fas fa-info-circle me-1"></i> Showing 16 of <?= $total_brands ?> brands</small>
             </div>
         <?php endif; ?>
     </div>
@@ -1582,10 +1603,6 @@ document.addEventListener('DOMContentLoaded', function() {
     if (moreBrands) {
         moreBrands.style.display = 'none';
     }
-    
-    // Log for debugging
-    console.log('Brands section initialized');
-    console.log('More brands exists:', !!moreBrands);
 });
 </script>
 <!-- FAQ Section -->
