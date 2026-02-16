@@ -7,6 +7,32 @@ $testimonials = mysqli_query($conn, "SELECT * FROM testimonials ORDER BY id DESC
 
 $success_message = isset($_SESSION['success_message']) ? $_SESSION['success_message'] : '';
 unset($_SESSION['success_message']);
+
+if (!function_exists('resolveAdminTestimonialImage')) {
+    function resolveAdminTestimonialImage(string $storedPath): string
+    {
+        $path = trim($storedPath);
+        if ($path === '') {
+            return '';
+        }
+        if (preg_match('/^https?:\/\//i', $path)) {
+            return $path;
+        }
+
+        $path = ltrim($path, '/');
+
+        if (strpos($path, 'admin/') === 0) {
+            return substr($path, 6);
+        }
+        if (strpos($path, 'assets/') === 0) {
+            return $path;
+        }
+        if (strpos($path, 'uploads/') === 0) {
+            return '../' . $path;
+        }
+        return 'assets/testimonials/' . $path;
+    }
+}
 ?>
 
 <?php include 'header.php'; ?>
@@ -124,14 +150,11 @@ unset($_SESSION['success_message']);
                                         <?php if (mysqli_num_rows($testimonials) > 0): ?>
                                             <?php while ($testimonial = mysqli_fetch_assoc($testimonials)): ?>
                                                 <tr>
-                                                    <td>#<?= $testimonial['id'] ?></td>
+                                                   <td>#<?= $testimonial['id'] ?></td>
                                                    <td>
     <?php if (!empty($testimonial['partner_img'])): ?>
         <?php 
-        // Check if path already has 'admin/' prefix
-        $img_path = (strpos($testimonial['partner_img'], 'admin/') === 0) 
-            ? '../' . $testimonial['partner_img'] 
-            : '../' . $testimonial['partner_img'];
+        $img_path = resolveAdminTestimonialImage((string) $testimonial['partner_img']);
         ?>
         <img src="<?= htmlspecialchars($img_path) ?>" 
              alt="<?= htmlspecialchars($testimonial['partner_name']) ?>"

@@ -938,15 +938,12 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
     </div>
 </section>
-<!-- Testimonials Section with Image Left and Text Right -->
-<section class="py-5" style="background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);">
+<!-- Testimonials Section -->
+<section class="py-5 partner-stories-section">
     <div class="container">
         <div class="text-center mb-5">
-            <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill mb-3">
-                <i class="fas fa-star me-2"></i> Partner Stories
-            </span>
-            <h2 class="fw-bold mb-3">Highest Standards. Happiest Partners</h2>
-            <p class="text-muted">Our partners are our strength</p>
+            <h2 class="fw-bold mb-2 testimonial-section-title">Highest Standards. Happiest Partners</h2>
+            <p class="testimonial-section-subtitle">Our partners are our strength</p>
         </div>
         
         <?php
@@ -959,20 +956,45 @@ document.addEventListener('DOMContentLoaded', function() {
                 $testimonials[] = $row;
             }
         }
+
+        if (!function_exists('resolveFrontendTestimonialImage')) {
+            function resolveFrontendTestimonialImage(string $storedPath): string
+            {
+                $path = trim($storedPath);
+                if ($path === '') {
+                    return '';
+                }
+                if (preg_match('/^https?:\/\//i', $path)) {
+                    return $path;
+                }
+
+                $path = ltrim($path, '/');
+
+                if (strpos($path, 'admin/') === 0) {
+                    return $path;
+                }
+                if (strpos($path, 'assets/') === 0) {
+                    return 'admin/' . $path;
+                }
+                if (strpos($path, 'uploads/') === 0) {
+                    return $path;
+                }
+                return 'admin/assets/testimonials/' . $path;
+            }
+        }
         ?>
         
         <?php if (!empty($testimonials)): ?>
-            <div class="testimonial-slider-container position-relative">
-                <!-- Main Testimonial Display -->
-                <div class="testimonial-display" id="testimonialDisplay">
+            <div class="testimonial-slider-container" id="testimonialSlider">
+                <div class="testimonial-display">
                     <?php foreach ($testimonials as $index => $testimonial): ?>
+                        <?php $imgSrc = resolveFrontendTestimonialImage((string) ($testimonial['partner_img'] ?? '')); ?>
                         <div class="testimonial-slide <?= $index === 0 ? 'active' : '' ?>" data-index="<?= $index ?>">
-                            <div class="row g-0 align-items-center testimonial-row">
-                                <!-- Image Side - Left -->
-                                <div class="col-md-5">
+                            <div class="row g-0 align-items-stretch testimonial-row">
+                                <div class="col-lg-6">
                                     <div class="testimonial-image-wrapper">
-                                        <?php if (!empty($testimonial['partner_img'])): ?>
-                                            <img src="admin/<?= htmlspecialchars($testimonial['partner_img']) ?>" 
+                                        <?php if ($imgSrc !== ''): ?>
+                                            <img src="<?= htmlspecialchars($imgSrc) ?>" 
                                                  alt="<?= htmlspecialchars($testimonial['partner_name']) ?>"
                                                  class="img-fluid testimonial-image"
                                                  onerror="this.onerror=null; this.src='https://via.placeholder.com/400x400?text=Partner';">
@@ -984,19 +1006,27 @@ document.addEventListener('DOMContentLoaded', function() {
                                     </div>
                                 </div>
                                 
-                                <!-- Text Side - Right -->
-                                <div class="col-md-7">
-                                    <div class="testimonial-content-wrapper p-4">
+                                <div class="col-lg-6">
+                                    <div class="testimonial-content-wrapper">
                                         <div class="testimonial-text-container">
-                                            <i class="fas fa-quote-left text-primary mb-3" style="font-size: 2rem; opacity: 0.2;"></i>
-                                            
-                                            <p class="testimonial-text mb-3">
+                                            <p class="testimonial-text">
                                                 "<?= htmlspecialchars($testimonial['testimonial_text']) ?>"
                                             </p>
                                             
-                                            <div class="testimonial-author mt-3">
-                                                <h5 class="fw-bold mb-1"><?= htmlspecialchars($testimonial['partner_name']) ?></h5>
-                                                <p class="text-muted small mb-0"><?= htmlspecialchars($testimonial['designation'] ?: 'Partner') ?></p>
+                                            <div class="testimonial-author-chip mt-4">
+                                                <?php if ($imgSrc !== ''): ?>
+                                                    <img src="<?= htmlspecialchars($imgSrc) ?>" 
+                                                         alt="<?= htmlspecialchars($testimonial['partner_name']) ?>"
+                                                         class="testimonial-author-image"
+                                                         onerror="this.onerror=null; this.src='https://via.placeholder.com/80x80?text=U';">
+                                                <?php else: ?>
+                                                    <span class="testimonial-author-fallback"><i class="fas fa-user"></i></span>
+                                                <?php endif; ?>
+
+                                                <div class="testimonial-author-meta">
+                                                    <h5><?= htmlspecialchars($testimonial['partner_name']) ?></h5>
+                                                    <p><?= htmlspecialchars($testimonial['designation'] ?: 'Partner') ?></p>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -1006,22 +1036,22 @@ document.addEventListener('DOMContentLoaded', function() {
                     <?php endforeach; ?>
                 </div>
                 
-                <!-- Navigation Dots -->
                 <?php if (count($testimonials) > 1): ?>
-                    <div class="testimonial-dots text-center mt-4">
-                        <?php foreach ($testimonials as $index => $testimonial): ?>
-                            <span class="dot <?= $index === 0 ? 'active' : '' ?>" data-index="<?= $index ?>" onclick="currentSlide(<?= $index ?>)"></span>
-                        <?php endforeach; ?>
-                    </div>
-                    
-                    <!-- Navigation Arrows -->
-                    <div class="testimonial-arrows">
-                        <button class="arrow prev" onclick="changeSlide(-1)">
-                            <i class="fas fa-chevron-left"></i>
-                        </button>
-                        <button class="arrow next" onclick="changeSlide(1)">
-                            <i class="fas fa-chevron-right"></i>
-                        </button>
+                    <div class="testimonial-controls">
+                        <div class="testimonial-dots">
+                            <?php foreach ($testimonials as $index => $testimonial): ?>
+                                <button type="button" class="dot <?= $index === 0 ? 'active' : '' ?>" data-index="<?= $index ?>" aria-label="Go to testimonial <?= $index + 1 ?>"></button>
+                            <?php endforeach; ?>
+                        </div>
+
+                        <div class="testimonial-arrows">
+                            <button class="arrow prev" type="button" aria-label="Previous testimonial">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <button class="arrow next" type="button" aria-label="Next testimonial">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
                     </div>
                 <?php endif; ?>
             </div>
@@ -1033,316 +1063,77 @@ document.addEventListener('DOMContentLoaded', function() {
         <?php endif; ?>
     </div>
 </section>
-
-<style>
-.testimonial-slider-container {
-    position: relative;
-    max-width: 1000px;
-    margin: 0 auto;
-}
-
-.testimonial-display {
-    position: relative;
-    width: 100%;
-}
-
-.testimonial-slide {
-    display: none;
-    opacity: 0;
-    transition: opacity 0.5s ease-in-out;
-}
-
-.testimonial-slide.active {
-    display: block;
-    opacity: 1;
-    animation: fadeIn 0.6s ease-in-out;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-.testimonial-row {
-    background: white;
-    border-radius: 16px;
-    overflow: hidden;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-    max-height: 290px;
-}
-
-/* Image Side Styles */
-.testimonial-image-wrapper {
-    position: relative;
-    height: 240px;
-    overflow: hidden;
-    background: #f8fafc;
-}
-
-.testimonial-image {
-    width: 100%;
-    height: 240px;
-    object-fit: cover;
-    transition: transform 0.5s ease;
-}
-
-.testimonial-image:hover {
-    transform: scale(1.03);
-}
-
-.testimonial-placeholder-image {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    height: 240px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-/* Text Side Styles */
-.testimonial-content-wrapper {
-    background: white;
-    height: 240px;
-    display: flex;
-    align-items: center;
-    padding: 20px 25px !important;
-}
-
-.testimonial-text-container {
-    width: 100%;
-}
-
-.testimonial-text {
-    font-size: 0.95rem;
-    line-height: 1.5;
-    color: #4a5568;
-    display: -webkit-box;
-    -webkit-line-clamp: 4;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    margin-bottom: 12px;
-    font-style: italic;
-}
-
-.testimonial-author h5 {
-    color: #2d3748;
-    font-size: 1.1rem;
-    margin-bottom: 4px;
-}
-
-.testimonial-author p {
-    font-size: 0.85rem;
-    color: #718096;
-}
-
-/* Navigation Dots */
-.testimonial-dots {
-    display: flex;
-    justify-content: center;
-    gap: 8px;
-}
-
-.dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: #cbd5e1;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.dot:hover {
-    background: var(--primary-color);
-}
-
-.dot.active {
-    background: var(--primary-color);
-    width: 24px;
-    border-radius: 20px;
-}
-
-/* Navigation Arrows */
-.testimonial-arrows {
-    position: absolute;
-    top: 50%;
-    left: -20px;
-    right: -20px;
-    transform: translateY(-50%);
-    display: flex;
-    justify-content: space-between;
-    pointer-events: none;
-}
-
-.arrow {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    background: white;
-    border: 1px solid #e2e8f0;
-    color: var(--primary-color);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease;
-    pointer-events: auto;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    font-size: 1rem;
-}
-
-.arrow:hover {
-    background: var(--primary-color);
-    color: white;
-    border-color: var(--primary-color);
-}
-
-.arrow:focus {
-    outline: none;
-}
-
-/* Responsive Styles */
-@media (max-width: 768px) {
-    .testimonial-row {
-        max-height: none;
-    }
-    
-    .testimonial-image-wrapper {
-        height: 200px;
-    }
-    
-    .testimonial-image {
-        height: 200px;
-    }
-    
-    .testimonial-content-wrapper {
-        height: auto;
-        min-height: 180px;
-        padding: 20px !important;
-    }
-    
-    .testimonial-arrows {
-        display: none;
-    }
-    
-    .testimonial-text {
-        font-size: 0.9rem;
-        -webkit-line-clamp: 3;
-    }
-    
-    .testimonial-author h5 {
-        font-size: 1rem;
-    }
-    
-    .testimonial-dots {
-        margin-top: 20px;
-    }
-}
-
-/* Animation for slide transitions */
-.testimonial-slide.active .testimonial-content-wrapper {
-    animation: slideContent 0.6s ease-out;
-}
-
-.testimonial-slide.active .testimonial-image-wrapper {
-    animation: slideImage 0.6s ease-out;
-}
-
-@keyframes slideImage {
-    from {
-        opacity: 0.7;
-        transform: translateX(-10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
-}
-
-@keyframes slideContent {
-    from {
-        opacity: 0.7;
-        transform: translateX(10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
-}
-</style>
-
 <script>
-// Testimonial Slider Functionality
-let currentIndex = 0;
-const slides = document.querySelectorAll('.testimonial-slide');
-const dots = document.querySelectorAll('.dot');
-let slideInterval;
-
-// Initialize slider
-function initSlider() {
-    if (slides.length > 1) {
-        startAutoSlide();
-        
-        // Pause auto-slide on hover
-        const container = document.querySelector('.testimonial-slider-container');
-        container.addEventListener('mouseenter', stopAutoSlide);
-        container.addEventListener('mouseleave', startAutoSlide);
-    }
-}
-
-// Show specific slide
-function showSlide(index) {
-    if (!slides.length) return;
-    
-    // Handle wrap around
-    if (index >= slides.length) index = 0;
-    if (index < 0) index = slides.length - 1;
-    
-    // Update slides
-    slides.forEach(slide => slide.classList.remove('active'));
-    slides[index].classList.add('active');
-    
-    // Update dots
-    if (dots.length) {
-        dots.forEach(dot => dot.classList.remove('active'));
-        dots[index].classList.add('active');
-    }
-    
-    currentIndex = index;
-}
-
-// Change slide by offset
-function changeSlide(offset) {
-    stopAutoSlide();
-    showSlide(currentIndex + offset);
-    startAutoSlide();
-}
-
-// Go to specific slide
-function currentSlide(index) {
-    stopAutoSlide();
-    showSlide(index);
-    startAutoSlide();
-}
-
-// Auto slide functions
-function startAutoSlide() {
-    if (slides.length <= 1) return;
-    stopAutoSlide();
-    slideInterval = setInterval(() => {
-        showSlide(currentIndex + 1);
-    }, 5000);
-}
-
-function stopAutoSlide() {
-    if (slideInterval) {
-        clearInterval(slideInterval);
-    }
-}
-
-// Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
-    if (document.querySelector('.testimonial-slider-container')) {
-        initSlider();
+    const slider = document.getElementById('testimonialSlider');
+    if (!slider) return;
+
+    const slides = slider.querySelectorAll('.testimonial-slide');
+    const dots = slider.querySelectorAll('.dot');
+    const prevBtn = slider.querySelector('.arrow.prev');
+    const nextBtn = slider.querySelector('.arrow.next');
+
+    if (!slides.length) return;
+
+    let currentIndex = 0;
+    let intervalId = null;
+    const AUTO_MS = 6000;
+
+    function showSlide(index) {
+        if (index >= slides.length) index = 0;
+        if (index < 0) index = slides.length - 1;
+
+        slides.forEach(slide => slide.classList.remove('active'));
+        dots.forEach(dot => dot.classList.remove('active'));
+
+        slides[index].classList.add('active');
+        if (dots[index]) dots[index].classList.add('active');
+        currentIndex = index;
     }
+
+    function stopAutoSlide() {
+        if (intervalId) {
+            clearInterval(intervalId);
+            intervalId = null;
+        }
+    }
+
+    function startAutoSlide() {
+        if (slides.length <= 1) return;
+        stopAutoSlide();
+        intervalId = setInterval(() => {
+            showSlide(currentIndex + 1);
+        }, AUTO_MS);
+    }
+
+    dots.forEach(dot => {
+        dot.addEventListener('click', function() {
+            const idx = Number(this.getAttribute('data-index'));
+            showSlide(idx);
+            startAutoSlide();
+        });
+    });
+
+    prevBtn?.addEventListener('click', function() {
+        showSlide(currentIndex - 1);
+        startAutoSlide();
+    });
+
+    nextBtn?.addEventListener('click', function() {
+        showSlide(currentIndex + 1);
+        startAutoSlide();
+    });
+
+    slider.addEventListener('mouseenter', stopAutoSlide);
+    slider.addEventListener('mouseleave', startAutoSlide);
+
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) stopAutoSlide();
+        else startAutoSlide();
+    });
+
+    showSlide(0);
+    startAutoSlide();
 });
 </script>
 <!-- CTA Section -->

@@ -16,6 +16,32 @@ if (!$testimonial) {
     header("Location: testimonials.php");
     exit;
 }
+
+if (!function_exists('resolveAdminTestimonialImage')) {
+    function resolveAdminTestimonialImage(string $storedPath): string
+    {
+        $path = trim($storedPath);
+        if ($path === '') {
+            return '';
+        }
+        if (preg_match('/^https?:\/\//i', $path)) {
+            return $path;
+        }
+
+        $path = ltrim($path, '/');
+
+        if (strpos($path, 'admin/') === 0) {
+            return substr($path, 6);
+        }
+        if (strpos($path, 'assets/') === 0) {
+            return $path;
+        }
+        if (strpos($path, 'uploads/') === 0) {
+            return '../' . $path;
+        }
+        return 'assets/testimonials/' . $path;
+    }
+}
 ?>
 
 <?php include 'header.php'; ?>
@@ -162,7 +188,7 @@ if (!$testimonial) {
                                         <div class="mb-2">
                                             <?php if (!empty($testimonial['partner_img'])): ?>
                                                 <?php 
-                                                $img_path = '../' . $testimonial['partner_img'];
+                                                $img_path = resolveAdminTestimonialImage((string) $testimonial['partner_img']);
                                                 ?>
                                                 <img src="<?= htmlspecialchars($img_path) ?>" 
                                                      alt="Current Image"
