@@ -938,6 +938,413 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
     </div>
 </section>
+<!-- Testimonials Section with Image Left and Text Right -->
+<section class="py-5" style="background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);">
+    <div class="container">
+        <div class="text-center mb-5">
+            <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill mb-3">
+                <i class="fas fa-star me-2"></i> Partner Stories
+            </span>
+            <h2 class="fw-bold mb-3">Highest Standards. Happiest Partners</h2>
+            <p class="text-muted">Our partners are our strength</p>
+        </div>
+        
+        <?php
+        // Fetch all active testimonials for slider
+        $testimonial_query = "SELECT partner_name, designation, testimonial_text, partner_img FROM testimonials WHERE active = 1 ORDER BY id DESC";
+        $testimonial_result = mysqli_query($conn, $testimonial_query);
+        $testimonials = [];
+        if ($testimonial_result && mysqli_num_rows($testimonial_result) > 0) {
+            while ($row = mysqli_fetch_assoc($testimonial_result)) {
+                $testimonials[] = $row;
+            }
+        }
+        ?>
+        
+        <?php if (!empty($testimonials)): ?>
+            <div class="testimonial-slider-container position-relative">
+                <!-- Main Testimonial Display -->
+                <div class="testimonial-display" id="testimonialDisplay">
+                    <?php foreach ($testimonials as $index => $testimonial): ?>
+                        <div class="testimonial-slide <?= $index === 0 ? 'active' : '' ?>" data-index="<?= $index ?>">
+                            <div class="row g-0 align-items-center testimonial-row">
+                                <!-- Image Side - Left -->
+                                <div class="col-md-5">
+                                    <div class="testimonial-image-wrapper">
+                                        <?php if (!empty($testimonial['partner_img'])): ?>
+                                            <img src="admin/<?= htmlspecialchars($testimonial['partner_img']) ?>" 
+                                                 alt="<?= htmlspecialchars($testimonial['partner_name']) ?>"
+                                                 class="img-fluid testimonial-image"
+                                                 onerror="this.onerror=null; this.src='https://via.placeholder.com/400x400?text=Partner';">
+                                        <?php else: ?>
+                                            <div class="testimonial-placeholder-image d-flex align-items-center justify-content-center">
+                                                <i class="fas fa-user-circle fa-6x text-white opacity-75"></i>
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                                
+                                <!-- Text Side - Right -->
+                                <div class="col-md-7">
+                                    <div class="testimonial-content-wrapper p-4">
+                                        <div class="testimonial-text-container">
+                                            <i class="fas fa-quote-left text-primary mb-3" style="font-size: 2rem; opacity: 0.2;"></i>
+                                            
+                                            <p class="testimonial-text mb-3">
+                                                "<?= htmlspecialchars($testimonial['testimonial_text']) ?>"
+                                            </p>
+                                            
+                                            <div class="testimonial-author mt-3">
+                                                <h5 class="fw-bold mb-1"><?= htmlspecialchars($testimonial['partner_name']) ?></h5>
+                                                <p class="text-muted small mb-0"><?= htmlspecialchars($testimonial['designation'] ?: 'Partner') ?></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+                
+                <!-- Navigation Dots -->
+                <?php if (count($testimonials) > 1): ?>
+                    <div class="testimonial-dots text-center mt-4">
+                        <?php foreach ($testimonials as $index => $testimonial): ?>
+                            <span class="dot <?= $index === 0 ? 'active' : '' ?>" data-index="<?= $index ?>" onclick="currentSlide(<?= $index ?>)"></span>
+                        <?php endforeach; ?>
+                    </div>
+                    
+                    <!-- Navigation Arrows -->
+                    <div class="testimonial-arrows">
+                        <button class="arrow prev" onclick="changeSlide(-1)">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <button class="arrow next" onclick="changeSlide(1)">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                <?php endif; ?>
+            </div>
+        <?php else: ?>
+            <div class="text-center py-5 text-muted">
+                <i class="fas fa-star mb-3" style="font-size: 3rem; opacity: 0.3;"></i>
+                <p>No testimonials available yet.</p>
+            </div>
+        <?php endif; ?>
+    </div>
+</section>
+
+<style>
+.testimonial-slider-container {
+    position: relative;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.testimonial-display {
+    position: relative;
+    width: 100%;
+}
+
+.testimonial-slide {
+    display: none;
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+}
+
+.testimonial-slide.active {
+    display: block;
+    opacity: 1;
+    animation: fadeIn 0.6s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.testimonial-row {
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    max-height: 290px;
+}
+
+/* Image Side Styles */
+.testimonial-image-wrapper {
+    position: relative;
+    height: 240px;
+    overflow: hidden;
+    background: #f8fafc;
+}
+
+.testimonial-image {
+    width: 100%;
+    height: 240px;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.testimonial-image:hover {
+    transform: scale(1.03);
+}
+
+.testimonial-placeholder-image {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    height: 240px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Text Side Styles */
+.testimonial-content-wrapper {
+    background: white;
+    height: 240px;
+    display: flex;
+    align-items: center;
+    padding: 20px 25px !important;
+}
+
+.testimonial-text-container {
+    width: 100%;
+}
+
+.testimonial-text {
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: #4a5568;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin-bottom: 12px;
+    font-style: italic;
+}
+
+.testimonial-author h5 {
+    color: #2d3748;
+    font-size: 1.1rem;
+    margin-bottom: 4px;
+}
+
+.testimonial-author p {
+    font-size: 0.85rem;
+    color: #718096;
+}
+
+/* Navigation Dots */
+.testimonial-dots {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+}
+
+.dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #cbd5e1;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.dot:hover {
+    background: var(--primary-color);
+}
+
+.dot.active {
+    background: var(--primary-color);
+    width: 24px;
+    border-radius: 20px;
+}
+
+/* Navigation Arrows */
+.testimonial-arrows {
+    position: absolute;
+    top: 50%;
+    left: -20px;
+    right: -20px;
+    transform: translateY(-50%);
+    display: flex;
+    justify-content: space-between;
+    pointer-events: none;
+}
+
+.arrow {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: white;
+    border: 1px solid #e2e8f0;
+    color: var(--primary-color);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    pointer-events: auto;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    font-size: 1rem;
+}
+
+.arrow:hover {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+.arrow:focus {
+    outline: none;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    .testimonial-row {
+        max-height: none;
+    }
+    
+    .testimonial-image-wrapper {
+        height: 200px;
+    }
+    
+    .testimonial-image {
+        height: 200px;
+    }
+    
+    .testimonial-content-wrapper {
+        height: auto;
+        min-height: 180px;
+        padding: 20px !important;
+    }
+    
+    .testimonial-arrows {
+        display: none;
+    }
+    
+    .testimonial-text {
+        font-size: 0.9rem;
+        -webkit-line-clamp: 3;
+    }
+    
+    .testimonial-author h5 {
+        font-size: 1rem;
+    }
+    
+    .testimonial-dots {
+        margin-top: 20px;
+    }
+}
+
+/* Animation for slide transitions */
+.testimonial-slide.active .testimonial-content-wrapper {
+    animation: slideContent 0.6s ease-out;
+}
+
+.testimonial-slide.active .testimonial-image-wrapper {
+    animation: slideImage 0.6s ease-out;
+}
+
+@keyframes slideImage {
+    from {
+        opacity: 0.7;
+        transform: translateX(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideContent {
+    from {
+        opacity: 0.7;
+        transform: translateX(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+</style>
+
+<script>
+// Testimonial Slider Functionality
+let currentIndex = 0;
+const slides = document.querySelectorAll('.testimonial-slide');
+const dots = document.querySelectorAll('.dot');
+let slideInterval;
+
+// Initialize slider
+function initSlider() {
+    if (slides.length > 1) {
+        startAutoSlide();
+        
+        // Pause auto-slide on hover
+        const container = document.querySelector('.testimonial-slider-container');
+        container.addEventListener('mouseenter', stopAutoSlide);
+        container.addEventListener('mouseleave', startAutoSlide);
+    }
+}
+
+// Show specific slide
+function showSlide(index) {
+    if (!slides.length) return;
+    
+    // Handle wrap around
+    if (index >= slides.length) index = 0;
+    if (index < 0) index = slides.length - 1;
+    
+    // Update slides
+    slides.forEach(slide => slide.classList.remove('active'));
+    slides[index].classList.add('active');
+    
+    // Update dots
+    if (dots.length) {
+        dots.forEach(dot => dot.classList.remove('active'));
+        dots[index].classList.add('active');
+    }
+    
+    currentIndex = index;
+}
+
+// Change slide by offset
+function changeSlide(offset) {
+    stopAutoSlide();
+    showSlide(currentIndex + offset);
+    startAutoSlide();
+}
+
+// Go to specific slide
+function currentSlide(index) {
+    stopAutoSlide();
+    showSlide(index);
+    startAutoSlide();
+}
+
+// Auto slide functions
+function startAutoSlide() {
+    if (slides.length <= 1) return;
+    stopAutoSlide();
+    slideInterval = setInterval(() => {
+        showSlide(currentIndex + 1);
+    }, 5000);
+}
+
+function stopAutoSlide() {
+    if (slideInterval) {
+        clearInterval(slideInterval);
+    }
+}
+
+// Initialize when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    if (document.querySelector('.testimonial-slider-container')) {
+        initSlider();
+    }
+});
+</script>
 <!-- CTA Section -->
 <section class="cta-section py-5">
     <i class="fas fa-coins cta-float float-1"></i>

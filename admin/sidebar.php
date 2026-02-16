@@ -1,5 +1,6 @@
 <?php
 $current_page = basename($_SERVER['PHP_SELF']);
+$testimonial_active = in_array($current_page, ['testimonial_add.php', 'testimonials.php', 'testimonial_edit.php'], true);
 $brand_active = in_array($current_page, ['brand_add.php', 'brands.php', 'brand_edit.php'], true);
 $blog_active = in_array($current_page, ['blogs.php', 'blog_add.php', 'blog_edit.php'], true);
 $dept_active = in_array($current_page, ['add-department.php', 'departments.php'], true);
@@ -497,6 +498,16 @@ $loan_all_active = ($current_page === 'loan_applications.php' && $active_loan_ca
                 <ul class="side-nav-second-level">
                     <li><a href="blog_add.php" class="side-nav-link <?= ($current_page === 'blog_add.php') ? 'active' : '' ?>"><i class="fas fa-plus"></i> Add Blog</a></li>
                     <li><a href="blogs.php" class="side-nav-link <?= ($current_page === 'blogs.php' || $current_page === 'blog_edit.php') ? 'active' : '' ?>"><i class="fas fa-eye"></i> View Blogs</a></li>
+                </ul>
+            </li>
+                        <li class="side-nav-item <?= $testimonial_active ? 'active' : '' ?>">
+                <a href="javascript:void(0);" class="side-nav-link has-arrow">
+                    <i class="ri-star-line"></i>
+                    <span>Manage Testimonials</span>
+                </a>
+                <ul class="side-nav-second-level">
+                    <li><a href="testimonial_add.php" class="side-nav-link <?= ($current_page === 'testimonial_add.php') ? 'active' : '' ?>"><i class="fas fa-plus"></i> Add Testimonial</a></li>
+                    <li><a href="testimonials.php" class="side-nav-link <?= ($current_page === 'testimonials.php' || $current_page === 'testimonial_edit.php') ? 'active' : '' ?>"><i class="fas fa-eye"></i> View Testimonials</a></li>
                 </ul>
             </li>
 <li class="side-nav-item <?= $websettings_active ? 'active' : '' ?>">
