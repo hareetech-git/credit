@@ -215,6 +215,9 @@ option, marquee, div {
             <?php endforeach; ?>
 
             <li class="nav-item-custom"><a href="#" class="nav-link-custom">Insurance</a></li>
+            <li class="nav-item-custom">
+                <a href="blogs.php" class="nav-link-custom <?= ($current_page == 'blogs.php' || $current_page == 'blog-details.php') ? 'active' : '' ?>">Blogs</a>
+            </li>
             <li class="nav-item-custom"><a href="contact.php" class="nav-link-custom">Contact Us</a></li>
         </ul>
 
@@ -315,6 +318,7 @@ option, marquee, div {
         <?php endforeach; ?>
         
         <div class="mobile-nav-item-custom"><a href="#" class="mobile-nav-link-custom">Insurance</a></div>
+        <div class="mobile-nav-item-custom"><a href="blogs.php" class="mobile-nav-link-custom">Blogs</a></div>
         <div class="mobile-nav-item-custom"><a href="contact.php" class="mobile-nav-link-custom">Contact Us</a></div>
     </div>
     
