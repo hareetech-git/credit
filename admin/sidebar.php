@@ -488,22 +488,12 @@ $loan_all_active = ($current_page === 'loan_applications.php' && $active_loan_ca
                     <span>FAQs</span>
                 </a>
             </li>
-<<<<<<< HEAD
 <li class="side-nav-item <?= $websettings_active ? 'active' : '' ?>">
     <a href="web_settings.php" class="side-nav-link">
         <i class="ri-settings-3-line"></i>
         <span>Web Settings</span>
     </a>
 </li>
-=======
-
-            <li class="side-nav-item <?= $websettings_active ? 'active' : '' ?>">
-                <a href="web_settings.php" class="side-nav-link">
-                    <i class="ri-settings-3-line"></i>
-                    <span>Web Settings</span>
-                </a>
-            </li>
->>>>>>> 64762dd808c9eae49f74ac88974edca362bb563b
 
             <li class="side-nav-item">
                 <a href="db/auth-logout.php" class="side-nav-link text-danger">
