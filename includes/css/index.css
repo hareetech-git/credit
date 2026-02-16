@@ -868,9 +868,12 @@
 
 /* Testimonials Section CSS Start Here */
 .partner-stories-section {
-    background: #efefef;
-    border-top: 1px solid #e5e7eb;
-    border-bottom: 1px solid #e5e7eb;
+    background:
+        radial-gradient(circle at 12% 20%, rgba(11, 8, 27, 0.06), transparent 35%),
+        radial-gradient(circle at 88% 85%, rgba(11, 8, 27, 0.05), transparent 30%),
+        #efefef;
+    border-top: 1px solid rgba(11, 8, 27, 0.12);
+    border-bottom: 1px solid rgba(11, 8, 27, 0.12);
 }
 
 .testimonial-section-title {
@@ -879,7 +882,7 @@
 }
 
 .testimonial-section-subtitle {
-    color: #334155;
+    color: var(--primary-color);
     font-size: 2rem;
     font-weight: 500;
     margin-bottom: 0;
@@ -979,8 +982,8 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    background: #cbd5e1;
-    color: #475569;
+    background: rgba(11, 8, 27, 0.12);
+    color: var(--primary-color);
     font-size: 1.3rem;
 }
 
@@ -1017,7 +1020,7 @@
     width: 14px;
     height: 14px;
     border-radius: 50%;
-    background: #bfd0dd;
+    background: rgba(11, 8, 27, 0.2);
     cursor: pointer;
     transition: all 0.25s ease;
     border: none;
@@ -1030,7 +1033,7 @@
 }
 
 .dot.active {
-    background: #1e73be;
+    background: var(--primary-color);
 }
 
 .testimonial-arrows {
@@ -1045,7 +1048,7 @@
     width: 56px;
     height: 56px;
     border-radius: 50%;
-    background: #1e73be;
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
     border: none;
     color: #ffffff;
     cursor: pointer;
@@ -1053,12 +1056,12 @@
     align-items: center;
     justify-content: center;
     transition: all 0.25s ease;
-    box-shadow: 0 8px 18px rgba(30, 115, 190, 0.3);
+    box-shadow: 0 8px 18px rgba(11, 8, 27, 0.35);
     font-size: 1.4rem;
 }
 
 .arrow:hover {
-    background: #165f9d;
+    background: linear-gradient(135deg, var(--primary-dark), var(--primary-color));
 }
 
 @media (max-width: 768px) {
