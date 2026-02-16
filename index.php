@@ -1452,21 +1452,21 @@ unset($_SESSION['success_message']);
             }
         }
         
-        // Get first 6 brands for display
-        $display_brands = array_slice($all_brands, 0, 6);
-        $remaining_brands = array_slice($all_brands, 6);
-        $has_more = count($all_brands) > 6;
+        // Get first 8 brands for display (4 per row × 2 rows = 8)
+        $display_brands = array_slice($all_brands, 0, 8);
+        $remaining_brands = array_slice($all_brands, 8);
+        $has_more = count($all_brands) > 8;
         ?>
         
-        <!-- Brands Grid - First 6 -->
+        <!-- Brands Grid - First 8 (4 per row) -->
         <div class="row g-4 justify-content-center" id="brandsGrid">
             <?php if (!empty($display_brands)): ?>
                 <?php foreach ($display_brands as $brand): ?>
-                    <div class="col-lg-2 col-md-3 col-4">
+                    <div class="col-lg-3 col-md-4 col-6">
                         <div class="card border-0 shadow-sm h-100 brand-card">
                             <div class="card-body p-3 d-flex align-items-center justify-content-center" style="min-height: 120px;">
                                 <?php 
-                                // FIXED: Add admin/ prefix to the path
+                                // Fix image path
                                 $image_path = 'admin/' . $brand['brand_img'];
                                 ?>
                                 <img src="<?= htmlspecialchars($image_path) ?>" 
@@ -1489,11 +1489,10 @@ unset($_SESSION['success_message']);
         <?php if ($has_more): ?>
             <div class="row g-4 justify-content-center mt-2" id="moreBrands" style="display: none;">
                 <?php foreach ($remaining_brands as $brand): ?>
-                    <div class="col-lg-2 col-md-3 col-4">
+                    <div class="col-lg-3 col-md-4 col-6">
                         <div class="card border-0 shadow-sm h-100 brand-card">
                             <div class="card-body p-3 d-flex align-items-center justify-content-center" style="min-height: 120px;">
                                 <?php 
-                                // FIXED: Add admin/ prefix to the path
                                 $image_path = 'admin/' . $brand['brand_img'];
                                 ?>
                                 <img src="<?= htmlspecialchars($image_path) ?>" 
@@ -1516,6 +1515,79 @@ unset($_SESSION['success_message']);
         <?php endif; ?>
     </div>
 </section>
+
+<style>
+.brand-card {
+    transition: all 0.3s ease;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #f1f5f9 !important;
+}
+
+.brand-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1) !important;
+    border-color: var(--primary-color) !important;
+}
+
+.brand-logo {
+    filter: grayscale(0%);
+    transition: filter 0.3s ease;
+}
+
+.brand-card:hover .brand-logo {
+    filter: grayscale(0%);
+}
+
+/* Animation for cards */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+#moreBrands .brand-card {
+    animation: fadeIn 0.5s ease forwards;
+}
+</style>
+
+<script>
+// Toggle brands function
+function toggleBrands() {
+    const moreBrands = document.getElementById('moreBrands');
+    const btnText = document.getElementById('btnText');
+    const btnIcon = document.getElementById('btnIcon');
+    
+    if (moreBrands) {
+        if (moreBrands.style.display === 'none' || moreBrands.style.display === '') {
+            moreBrands.style.display = 'flex';
+            moreBrands.style.flexWrap = 'wrap';
+            if (btnText) btnText.textContent = 'VIEW LESS';
+            if (btnIcon) {
+                btnIcon.className = 'fas fa-chevron-up ms-2';
+            }
+        } else {
+            moreBrands.style.display = 'none';
+            if (btnText) btnText.textContent = 'VIEW ALL';
+            if (btnIcon) {
+                btnIcon.className = 'fas fa-chevron-down ms-2';
+            }
+        }
+    }
+}
+
+// Make sure DOM is loaded before any operations
+document.addEventListener('DOMContentLoaded', function() {
+    // Ensure moreBrands is hidden initially
+    const moreBrands = document.getElementById('moreBrands');
+    if (moreBrands) {
+        moreBrands.style.display = 'none';
+    }
+    
+    // Log for debugging
+    console.log('Brands section initialized');
+    console.log('More brands exists:', !!moreBrands);
+});
+</script>
 <!-- FAQ Section -->
 <section class="py-5 bg-white faq-section">
     <div class="container">

@@ -1,6 +1,6 @@
 <?php
 $current_page = basename($_SERVER['PHP_SELF']);
-
+$brand_active = in_array($current_page, ['brand_add.php', 'brands.php', 'brand_edit.php'], true);
 $dept_active = in_array($current_page, ['add-department.php', 'departments.php'], true);
 $customer_active = in_array($current_page, ['customer_add.php', 'customers.php', 'customer_edit.php', 'customer_view.php'], true);
 $loan_active = in_array($current_page, ['loan_applications.php', 'loan_view.php', 'manual_loan_assign.php', 'rejected_loans.php'], true);
@@ -494,6 +494,16 @@ $loan_all_active = ($current_page === 'loan_applications.php' && $active_loan_ca
         <span>Web Settings</span>
     </a>
 </li>
+            <li class="side-nav-item <?= $brand_active ? 'active' : '' ?>">
+                <a href="javascript:void(0);" class="side-nav-link has-arrow">
+                    <i class="ri-building-2-line"></i>
+                    <span>Manage Brands</span>
+                </a>
+                <ul class="side-nav-second-level">
+                    <li><a href="brand_add.php" class="side-nav-link <?= ($current_page === 'brand_add.php') ? 'active' : '' ?>"><i class="fas fa-plus"></i> Add Brand</a></li>
+                    <li><a href="brands.php" class="side-nav-link <?= ($current_page === 'brands.php' || $current_page === 'brand_edit.php') ? 'active' : '' ?>"><i class="fas fa-eye"></i> View Brands</a></li>
+                </ul>
+            </li>
 
             <li class="side-nav-item">
                 <a href="db/auth-logout.php" class="side-nav-link text-danger">
