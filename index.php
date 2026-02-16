@@ -1430,7 +1430,92 @@ unset($_SESSION['success_message']);
         </div>
     </div>
 </section>
-
+<!-- Brands Section -->
+<section class="py-5" style="background-color: #ffffff;">
+    <div class="container">
+        <div class="text-center mb-5">
+            <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill mb-3">
+                <i class="fas fa-handshake me-2"></i> Trusted Partners
+            </span>
+            <h2 class="fw-bold mb-3">Brands Who Trust Us</h2>
+            <p class="text-muted">We are amongst the top 3 most-preferred channel partners for loans for India's widest network of Banks, NBFCs, and Fintech</p>
+        </div>
+        
+        <?php
+        // Fetch brands from database
+        $brands_query = "SELECT id, brand_name, brand_img FROM brands WHERE active = 1 ORDER BY id DESC";
+        $brands_result = mysqli_query($conn, $brands_query);
+        $all_brands = [];
+        if ($brands_result && mysqli_num_rows($brands_result) > 0) {
+            while ($brand = mysqli_fetch_assoc($brands_result)) {
+                $all_brands[] = $brand;
+            }
+        }
+        
+        // Get first 6 brands for display
+        $display_brands = array_slice($all_brands, 0, 6);
+        $remaining_brands = array_slice($all_brands, 6);
+        $has_more = count($all_brands) > 6;
+        ?>
+        
+        <!-- Brands Grid - First 6 -->
+        <div class="row g-4 justify-content-center" id="brandsGrid">
+            <?php if (!empty($display_brands)): ?>
+                <?php foreach ($display_brands as $brand): ?>
+                    <div class="col-lg-2 col-md-3 col-4">
+                        <div class="card border-0 shadow-sm h-100 brand-card">
+                            <div class="card-body p-3 d-flex align-items-center justify-content-center" style="min-height: 120px;">
+                                <?php 
+                                // FIXED: Add admin/ prefix to the path
+                                $image_path = 'admin/' . $brand['brand_img'];
+                                ?>
+                                <img src="<?= htmlspecialchars($image_path) ?>" 
+                                     alt="<?= htmlspecialchars($brand['brand_name']) ?>"
+                                     class="img-fluid brand-logo"
+                                     style="max-width: 100%; max-height: 80px; object-fit: contain;"
+                                     onerror="this.onerror=null; this.src='https://via.placeholder.com/150x80?text=<?= urlencode($brand['brand_name']) ?>';">
+                            </div>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <div class="col-12 text-center py-4 text-muted">
+                    <p>No brands available</p>
+                </div>
+            <?php endif; ?>
+        </div>
+        
+        <!-- Remaining Brands (Hidden initially) -->
+        <?php if ($has_more): ?>
+            <div class="row g-4 justify-content-center mt-2" id="moreBrands" style="display: none;">
+                <?php foreach ($remaining_brands as $brand): ?>
+                    <div class="col-lg-2 col-md-3 col-4">
+                        <div class="card border-0 shadow-sm h-100 brand-card">
+                            <div class="card-body p-3 d-flex align-items-center justify-content-center" style="min-height: 120px;">
+                                <?php 
+                                // FIXED: Add admin/ prefix to the path
+                                $image_path = 'admin/' . $brand['brand_img'];
+                                ?>
+                                <img src="<?= htmlspecialchars($image_path) ?>" 
+                                     alt="<?= htmlspecialchars($brand['brand_name']) ?>"
+                                     class="img-fluid brand-logo"
+                                     style="max-width: 100%; max-height: 80px; object-fit: contain;"
+                                     onerror="this.onerror=null; this.src='https://via.placeholder.com/150x80?text=<?= urlencode($brand['brand_name']) ?>';">
+                            </div>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+            
+            <!-- View All Button -->
+            <div class="text-center mt-4" id="viewAllBtn">
+                <button class="btn btn-outline-primary rounded-pill px-4" onclick="toggleBrands()">
+                    <span id="btnText">VIEW ALL</span> <i class="fas fa-chevron-down ms-2" id="btnIcon"></i>
+                </button>
+            </div>
+        <?php endif; ?>
+    </div>
+</section>
 <!-- FAQ Section -->
 <section class="py-5 bg-white faq-section">
     <div class="container">

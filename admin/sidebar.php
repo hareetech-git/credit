@@ -301,6 +301,7 @@ $dsa_active = in_array($current_page, [
         <span>Web Settings</span>
     </a>
 </li>
+
             <li class="side-nav-item">
                 <a href="db/auth-logout.php" class="side-nav-link text-danger">
                     <i class="ri-logout-box-line"></i>
