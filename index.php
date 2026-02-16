@@ -65,6 +65,29 @@ if (isset($conn)) {
     }
 }
 
+// Fetch latest 3 published blogs for homepage
+$latest_blogs = [];
+if (isset($conn)) {
+    $blog_res = mysqli_query(
+        $conn,
+        "SELECT id, title, slug, short_description, content, featured_image, created_at
+         FROM blogs
+         WHERE status = 1
+         ORDER BY id DESC
+         LIMIT 3"
+    );
+
+    if ($blog_res && mysqli_num_rows($blog_res) > 0) {
+        while ($row = mysqli_fetch_assoc($blog_res)) {
+            if (trim((string) $row['short_description']) === '') {
+                $plain = trim(strip_tags((string) $row['content']));
+                $row['short_description'] = strlen($plain) > 180 ? substr($plain, 0, 180) . '...' : $plain;
+            }
+            $latest_blogs[] = $row;
+        }
+    }
+}
+
 // Check for session messages
 $errors = isset($_SESSION['errors']) ? $_SESSION['errors'] : [];
 $success_message = isset($_SESSION['success_message']) ? $_SESSION['success_message'] : '';
@@ -1588,6 +1611,59 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('More brands exists:', !!moreBrands);
 });
 </script>
+<!-- Latest Blogs Section -->
+<section class="py-5" style="background: #f8fafc;">
+    <div class="container">
+        <div class="d-flex flex-wrap align-items-center justify-content-between mb-4">
+            <div>
+                <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill mb-2">
+                    <i class="fas fa-newspaper me-2"></i> Latest Updates
+                </span>
+                <h2 class="fw-bold mb-0">From Our Blog</h2>
+            </div>
+            <a href="blogs.php" class="btn btn-outline-dark rounded-pill px-4 mt-2 mt-md-0">View All Blogs</a>
+        </div>
+
+        <div class="row g-4">
+            <?php if (!empty($latest_blogs)): ?>
+                <?php foreach ($latest_blogs as $blog): ?>
+                    <div class="col-lg-4 col-md-6">
+                        <div class="card border-0 shadow-sm h-100 rounded-4 overflow-hidden blog-home-card">
+                            <?php if (!empty($blog['featured_image'])): ?>
+                                <img src="<?= htmlspecialchars((string) $blog['featured_image']) ?>"
+                                     alt="<?= htmlspecialchars((string) $blog['title']) ?>"
+                                     style="width:100%; height:210px; object-fit:cover;">
+                            <?php endif; ?>
+                            <div class="card-body p-4">
+                                <small class="text-muted d-block mb-2">
+                                    <i class="fas fa-calendar-alt me-1"></i>
+                                    <?= date('d M Y', strtotime((string) $blog['created_at'])) ?>
+                                </small>
+                                <h5 class="fw-bold mb-2"><?= htmlspecialchars((string) $blog['title']) ?></h5>
+                                <p class="text-muted small mb-3"><?= htmlspecialchars((string) limitWords((string) $blog['short_description'], 24)) ?></p>
+                                <a href="blog-details.php?slug=<?= urlencode((string) $blog['slug']) ?>" class="btn btn-sm btn-outline-primary rounded-pill px-3">
+                                    Read More <i class="fas fa-arrow-right ms-1"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <div class="col-12 text-center text-muted">Blogs will be available soon.</div>
+            <?php endif; ?>
+        </div>
+    </div>
+</section>
+<style>
+    .blog-home-card {
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+        border: 1px solid #e2e8f0 !important;
+    }
+    .blog-home-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 18px 30px rgba(15, 23, 42, 0.12) !important;
+    }
+</style>
 <!-- FAQ Section -->
 <section class="py-5 bg-white faq-section">
     <div class="container">

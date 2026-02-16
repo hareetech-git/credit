@@ -1,6 +1,7 @@
 <?php
 $current_page = basename($_SERVER['PHP_SELF']);
 $brand_active = in_array($current_page, ['brand_add.php', 'brands.php', 'brand_edit.php'], true);
+$blog_active = in_array($current_page, ['blogs.php', 'blog_add.php', 'blog_edit.php'], true);
 $dept_active = in_array($current_page, ['add-department.php', 'departments.php'], true);
 $customer_active = in_array($current_page, ['customer_add.php', 'customers.php', 'customer_edit.php', 'customer_view.php'], true);
 $loan_active = in_array($current_page, ['loan_applications.php', 'loan_view.php', 'manual_loan_assign.php', 'rejected_loans.php'], true);
@@ -487,6 +488,16 @@ $loan_all_active = ($current_page === 'loan_applications.php' && $active_loan_ca
                     <i class="ri-question-line"></i>
                     <span>FAQs</span>
                 </a>
+            </li>
+            <li class="side-nav-item <?= $blog_active ? 'active' : '' ?>">
+                <a href="javascript:void(0);" class="side-nav-link has-arrow">
+                    <i class="ri-article-line"></i>
+                    <span>Manage Blogs</span>
+                </a>
+                <ul class="side-nav-second-level">
+                    <li><a href="blog_add.php" class="side-nav-link <?= ($current_page === 'blog_add.php') ? 'active' : '' ?>"><i class="fas fa-plus"></i> Add Blog</a></li>
+                    <li><a href="blogs.php" class="side-nav-link <?= ($current_page === 'blogs.php' || $current_page === 'blog_edit.php') ? 'active' : '' ?>"><i class="fas fa-eye"></i> View Blogs</a></li>
+                </ul>
             </li>
 <li class="side-nav-item <?= $websettings_active ? 'active' : '' ?>">
     <a href="web_settings.php" class="side-nav-link">
