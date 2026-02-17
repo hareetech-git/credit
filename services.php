@@ -511,7 +511,7 @@ include 'includes/header.php';
 }
 
 </style>
-
+    <link rel="stylesheet" href="includes/css/index.css">
 <main class="service-page">
     <?php if (isset($error) && !empty($error) && $service === null): ?>
         <div class="container  mt-5 text-center fade-in-up">
@@ -810,6 +810,92 @@ $heroImg = !empty($service['hero_image'])
                 <?php endif; ?>
             </div>
         </section>
+<!-- Partner Benefits Network Section -->
+<section class="partner-benefits-section py-5">
+    <div class="container py-3">
+        <div class="text-center mb-4">
+        
+            <h2 class="fw-bold text-white mb-2">Built For Growth, Trust, and Speed</h2>
+            <p class="text-white-50 mb-0">A complete ecosystem designed for better performance and better customer outcomes.</p>
+        </div>
+
+        <div class="benefit-network">
+            <div class="network-line"></div>
+
+            <div class="network-item left">
+                <div class="network-node"><i class="fas fa-laptop-medical"></i></div>
+                <div class="network-card">
+                    <h6>Easy On-boarding</h6>
+                    <p>Quick activation and smooth start for every partner.</p>
+                </div>
+            </div>
+
+            <div class="network-item right">
+                <div class="network-node"><i class="fas fa-cubes"></i></div>
+                <div class="network-card">
+                    <h6>Multiple Products</h6>
+                    <p>Wide product basket to match every customer profile.</p>
+                </div>
+            </div>
+
+            <div class="network-item left">
+                <div class="network-node"><i class="fas fa-circle-check"></i></div>
+                <div class="network-card">
+                    <h6>Instant Approvals</h6>
+                    <p>Faster decisioning pipeline for better conversion.</p>
+                </div>
+            </div>
+
+            <div class="network-item right">
+                <div class="network-node"><i class="fas fa-wallet"></i></div>
+                <div class="network-card">
+                    <h6>Prompt Payouts</h6>
+                    <p>Reliable and transparent payout tracking system.</p>
+                </div>
+            </div>
+
+            <div class="network-item left">
+                <div class="network-node"><i class="fas fa-shield-halved"></i></div>
+                <div class="network-card">
+                    <h6>Secure Data</h6>
+                    <p>Strong security and compliance-led data handling.</p>
+                </div>
+            </div>
+
+            <div class="network-item right">
+                <div class="network-node"><i class="fas fa-chart-line"></i></div>
+                <div class="network-card">
+                    <h6>Unified Dashboard</h6>
+                    <p>Single view of leads, status, payouts, and insights.</p>
+                </div>
+            </div>
+
+            <div class="network-item left">
+                <div class="network-node"><i class="fas fa-gem"></i></div>
+                <div class="network-card">
+                    <h6>Rewards &amp; Loyalty</h6>
+                    <p>Growth-linked incentives and lifetime partner value.</p>
+                </div>
+            </div>
+
+            <div class="network-item right">
+                <div class="network-node"><i class="fas fa-headset"></i></div>
+                <div class="network-card">
+                    <h6>Excellent Customer Support</h6>
+                    <p>Dedicated assistance from onboarding to disbursal.</p>
+                </div>
+            </div>
+
+            <div class="network-item left">
+                <div class="network-node"><i class="fas fa-handshake-angle"></i></div>
+                <div class="network-card">
+                    <h6>Training Programs</h6>
+                    <p>Skill-building sessions to improve quality and output.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 
         <section class="section-padding bg-white reveal">
             <div class="container">

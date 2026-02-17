@@ -1,5 +1,3 @@
-
-<include 'header.php'; ?>
 <?php
 session_start();
 
@@ -18,6 +16,7 @@ if (!function_exists('limitWords')) {
         return implode(' ', array_slice($words, 0, $limit)) . '...';
     }
 }
+
 // Fetch service cards dynamically from services table
 $service_cards = [];
 if (isset($conn)) {
@@ -36,9 +35,79 @@ if (isset($conn)) {
         }
     }
 }
-
-
 ?>
+
+<style>
+/* Breadcrumb Styles */
+.breadcrumb-section {
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    padding: 20px 0;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.breadcrumb {
+    background: transparent;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.breadcrumb-item {
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+.breadcrumb-item a {
+    color: var(--primary-color);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.breadcrumb-item a:hover {
+    color: var(--primary-dark);
+    text-decoration: underline;
+}
+
+.breadcrumb-item.active {
+    color: #64748b;
+    font-weight: 600;
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+    content: "›";
+    color: #94a3b8;
+    font-size: 1.2rem;
+    line-height: 1;
+    padding: 0 8px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .breadcrumb-item {
+        font-size: 0.85rem;
+    }
+}
+</style>
+
+<!-- Breadcrumb Section -->
+<section class="breadcrumb-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="index.php"><i class="fas fa-home me-1"></i>Home</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">All Services</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Services Section -->
 <section class="py-5" style="background-color: #f8fafc;">
     <div class="container py-4">
         <div class="text-center mb-5 animate-up">
@@ -99,4 +168,5 @@ if (isset($conn)) {
         </div>
     </div>
 </section>
+
 <?php include 'includes/footer.php'; ?>

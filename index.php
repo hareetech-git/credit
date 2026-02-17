@@ -247,7 +247,7 @@ unset($_SESSION['success_message']);
 </section>
 
 <div class="section-divider"></div>
-
+<!-- Tailored Financial Solutions Section -->
 <section class="py-5" style="background-color: #f8fafc;">
     <div class="container py-4">
         <div class="text-center mb-5 animate-up">
@@ -305,6 +305,13 @@ unset($_SESSION['success_message']);
                     <div class="alert alert-light border text-center mb-0">No services available right now.</div>
                 </div>
             <?php endif; ?>
+        </div>
+        
+        <!-- View All Services Button -->
+        <div class="text-center mt-5">
+            <a href="all_services.php" class="btn btn-outline-primary btn-lg rounded-pill px-5">
+                View All Services <i class="fas fa-arrow-right ms-2"></i>
+            </a>
         </div>
     </div>
 </section>
