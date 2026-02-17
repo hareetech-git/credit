@@ -15,7 +15,6 @@ if (isset($_GET['cat_id'])) {
 }
 
 $loan_categories = [];
-$pending_dsa_requests_sidebar = 0;
 if (isset($conn) && $conn instanceof mysqli) {
     $loanCatRes = mysqli_query(
         $conn,
@@ -28,11 +27,6 @@ if (isset($conn) && $conn instanceof mysqli) {
         while ($catRow = mysqli_fetch_assoc($loanCatRes)) {
             $loan_categories[] = $catRow;
         }
-    }
-
-    $pendingDsaRes = mysqli_query($conn, "SELECT COUNT(*) AS total FROM dsa_requests WHERE status='pending'");
-    if ($pendingDsaRes && ($pendingDsaRow = mysqli_fetch_assoc($pendingDsaRes))) {
-        $pending_dsa_requests_sidebar = (int) ($pendingDsaRow['total'] ?? 0);
     }
 }
 
@@ -379,9 +373,6 @@ $loan_all_active = ($current_page === 'loan_applications.php' && $active_loan_ca
                 <a href="javascript:void(0);" class="side-nav-link has-arrow">
                     <i class="ri-user-star-line"></i>
                     <span>DSA Control</span>
-                    <?php if ($pending_dsa_requests_sidebar > 0): ?>
-                        <span class="side-nav-badge"><?= $pending_dsa_requests_sidebar ?></span>
-                    <?php endif; ?>
                 </a>
                 <ul class="side-nav-second-level">
                     <li><a href="dsa_add.php" class="side-nav-link <?= ($current_page === 'dsa_add.php') ? 'active' : '' ?>"><i class="fas fa-plus"></i> Add DSA</a></li>
