@@ -118,7 +118,7 @@ $err = $_GET['err'] ?? '';
                                         <input type="hidden" name="content" id="content">
                                     </div>
                                     <div class="col-12 pt-2">
-                                        <button type="submit" class="btn btn-dark px-4">
+                                        <button type="submit" class="btn btn-dark px-4 mt-3">
                                             <i class="fas fa-save me-2"></i> Update Blog
                                         </button>
                                         <a href="blogs.php" class="btn btn-link text-muted text-decoration-none ms-2">Cancel</a>

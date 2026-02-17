@@ -409,22 +409,7 @@ if ($blog) {
                             </ol>
                         </div>
 
-                        <div class="sidebar-card">
-                            <h6 class="fw-bold mb-2">Share Article</h6>
-                            <div class="share-wrap">
-                                <?php
-                                $currentUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https://' : 'http://')
-                                    . ($_SERVER['HTTP_HOST'] ?? '')
-                                    . ($_SERVER['REQUEST_URI'] ?? '');
-                                $encodedUrl = urlencode($currentUrl);
-                                $encodedTitle = urlencode((string) $blog['title']);
-                                ?>
-                                <a class="share-btn" href="https://www.facebook.com/sharer/sharer.php?u=<?= $encodedUrl ?>" target="_blank" rel="noopener">Facebook</a>
-                                <a class="share-btn" href="https://twitter.com/intent/tweet?url=<?= $encodedUrl ?>&text=<?= $encodedTitle ?>" target="_blank" rel="noopener">X</a>
-                                <a class="share-btn" href="https://www.linkedin.com/shareArticle?mini=true&url=<?= $encodedUrl ?>&title=<?= $encodedTitle ?>" target="_blank" rel="noopener">LinkedIn</a>
-                                <a class="share-btn" href="https://wa.me/?text=<?= $encodedTitle ?>%20<?= $encodedUrl ?>" target="_blank" rel="noopener">WhatsApp</a>
-                            </div>
-                        </div>
+                     
 
                         <?php if (!empty($relatedBlogs)): ?>
                             <div class="sidebar-card">
