@@ -869,75 +869,9 @@ document.addEventListener('DOMContentLoaded', function() {
     </div>
 </section>
 
-<!-- FAQ Section -->
-<section class="py-5 bg-white faq-section">
-    <div class="container">
-        <div class="row g-4 align-items-start">
-            <div class="col-lg-4">
-                <div class="faq-panel">
-                    <div class="faq-kicker mb-3">
-                        <i class="fas fa-circle-question"></i> FAQs
-                    </div>
-                    <h2 class="fw-bold mb-2">Questions? We have answers.</h2>
-                    <p class="text-muted mb-4">Clear, quick responses to common loan queries.</p>
+<?php include 'includes/certificate-section.php'; ?>
 
-                    <div class="faq-stats">
-                        <div class="faq-stat">
-                            <h5>48 min</h5>
-                            <span>Fast approvals</span>
-                        </div>
-                        <div class="faq-stat">
-                            <h5>24x7</h5>
-                            <span>Support access</span>
-                        </div>
-                        <div class="faq-stat">
-                            <h5>₹250CR</h5>
-                            <span>Max amount</span>
-                        </div>
-                        <div class="faq-stat">
-                            <h5>9.75%</h5>
-                            <span>Rates from</span>
-                        </div>
-                    </div>
 
-                    <a href="contact.php" class="btn btn-outline-primary w-100 rounded-pill mt-4">
-                        <i class="fas fa-headset me-2"></i> Talk to an Expert
-                    </a>
-                </div>
-            </div>
-
-            <div class="col-lg-8">
-                <?php if (!empty($faq_items)): ?>
-                    <div class="accordion faq-accordion" id="faqAccordion">
-                        <?php foreach ($faq_items as $index => $faq): 
-                            $collapse_id = 'faqItem' . (int)$faq['id'];
-                            $heading_id = 'heading' . (int)$faq['id'];
-                            $is_first = $index === 0;
-                        ?>
-                        <div class="accordion-item shadow-sm rounded-3 mb-3">
-                            <h2 class="accordion-header" id="<?= $heading_id ?>">
-                                <button class="accordion-button <?= $is_first ? '' : 'collapsed' ?>" type="button"
-                                        data-bs-toggle="collapse" data-bs-target="#<?= $collapse_id ?>"
-                                        aria-expanded="<?= $is_first ? 'true' : 'false' ?>" aria-controls="<?= $collapse_id ?>">
-                                    <?= htmlspecialchars($faq['question']) ?>
-                                </button>
-                            </h2>
-                            <div id="<?= $collapse_id ?>" class="accordion-collapse collapse <?= $is_first ? 'show' : '' ?>"
-                                 aria-labelledby="<?= $heading_id ?>" data-bs-parent="#faqAccordion">
-                                <div class="accordion-body text-muted">
-                                    <?= nl2br(htmlspecialchars($faq['answer'])) ?>
-                                </div>
-                            </div>
-                        </div>
-                        <?php endforeach; ?>
-                    </div>
-                <?php else: ?>
-                    <div class="text-center text-muted">FAQs will be available soon.</div>
-                <?php endif; ?>
-            </div>
-        </div>
-    </div>
-</section>
 <!-- Testimonials Section -->
 <section class="py-5 partner-stories-section">
     <div class="container">
@@ -1063,6 +997,7 @@ document.addEventListener('DOMContentLoaded', function() {
         <?php endif; ?>
     </div>
 </section>
+
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const slider = document.getElementById('testimonialSlider');
@@ -1136,6 +1071,75 @@ document.addEventListener('DOMContentLoaded', function() {
     startAutoSlide();
 });
 </script>
+<!-- FAQ Section -->
+<section class="py-5 bg-white faq-section">
+    <div class="container">
+        <div class="row g-4 align-items-start">
+            <div class="col-lg-4">
+                <div class="faq-panel">
+                    <div class="faq-kicker mb-3">
+                        <i class="fas fa-circle-question"></i> FAQs
+                    </div>
+                    <h2 class="fw-bold mb-2">Questions? We have answers.</h2>
+                    <p class="text-muted mb-4">Clear, quick responses to common loan queries.</p>
+
+                    <div class="faq-stats">
+                        <div class="faq-stat">
+                            <h5>48 min</h5>
+                            <span>Fast approvals</span>
+                        </div>
+                        <div class="faq-stat">
+                            <h5>24x7</h5>
+                            <span>Support access</span>
+                        </div>
+                        <div class="faq-stat">
+                            <h5>₹250CR</h5>
+                            <span>Max amount</span>
+                        </div>
+                        <div class="faq-stat">
+                            <h5>9.75%</h5>
+                            <span>Rates from</span>
+                        </div>
+                    </div>
+
+                    <a href="contact.php" class="btn btn-outline-primary w-100 rounded-pill mt-4">
+                        <i class="fas fa-headset me-2"></i> Talk to an Expert
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-lg-8">
+                <?php if (!empty($faq_items)): ?>
+                    <div class="accordion faq-accordion" id="faqAccordion">
+                        <?php foreach ($faq_items as $index => $faq): 
+                            $collapse_id = 'faqItem' . (int)$faq['id'];
+                            $heading_id = 'heading' . (int)$faq['id'];
+                            $is_first = $index === 0;
+                        ?>
+                        <div class="accordion-item shadow-sm rounded-3 mb-3">
+                            <h2 class="accordion-header" id="<?= $heading_id ?>">
+                                <button class="accordion-button <?= $is_first ? '' : 'collapsed' ?>" type="button"
+                                        data-bs-toggle="collapse" data-bs-target="#<?= $collapse_id ?>"
+                                        aria-expanded="<?= $is_first ? 'true' : 'false' ?>" aria-controls="<?= $collapse_id ?>">
+                                    <?= htmlspecialchars($faq['question']) ?>
+                                </button>
+                            </h2>
+                            <div id="<?= $collapse_id ?>" class="accordion-collapse collapse <?= $is_first ? 'show' : '' ?>"
+                                 aria-labelledby="<?= $heading_id ?>" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body text-muted">
+                                    <?= nl2br(htmlspecialchars($faq['answer'])) ?>
+                                </div>
+                            </div>
+                        </div>
+                        <?php endforeach; ?>
+                    </div>
+                <?php else: ?>
+                    <div class="text-center text-muted">FAQs will be available soon.</div>
+                <?php endif; ?>
+            </div>
+        </div>
+    </div>
+</section>
 <!-- CTA Section -->
 <section class="cta-section py-5">
     <i class="fas fa-coins cta-float float-1"></i>

@@ -1,6 +1,7 @@
 <?php
 $current_page = basename($_SERVER['PHP_SELF']);
 $testimonial_active = in_array($current_page, ['testimonial_add.php', 'testimonials.php', 'testimonial_edit.php'], true);
+$certificate_active = in_array($current_page, ['certificate_add.php', 'certificates.php', 'certificate_edit.php'], true);
 $brand_active = in_array($current_page, ['brand_add.php', 'brands.php', 'brand_edit.php'], true);
 $blog_active = in_array($current_page, ['blogs.php', 'blog_add.php', 'blog_edit.php'], true);
 $dept_active = in_array($current_page, ['add-department.php', 'departments.php'], true);
@@ -499,6 +500,16 @@ $loan_all_active = ($current_page === 'loan_applications.php' && $active_loan_ca
                 <ul class="side-nav-second-level">
                     <li><a href="testimonial_add.php" class="side-nav-link <?= ($current_page === 'testimonial_add.php') ? 'active' : '' ?>"><i class="fas fa-plus"></i> Add Testimonial</a></li>
                     <li><a href="testimonials.php" class="side-nav-link <?= ($current_page === 'testimonials.php' || $current_page === 'testimonial_edit.php') ? 'active' : '' ?>"><i class="fas fa-eye"></i> View Testimonials</a></li>
+                </ul>
+            </li>
+                        <li class="side-nav-item <?= $certificate_active ? 'active' : '' ?>">
+                <a href="javascript:void(0);" class="side-nav-link has-arrow">
+                    <i class="ri-award-line"></i>
+                    <span>Manage Certificates</span>
+                </a>
+                <ul class="side-nav-second-level">
+                    <li><a href="certificate_add.php" class="side-nav-link <?= ($current_page === 'certificate_add.php') ? 'active' : '' ?>"><i class="fas fa-plus"></i> Add Certificate</a></li>
+                    <li><a href="certificates.php" class="side-nav-link <?= ($current_page === 'certificates.php' || $current_page === 'certificate_edit.php') ? 'active' : '' ?>"><i class="fas fa-eye"></i> View Certificates</a></li>
                 </ul>
             </li>
 <li class="side-nav-item <?= $websettings_active ? 'active' : '' ?>">
