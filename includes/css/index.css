@@ -98,7 +98,7 @@
         flex-shrink: 0;
         white-space: nowrap;
     }
-    
+
     /* Form Styles - Professional */
     .form-card {
         background: rgba(255, 255, 255, 0.95);
@@ -358,6 +358,17 @@
 
     /* Button Styles using Root Variables */
     .btn-outline-primary {
+        --bs-btn-color: var(--primary-color);
+        --bs-btn-border-color: var(--primary-color);
+        --bs-btn-hover-color: #ffffff;
+        --bs-btn-hover-bg: var(--primary-color);
+        --bs-btn-hover-border-color: var(--primary-color);
+        --bs-btn-focus-shadow-rgb: 11, 8, 27;
+        --bs-btn-active-color: #ffffff;
+        --bs-btn-active-bg: var(--primary-dark);
+        --bs-btn-active-border-color: var(--primary-dark);
+        --bs-btn-disabled-color: var(--primary-color);
+        --bs-btn-disabled-border-color: var(--primary-color);
         color: var(--primary-color);
         border-color: var(--primary-color);
     }
@@ -366,6 +377,16 @@
         background-color: var(--primary-color);
         border-color: var(--primary-color);
         color: white;
+    }
+
+    .btn-outline-primary:active,
+    .btn-outline-primary.active,
+    .btn-check:checked + .btn-outline-primary,
+    .btn-check:active + .btn-outline-primary,
+    .show > .btn-outline-primary.dropdown-toggle {
+        background-color: var(--primary-dark);
+        border-color: var(--primary-dark);
+        color: #ffffff;
     }
 
     /* Alert Styles */
