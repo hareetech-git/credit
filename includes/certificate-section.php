@@ -26,7 +26,7 @@ if ($certificate_result && mysqli_num_rows($certificate_result) > 0) {
                 <i class="fas fa-award me-2"></i> Our Achievements
             </span>
             <h2 class="fw-bold mb-3">Our Certificates & Awards</h2>
-            <p class="text-muted">Andromeda's achievements so far.</p>
+            <p class="text-muted">Udhaar Capital's achievements so far.</p>
         </div>
         
         <?php if (!empty($certificates)): ?>
