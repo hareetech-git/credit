@@ -1,6 +1,24 @@
 <div class="navbar-custom">
     <div class="topbar container-fluid">
         <div class="d-flex align-items-center gap-1">
+            <div class="logo-topbar">
+                <a href="dashboard.php" class="logo-light">
+                    <span class="logo-lg">
+                        <img src="../admin/assets/udhaar_logo.png" alt="logo">
+                    </span>
+                    <span class="logo-sm">
+                        <img src="../admin/assets/udhaar_logo.png" alt="small logo">
+                    </span>
+                </a>
+                <a href="dashboard.php" class="logo-dark">
+                    <span class="logo-lg">
+                        <img src="../admin/assets/udhaar_logo.png" alt="dark logo">
+                    </span>
+                    <span class="logo-sm">
+                        <img src="../admin/assets/udhaar_logo.png" alt="small logo">
+                    </span>
+                </a>
+            </div>
             <button class="button-toggle-menu"><i class="mdi mdi-menu"></i></button>
             <h4 class="page-title d-none d-sm-block">DSA Portal</h4>
         </div>

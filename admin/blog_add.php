@@ -56,6 +56,7 @@ $err = $_GET['err'] ?? '';
         padding: 11px 26px;
         border-radius: 8px;
         font-weight: 600;
+        margin-top: 34px;
     }
 </style>
 
