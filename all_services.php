@@ -38,11 +38,98 @@ if (isset($conn)) {
 ?>
 
 <style>
-/* Breadcrumb Styles */
+/* Breadcrumb Styles - With Background Image and Centered Navigation */
 .breadcrumb-section {
-    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-    padding: 20px 0;
-    border-bottom: 1px solid #e2e8f0;
+    position: relative;
+    padding: 80px 0;
+    background: url('includes/assets/services.jpg') no-repeat center center;
+    background-size: cover;
+    background-attachment: ;
+    text-align: center;
+    isolation: isolate;
+}
+
+/* Dark overlay for better text readability */
+.breadcrumb-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.5) 100%);
+    z-index: 1;
+    pointer-events: none;
+}
+
+.breadcrumb-container {
+    position: relative;
+    z-index: 2;
+    max-width: 800px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.breadcrumb-header {
+    margin-bottom: 15px;
+}
+
+.breadcrumb-subtitle {
+    color: rgba(255,255,255,0.9);
+    font-size: 1rem;
+    font-weight: 500;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    display: inline-block;
+    background: rgba(200,16,46,0.2);
+    padding: 5px 15px;
+    border-radius: 30px;
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+.breadcrumb-title {
+    font-size: 3.2rem;
+    font-weight: 800;
+    color: white;
+    margin: 0 0 20px 0;
+    line-height: 1.2;
+    text-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    letter-spacing: -0.02em;
+}
+
+.breadcrumb-title span {
+    color: var(--primary-color);
+    position: relative;
+    display: inline-block;
+}
+
+.breadcrumb-title span::after {
+    content: '';
+    position: absolute;
+    bottom: 5px;
+    left: 0;
+    width: 100%;
+    height: 8px;
+    background: rgba(200,16,46,0.3);
+    z-index: -1;
+    border-radius: 4px;
+}
+
+.breadcrumb-nav {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    background: rgba(255,255,255,0.1);
+    backdrop-filter: blur(10px);
+    padding: 12px 25px;
+    border-radius: 50px;
+    border: 1px solid rgba(255,255,255,0.2);
+    display: inline-flex;
+    margin: 0 auto;
 }
 
 .breadcrumb {
@@ -52,54 +139,135 @@ if (isset($conn)) {
     display: flex;
     align-items: center;
     flex-wrap: wrap;
+    justify-content: center;
 }
 
 .breadcrumb-item {
-    font-size: 0.95rem;
+    font-size: 1rem;
     font-weight: 500;
 }
 
 .breadcrumb-item a {
-    color: var(--primary-color);
+    color: rgba(255,255,255,0.9);
     text-decoration: none;
-    transition: color 0.2s ease;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 10px;
+    border-radius: 30px;
 }
 
 .breadcrumb-item a:hover {
-    color: var(--primary-dark);
-    text-decoration: underline;
+    color: white;
+    background: rgba(255,255,255,0.1);
+    transform: translateY(-2px);
 }
 
 .breadcrumb-item.active {
-    color: #64748b;
+    color: white;
     font-weight: 600;
+    padding: 5px 10px;
+}
+
+.breadcrumb-item.active i {
+    color: var(--primary-color);
 }
 
 .breadcrumb-item + .breadcrumb-item::before {
     content: "›";
-    color: #94a3b8;
-    font-size: 1.2rem;
+    color: rgba(255,255,255,0.5);
+    font-size: 1.4rem;
     line-height: 1;
-    padding: 0 8px;
+    padding: 0 5px;
+}
+
+.breadcrumb-icon {
+    width: 35px;
+    height: 35px;
+    background: rgba(200,16,46,0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1rem;
+    margin-right: 10px;
+    border: 1px solid rgba(255,255,255,0.2);
 }
 
 /* Responsive */
 @media (max-width: 768px) {
-    .breadcrumb-item {
-        font-size: 0.85rem;
+    .breadcrumb-section {
+        padding: 60px 0;
     }
+    
+    .breadcrumb-title {
+        font-size: 2.2rem;
+    }
+    
+    .breadcrumb-nav {
+        padding: 10px 20px;
+    }
+    
+    .breadcrumb-item {
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .breadcrumb-title {
+        font-size: 1.8rem;
+    }
+    
+    .breadcrumb-nav {
+        flex-direction: column;
+        border-radius: 20px;
+        padding: 15px;
+    }
+}
+
+/* Services Section Styles */
+.card-hover {
+    transition: all 0.3s ease;
+}
+
+.card-hover:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1) !important;
 }
 </style>
 
-<!-- Breadcrumb Section -->
+<!-- Breadcrumb Section - With Background Image and Centered Navigation -->
 <section class="breadcrumb-section">
     <div class="container">
-        <div class="row">
-            <div class="col-12">
+        <div class="breadcrumb-container">
+            <div class="breadcrumb-header">
+                <span class="breadcrumb-subtitle">
+                    <i class="fas fa-tag me-2"></i>Our Services
+                </span>
+            </div>
+            
+            <h1 class="breadcrumb-title">
+                <span>All Services</span>
+            </h1>
+            
+            <div class="breadcrumb-nav">
+                <span class="breadcrumb-icon">
+                    <i class="fas fa-compass"></i>
+                </span>
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="index.php"><i class="fas fa-home me-1"></i>Home</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">All Services</li>
+                        <li class="breadcrumb-item">
+                            <a href="index.php">
+                                <i class="fas fa-home"></i> 
+                                <span class="d-none d-sm-inline">Home</span>
+                            </a>
+                        </li>
+                        <li class="breadcrumb-item active" aria-current="page">
+                            <i class="fas fa-cog"></i> 
+                            <span>All Services</span>
+                        </li>
                     </ol>
                 </nav>
             </div>
