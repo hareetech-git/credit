@@ -16,6 +16,31 @@ if (!$certificate) {
     header("Location: certificates.php");
     exit;
 }
+
+// Image path resolver function for certificates
+if (!function_exists('resolveAdminCertificateImage')) {
+    function resolveAdminCertificateImage(string $storedPath): string
+    {
+        $path = trim($storedPath);
+        if ($path === '') {
+            return '';
+        }
+        if (preg_match('/^https?:\/\//i', $path)) {
+            return $path;
+        }
+        $path = ltrim($path, '/');
+        if (strpos($path, 'admin/') === 0) {
+            return substr($path, 6);
+        }
+        if (strpos($path, 'assets/') === 0) {
+            return $path;
+        }
+        if (strpos($path, 'uploads/') === 0) {
+            return '../' . $path;
+        }
+        return 'assets/certificates/' . $path;
+    }
+}
 ?>
 
 <?php include 'header.php'; ?>
@@ -84,7 +109,10 @@ if (!$certificate) {
                                         <label class="form-label">Current Image</label>
                                         <div class="mb-2">
                                             <?php if (!empty($certificate['certificate_img'])): ?>
-                                                <img src="../<?= htmlspecialchars($certificate['certificate_img']) ?>" 
+                                                <?php 
+                                                $img_path = resolveAdminCertificateImage((string) $certificate['certificate_img']);
+                                                ?>
+                                                <img src="<?= htmlspecialchars($img_path) ?>" 
                                                      alt="Current Image"
                                                      class="current-image"
                                                      onerror="this.onerror=null; this.src='https://via.placeholder.com/100x100?text=Certificate';">
