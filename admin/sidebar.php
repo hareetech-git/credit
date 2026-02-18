@@ -160,13 +160,13 @@ $loan_all_active = ($current_page === 'loan_applications.php' && $active_loan_ca
         transform: translateX(1px);
     }
 
-    .side-nav-item.active > .side-nav-link {
+    .side-nav-item.active>.side-nav-link {
         background: linear-gradient(135deg, var(--admin-nav-accent-soft), #121212);
         border-color: #3b3b3b;
         box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
     }
 
-    .side-nav-item.active > .side-nav-link i {
+    .side-nav-item.active>.side-nav-link i {
         color: var(--admin-nav-accent) !important;
     }
 
@@ -179,7 +179,7 @@ $loan_all_active = ($current_page === 'loan_applications.php' && $active_loan_ca
         font-size: 1rem;
     }
 
-    .side-nav-item.active > .side-nav-link.has-arrow::after {
+    .side-nav-item.active>.side-nav-link.has-arrow::after {
         transform: rotate(180deg);
         color: var(--admin-nav-accent);
     }
@@ -315,6 +315,7 @@ $loan_all_active = ($current_page === 'loan_applications.php' && $active_loan_ca
     }
 
     @media (max-width: 991.98px) {
+
         .leftside-menu,
         .leftside-menu::before {
             width: 100%;
@@ -364,9 +365,15 @@ $loan_all_active = ($current_page === 'loan_applications.php' && $active_loan_ca
                     <span>Staff Control</span>
                 </a>
                 <ul class="side-nav-second-level">
-                    <li><a href="staff_add.php" class="side-nav-link <?= ($current_page === 'staff_add.php') ? 'active' : '' ?>"><i class="fas fa-plus"></i> Add Staff</a></li>
-                    <li><a href="staff_list.php" class="side-nav-link <?= ($current_page === 'staff_list.php') ? 'active' : '' ?>"><i class="fas fa-users-cog"></i> View Staff</a></li>
-                    <li><a href="manage_permissions.php" class="side-nav-link <?= ($current_page === 'manage_permissions.php') ? 'active' : '' ?>"><i class="fas fa-user-shield"></i> Manage Access</a></li>
+                    <li><a href="staff_add.php"
+                            class="side-nav-link <?= ($current_page === 'staff_add.php') ? 'active' : '' ?>"><i
+                                class="fas fa-plus"></i> Add Staff</a></li>
+                    <li><a href="staff_list.php"
+                            class="side-nav-link <?= ($current_page === 'staff_list.php') ? 'active' : '' ?>"><i
+                                class="fas fa-users-cog"></i> View Staff</a></li>
+                    <li><a href="manage_permissions.php"
+                            class="side-nav-link <?= ($current_page === 'manage_permissions.php') ? 'active' : '' ?>"><i
+                                class="fas fa-user-shield"></i> Manage Access</a></li>
                 </ul>
             </li>
 
@@ -376,10 +383,18 @@ $loan_all_active = ($current_page === 'loan_applications.php' && $active_loan_ca
                     <span>DSA Control</span>
                 </a>
                 <ul class="side-nav-second-level">
-                    <li><a href="dsa_add.php" class="side-nav-link <?= ($current_page === 'dsa_add.php') ? 'active' : '' ?>"><i class="fas fa-plus"></i> Add DSA</a></li>
-                    <li><a href="dsa_list.php" class="side-nav-link <?= ($current_page === 'dsa_list.php') ? 'active' : '' ?>"><i class="fas fa-users"></i> View DSA</a></li>
-                    <li><a href="manage_dsa_permissions.php" class="side-nav-link <?= ($current_page === 'manage_dsa_permissions.php') ? 'active' : '' ?>"><i class="fas fa-key"></i> Manage Access</a></li>
-                    <li><a href="dsa_requests.php" class="side-nav-link <?= ($current_page === 'dsa_requests.php') ? 'active' : '' ?>"><i class="fas fa-user-check"></i> DSA Requests</a></li>
+                    <li><a href="dsa_add.php"
+                            class="side-nav-link <?= ($current_page === 'dsa_add.php') ? 'active' : '' ?>"><i
+                                class="fas fa-plus"></i> Add DSA</a></li>
+                    <li><a href="dsa_list.php"
+                            class="side-nav-link <?= ($current_page === 'dsa_list.php') ? 'active' : '' ?>"><i
+                                class="fas fa-users"></i> View DSA</a></li>
+                    <li><a href="manage_dsa_permissions.php"
+                            class="side-nav-link <?= ($current_page === 'manage_dsa_permissions.php') ? 'active' : '' ?>"><i
+                                class="fas fa-key"></i> Manage Access</a></li>
+                    <li><a href="dsa_requests.php"
+                            class="side-nav-link <?= ($current_page === 'dsa_requests.php') ? 'active' : '' ?>"><i
+                                class="fas fa-user-check"></i> DSA Requests</a></li>
                 </ul>
             </li>
 
@@ -391,8 +406,12 @@ $loan_all_active = ($current_page === 'loan_applications.php' && $active_loan_ca
                     <span>Manage Department</span>
                 </a>
                 <ul class="side-nav-second-level">
-                    <li><a href="add-department.php" class="side-nav-link <?= ($current_page === 'add-department.php') ? 'active' : '' ?>"><i class="fas fa-plus"></i> Create</a></li>
-                    <li><a href="departments.php" class="side-nav-link <?= ($current_page === 'departments.php') ? 'active' : '' ?>"><i class="fas fa-eye"></i> View</a></li>
+                    <li><a href="add-department.php"
+                            class="side-nav-link <?= ($current_page === 'add-department.php') ? 'active' : '' ?>"><i
+                                class="fas fa-plus"></i> Create</a></li>
+                    <li><a href="departments.php"
+                            class="side-nav-link <?= ($current_page === 'departments.php') ? 'active' : '' ?>"><i
+                                class="fas fa-eye"></i> View</a></li>
                 </ul>
             </li>
 
@@ -402,8 +421,12 @@ $loan_all_active = ($current_page === 'loan_applications.php' && $active_loan_ca
                     <span>Manage Customer</span>
                 </a>
                 <ul class="side-nav-second-level">
-                    <li><a href="customer_add.php" class="side-nav-link <?= ($current_page === 'customer_add.php') ? 'active' : '' ?>"><i class="fas fa-user-plus"></i> Add Customer</a></li>
-                    <li><a href="customers.php" class="side-nav-link <?= ($current_page === 'customers.php' || $current_page === 'customer_view.php') ? 'active' : '' ?>"><i class="fas fa-users"></i> View Customers</a></li>
+                    <li><a href="customer_add.php"
+                            class="side-nav-link <?= ($current_page === 'customer_add.php') ? 'active' : '' ?>"><i
+                                class="fas fa-user-plus"></i> Add Customer</a></li>
+                    <li><a href="customers.php"
+                            class="side-nav-link <?= ($current_page === 'customers.php' || $current_page === 'customer_view.php') ? 'active' : '' ?>"><i
+                                class="fas fa-users"></i> View Customers</a></li>
                 </ul>
             </li>
 
@@ -413,17 +436,24 @@ $loan_all_active = ($current_page === 'loan_applications.php' && $active_loan_ca
                     <span>Loan Management</span>
                 </a>
                 <ul class="side-nav-second-level">
-                    <li><a href="loan_applications.php" class="side-nav-link <?= $loan_all_active ? 'active' : '' ?>"><i class="fas fa-file-invoice-dollar"></i> All Applications</a></li>
+                    <li><a href="loan_applications.php" class="side-nav-link <?= $loan_all_active ? 'active' : '' ?>"><i
+                                class="fas fa-file-invoice-dollar"></i> All Applications</a></li>
                     <?php foreach ($loan_categories as $loanCat): ?>
                         <?php $catId = (int) $loanCat['id']; ?>
                         <li>
-                            <a href="loan_applications.php?cat_id=<?= $catId ?>" class="side-nav-link <?= ($current_page === 'loan_applications.php' && $active_loan_category_id === $catId) ? 'active' : '' ?>">
-                                <i class="fas fa-angle-right"></i> <?= htmlspecialchars((string) $loanCat['category_name']) ?>
+                            <a href="loan_applications.php?cat_id=<?= $catId ?>"
+                                class="side-nav-link <?= ($current_page === 'loan_applications.php' && $active_loan_category_id === $catId) ? 'active' : '' ?>">
+                                <i class="fas fa-angle-right"></i>
+                                <?= htmlspecialchars((string) $loanCat['category_name']) ?>
                             </a>
                         </li>
                     <?php endforeach; ?>
-                    <li><a href="manual_loan_assign.php" class="side-nav-link <?= ($current_page === 'manual_loan_assign.php') ? 'active' : '' ?>"><i class="fas fa-user-check"></i> Manual Assign</a></li>
-                    <li><a href="loan_applications.php?status=rejected" class="side-nav-link <?= $loan_rejected_active ? 'active' : '' ?>"><i class="fas fa-ban"></i> Rejected Apps</a></li>
+                    <li><a href="manual_loan_assign.php"
+                            class="side-nav-link <?= ($current_page === 'manual_loan_assign.php') ? 'active' : '' ?>"><i
+                                class="fas fa-user-check"></i> Manual Assign</a></li>
+                    <li><a href="loan_applications.php?status=rejected"
+                            class="side-nav-link <?= $loan_rejected_active ? 'active' : '' ?>"><i
+                                class="fas fa-ban"></i> Rejected Apps</a></li>
                 </ul>
             </li>
 
@@ -435,8 +465,12 @@ $loan_all_active = ($current_page === 'loan_applications.php' && $active_loan_ca
                     <span>Manage Category</span>
                 </a>
                 <ul class="side-nav-second-level">
-                    <li><a href="category_add.php" class="side-nav-link <?= ($current_page === 'category_add.php') ? 'active' : '' ?>"><i class="fas fa-plus"></i> Create</a></li>
-                    <li><a href="category.php" class="side-nav-link <?= ($current_page === 'category.php' || $current_page === 'category_edit.php') ? 'active' : '' ?>"><i class="fas fa-eye"></i> View</a></li>
+                    <li><a href="category_add.php"
+                            class="side-nav-link <?= ($current_page === 'category_add.php') ? 'active' : '' ?>"><i
+                                class="fas fa-plus"></i> Create</a></li>
+                    <li><a href="category.php"
+                            class="side-nav-link <?= ($current_page === 'category.php' || $current_page === 'category_edit.php') ? 'active' : '' ?>"><i
+                                class="fas fa-eye"></i> View</a></li>
                 </ul>
             </li>
 
@@ -446,8 +480,12 @@ $loan_all_active = ($current_page === 'loan_applications.php' && $active_loan_ca
                     <span>Manage Subcategory</span>
                 </a>
                 <ul class="side-nav-second-level">
-                    <li><a href="subcategory_add.php" class="side-nav-link <?= ($current_page === 'subcategory_add.php') ? 'active' : '' ?>"><i class="fas fa-plus"></i> Create</a></li>
-                    <li><a href="subcategory.php" class="side-nav-link <?= ($current_page === 'subcategory.php' || $current_page === 'subcategory_edit.php') ? 'active' : '' ?>"><i class="fas fa-eye"></i> View</a></li>
+                    <li><a href="subcategory_add.php"
+                            class="side-nav-link <?= ($current_page === 'subcategory_add.php') ? 'active' : '' ?>"><i
+                                class="fas fa-plus"></i> Create</a></li>
+                    <li><a href="subcategory.php"
+                            class="side-nav-link <?= ($current_page === 'subcategory.php' || $current_page === 'subcategory_edit.php') ? 'active' : '' ?>"><i
+                                class="fas fa-eye"></i> View</a></li>
                 </ul>
             </li>
 
@@ -457,30 +495,84 @@ $loan_all_active = ($current_page === 'loan_applications.php' && $active_loan_ca
                     <span>Manage Service</span>
                 </a>
                 <ul class="side-nav-second-level">
-                    <li><a href="service_add.php" class="side-nav-link <?= ($current_page === 'service_add.php') ? 'active' : '' ?>"><i class="fas fa-plus"></i> Create</a></li>
-                    <li><a href="services.php" class="side-nav-link <?= ($current_page === 'services.php' || $current_page === 'service_edit.php' || $current_page === 'service_view.php' || $current_page === 'service_details.php') ? 'active' : '' ?>"><i class="fas fa-eye"></i> View</a></li>
+                    <li><a href="service_add.php"
+                            class="side-nav-link <?= ($current_page === 'service_add.php') ? 'active' : '' ?>"><i
+                                class="fas fa-plus"></i> Create</a></li>
+                    <li><a href="services.php"
+                            class="side-nav-link <?= ($current_page === 'services.php' || $current_page === 'service_edit.php' || $current_page === 'service_view.php' || $current_page === 'service_details.php') ? 'active' : '' ?>"><i
+                                class="fas fa-eye"></i> View</a></li>
+                </ul>
+            </li>
+            <li class="side-nav-item <?= $testimonial_active ? 'active' : '' ?>">
+                <a href="javascript:void(0);" class="side-nav-link has-arrow">
+                    <i class="ri-star-line"></i>
+                    <span>Manage Testimonials</span>
+                </a>
+                <ul class="side-nav-second-level">
+                    <li><a href="testimonial_add.php"
+                            class="side-nav-link <?= ($current_page === 'testimonial_add.php') ? 'active' : '' ?>"><i
+                                class="fas fa-plus"></i> Add Testimonial</a></li>
+                    <li><a href="testimonials.php"
+                            class="side-nav-link <?= ($current_page === 'testimonials.php' || $current_page === 'testimonial_edit.php') ? 'active' : '' ?>"><i
+                                class="fas fa-eye"></i> View Testimonials</a></li>
                 </ul>
             </li>
 
-            <li class="side-nav-item <?= $enquiry_active ? 'active' : '' ?>">
-                <a href="enquiries.php" class="side-nav-link">
-                    <i class="ri-question-answer-line"></i>
-                    <span>Enquiries</span>
-                </a>
-            </li>
 
-            <li class="side-nav-item <?= $career_active ? 'active' : '' ?>">
-                <a href="career_applications.php" class="side-nav-link">
-                    <i class="ri-briefcase-4-line"></i>
-                    <span>Careers</span>
+            <li class="side-nav-item <?= $certificate_active ? 'active' : '' ?>">
+                <a href="javascript:void(0);" class="side-nav-link has-arrow">
+                    <i class="ri-award-line"></i>
+                    <span>Manage Certificates</span>
                 </a>
-            </li>
+                <ul class="side-nav-second-level">
+                    <li><a href="certificate_add.php"
+                            class="side-nav-link <?= ($current_page === 'certificate_add.php') ? 'active' : '' ?>"><i
+                                class="fas fa-plus"></i> Add Certificate</a></li>
+                    <li><a href="certificates.php"
+                            class="side-nav-link <?= ($current_page === 'certificates.php' || $current_page === 'certificate_edit.php') ? 'active' : '' ?>"><i
+                                class="fas fa-eye"></i> View Certificates</a>
+                    </li>
 
-            <li class="side-nav-item <?= $faq_active ? 'active' : '' ?>">
-                <a href="faqs.php" class="side-nav-link">
-                    <i class="ri-question-line"></i>
-                    <span>FAQs</span>
-                </a>
+
+
+
+                    <li class="side-nav-item <?= $brand_active ? 'active' : '' ?>">
+                        <a href="javascript:void(0);" class="side-nav-link has-arrow">
+                            <i class="ri-building-2-line"></i>
+                            <span>Manage Brands</span>
+                        </a>
+                        <ul class="side-nav-second-level">
+                            <li><a href="brand_add.php"
+                                    class="side-nav-link <?= ($current_page === 'brand_add.php') ? 'active' : '' ?>"><i
+                                        class="fas fa-plus"></i> Add Brand</a></li>
+                            <li><a href="brands.php"
+                                    class="side-nav-link <?= ($current_page === 'brands.php' || $current_page === 'brand_edit.php') ? 'active' : '' ?>"><i
+                                        class="fas fa-eye"></i> View Brands</a></li>
+                        </ul>
+                    </li>
+                    <li class="side-nav-item <?= $enquiry_active ? 'active' : '' ?>">
+                        <a href="enquiries.php" class="side-nav-link">
+                            <i class="ri-question-answer-line"></i>
+                            <span>Enquiries</span>
+                        </a>
+                    </li>
+
+                    <li class="side-nav-item <?= $career_active ? 'active' : '' ?>">
+                        <a href="career_applications.php" class="side-nav-link">
+                            <i class="ri-briefcase-4-line"></i>
+                            <span>Careers</span>
+                        </a>
+                    </li>
+
+                    <li class="side-nav-item <?= $faq_active ? 'active' : '' ?>">
+                        <a href="faqs.php" class="side-nav-link">
+                            <i class="ri-question-line"></i>
+                            <span>FAQs</span>
+                        </a>
+                    </li>
+
+
+                </ul>
             </li>
             <li class="side-nav-item <?= $blog_active ? 'active' : '' ?>">
                 <a href="javascript:void(0);" class="side-nav-link has-arrow">
@@ -488,46 +580,21 @@ $loan_all_active = ($current_page === 'loan_applications.php' && $active_loan_ca
                     <span>Manage Blogs</span>
                 </a>
                 <ul class="side-nav-second-level">
-                    <li><a href="blog_add.php" class="side-nav-link <?= ($current_page === 'blog_add.php') ? 'active' : '' ?>"><i class="fas fa-plus"></i> Add Blog</a></li>
-                    <li><a href="blogs.php" class="side-nav-link <?= ($current_page === 'blogs.php' || $current_page === 'blog_edit.php') ? 'active' : '' ?>"><i class="fas fa-eye"></i> View Blogs</a></li>
+                    <li><a href="blog_add.php"
+                            class="side-nav-link <?= ($current_page === 'blog_add.php') ? 'active' : '' ?>"><i
+                                class="fas fa-plus"></i> Add Blog</a></li>
+                    <li><a href="blogs.php"
+                            class="side-nav-link <?= ($current_page === 'blogs.php' || $current_page === 'blog_edit.php') ? 'active' : '' ?>"><i
+                                class="fas fa-eye"></i> View Blogs</a></li>
                 </ul>
             </li>
-                        <li class="side-nav-item <?= $testimonial_active ? 'active' : '' ?>">
-                <a href="javascript:void(0);" class="side-nav-link has-arrow">
-                    <i class="ri-star-line"></i>
-                    <span>Manage Testimonials</span>
+            <li class="side-nav-item <?= $websettings_active ? 'active' : '' ?>">
+                <a href="web_settings.php" class="side-nav-link">
+                    <i class="ri-settings-3-line"></i>
+                    <span>Web Settings</span>
                 </a>
-                <ul class="side-nav-second-level">
-                    <li><a href="testimonial_add.php" class="side-nav-link <?= ($current_page === 'testimonial_add.php') ? 'active' : '' ?>"><i class="fas fa-plus"></i> Add Testimonial</a></li>
-                    <li><a href="testimonials.php" class="side-nav-link <?= ($current_page === 'testimonials.php' || $current_page === 'testimonial_edit.php') ? 'active' : '' ?>"><i class="fas fa-eye"></i> View Testimonials</a></li>
-                </ul>
             </li>
-                        <li class="side-nav-item <?= $certificate_active ? 'active' : '' ?>">
-                <a href="javascript:void(0);" class="side-nav-link has-arrow">
-                    <i class="ri-award-line"></i>
-                    <span>Manage Certificates</span>
-                </a>
-                <ul class="side-nav-second-level">
-                    <li><a href="certificate_add.php" class="side-nav-link <?= ($current_page === 'certificate_add.php') ? 'active' : '' ?>"><i class="fas fa-plus"></i> Add Certificate</a></li>
-                    <li><a href="certificates.php" class="side-nav-link <?= ($current_page === 'certificates.php' || $current_page === 'certificate_edit.php') ? 'active' : '' ?>"><i class="fas fa-eye"></i> View Certificates</a></li>
-                </ul>
-            </li>
-<li class="side-nav-item <?= $websettings_active ? 'active' : '' ?>">
-    <a href="web_settings.php" class="side-nav-link">
-        <i class="ri-settings-3-line"></i>
-        <span>Web Settings</span>
-    </a>
-</li>
-            <li class="side-nav-item <?= $brand_active ? 'active' : '' ?>">
-                <a href="javascript:void(0);" class="side-nav-link has-arrow">
-                    <i class="ri-building-2-line"></i>
-                    <span>Manage Brands</span>
-                </a>
-                <ul class="side-nav-second-level">
-                    <li><a href="brand_add.php" class="side-nav-link <?= ($current_page === 'brand_add.php') ? 'active' : '' ?>"><i class="fas fa-plus"></i> Add Brand</a></li>
-                    <li><a href="brands.php" class="side-nav-link <?= ($current_page === 'brands.php' || $current_page === 'brand_edit.php') ? 'active' : '' ?>"><i class="fas fa-eye"></i> View Brands</a></li>
-                </ul>
-            </li>
+
 
             <li class="side-nav-item">
                 <a href="db/auth-logout.php" class="side-nav-link text-danger">
