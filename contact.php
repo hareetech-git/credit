@@ -724,7 +724,7 @@ if (isset($conn)) {
                     <div class="form-group">
                         <label class="form-label" for="email">Email *</label>
                         <input type="email" name="email" id="email" class="form-control"
-                               placeholder="devkratika8726@.com" required>
+                               placeholder="devkratika8726@gmail.com" required>
                     </div>
 
                     <div class="form-group">
