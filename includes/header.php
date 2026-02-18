@@ -126,9 +126,43 @@ option, marquee, div {
     font-family: "Plus Jakarta Sans", sans-serif !important;
 }
    </style>
-   
+   <style>
+/* Full Page Loader */
+#page-loader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #ffffff;
+    z-index: 99999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Centered Logo */
+#page-loader img {
+    width: 220px;
+    animation: pulse 1.5s infinite ease-in-out;
+}
+
+/* Soft pulse animation */
+@keyframes pulse {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.05); opacity: 0.8; }
+    100% { transform: scale(1); opacity: 1; }
+}
+</style>
+
 </head>
 <body>
+<!-- Page Loader -->
+<div id="page-loader">
+    <div class="loader-inner">
+        <img src="includes/assets/udhaar_logo.png" alt="Loading">
+    </div>
+</div>
 
 <header class="header-custom">
     <div class="header-container">
@@ -371,3 +405,17 @@ option, marquee, div {
         toggleMenu(); 
     }
 </script>
+<script>
+window.addEventListener("load", function () {
+    const loader = document.getElementById("page-loader");
+    if (loader) {
+        loader.style.opacity = "0";
+        loader.style.transition = "opacity 0.4s ease";
+
+        setTimeout(() => {
+            loader.style.display = "none";
+        }, 400);
+    }
+});
+</script>
+
