@@ -123,6 +123,8 @@ if ($staff_res) {
                                     <th>Resume</th>
                                     <th>Status</th>
                                     <th>Assigned Staff</th>
+                                    <th width="80">Action</th>
+
                                     <th>Submitted</th>
                                 </tr>
                             </thead>
@@ -166,6 +168,14 @@ if ($staff_res) {
                                                 <?php echo date('d M Y', strtotime((string)$row['created_at'])); ?><br>
                                                 <?php echo date('h:i A', strtotime((string)$row['created_at'])); ?>
                                             </td>
+                                            <td>
+    <a href="db/delete/delete_career_application.php?id=<?php echo (int)$row['id']; ?>"
+       class="btn btn-sm btn-outline-danger"
+       onclick="return confirm('Are you sure you want to delete this application?');">
+        <i class="fas fa-trash"></i>
+    </a>
+</td>
+
                                         </tr>
                                     <?php endwhile; ?>
                                 <?php else: ?>

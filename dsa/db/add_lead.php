@@ -9,10 +9,10 @@ if (!isset($_SESSION['dsa_id'])) {
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header('Location: ../add-lead.php?err=Invalid request');
-    exit;
+    exit; 
 }
 
-$dsa_id = (int)$_SESSION['dsa_id'];
+$dsa_id = (int)$_SESSION['dsa_id']; 
 
 $permTbl = mysqli_query($conn, "SHOW TABLES LIKE 'dsa_permissions'");
 $userPermTbl = mysqli_query($conn, "SHOW TABLES LIKE 'dsa_user_permissions'");
@@ -25,7 +25,7 @@ if ($permTbl && mysqli_num_rows($permTbl) > 0 && $userPermTbl && mysqli_num_rows
     if (!$permRes || mysqli_num_rows($permRes) === 0) {
         header('Location: ../dashboard.php?err=Access denied');
         exit;
-    }
+    } 
 }
 
 $hasDsaColumn = false;
@@ -101,36 +101,35 @@ if ($employee_type === 'business' && $company_name === '') {
 if ($monthly_income < 0) {
     header('Location: ../add-lead.php?err=Monthly income cannot be negative');
     exit;
-}
+} 
 
 if (!preg_match('/^[0-9]{6}$/', $pin_code)) {
     header('Location: ../add-lead.php?err=Enter valid 6-digit pin code');
     exit;
-}
+} 
 
 if (!preg_match('/^[6-9][0-9]{9}$/', $reference1_phone) || !preg_match('/^[6-9][0-9]{9}$/', $reference2_phone)) {
     header('Location: ../add-lead.php?err=Enter valid reference mobile numbers');
     exit;
 }
 
-$r1n_norm = strtolower(preg_replace('/\s+/', ' ', trim((string)($_POST['reference1_name'] ?? ''))));
-$r2n_norm = strtolower(preg_replace('/\s+/', ' ', trim((string)($_POST['reference2_name'] ?? ''))));
 $r1p_norm = preg_replace('/\D+/', '', (string)($_POST['reference1_phone'] ?? ''));
 $r2p_norm = preg_replace('/\D+/', '', (string)($_POST['reference2_phone'] ?? ''));
-if (($r1n_norm !== '' && $r1n_norm === $r2n_norm) || ($r1p_norm !== '' && $r1p_norm === $r2p_norm)) {
-    header('Location: ../add-lead.php?err=Reference 1 and Reference 2 must be different');
+
+if ($r1p_norm !== '' && $r1p_norm === $r2p_norm) {
+    header('Location: ../add-lead.php?err=Reference phone numbers must be different');
     exit;
 }
 
 $svcRes = mysqli_query($conn, "SELECT id FROM services WHERE id = $service_id LIMIT 1");
 if (!$svcRes || mysqli_num_rows($svcRes) === 0) {
     header('Location: ../add-lead.php?err=Invalid loan product selected');
-    exit;
-}
+    exit; 
+} 
 
-mysqli_begin_transaction($conn);
+mysqli_begin_transaction($conn); 
 
-try {
+try { 
     $customer_id = 0;
     $custRes = mysqli_query($conn, "SELECT id FROM customers WHERE email = '$email' OR phone = '$phone' LIMIT 1");
     if ($custRes && mysqli_num_rows($custRes) > 0) {
@@ -145,7 +144,7 @@ try {
     }
 
     if ($customer_id <= 0) {
-        throw new Exception('Unable to create customer');
+        throw new Exception('Unable to create customer'); 
     }
 
     mysqli_query($conn, "UPDATE enquiries SET customer_id = $customer_id WHERE customer_id IS NULL AND email = '$email'");

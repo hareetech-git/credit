@@ -181,7 +181,10 @@ $services = mysqli_query($conn, "SELECT id, service_name FROM services ORDER BY 
 
                             <div class="col-12">
                                 <small id="referenceError" class="text-danger d-none">Reference 1 and Reference 2 must be different (name and phone).</small>
-                                <small class="block-note d-block mt-1">Use two different persons with different mobile numbers.</small>
+                               <small id="referenceError" class="text-danger d-none">
+    Reference 1 and Reference 2 phone numbers must be different.
+</small>
+
                             </div>
                         </div>
                     </div>
@@ -256,23 +259,7 @@ function normalizePan() {
     panInput.value = String(panInput.value || '').toUpperCase();
 }
 
-function validateReferenceUniqueness() {
-    const r1n = document.querySelector('input[name="reference1_name"]');
-    const r2n = document.querySelector('input[name="reference2_name"]');
-    const r1p = document.querySelector('input[name="reference1_phone"]');
-    const r2p = document.querySelector('input[name="reference2_phone"]');
-    if (!r1n || !r2n || !r1p || !r2p || !refError) return true;
-
-    const n1 = String(r1n.value || '').trim().toLowerCase().replace(/\s+/g, ' ');
-    const n2 = String(r2n.value || '').trim().toLowerCase().replace(/\s+/g, ' ');
-    const p1 = String(r1p.value || '').replace(/\D+/g, '');
-    const p2 = String(r2p.value || '').replace(/\D+/g, '');
-
-    const duplicate = (n1 !== '' && n1 === n2) || (p1 !== '' && p1 === p2);
-    refError.classList.toggle('d-none', !duplicate);
-    return !duplicate;
-}
-
+validateReferenceUniqueness()
 function enforceAge18() {
     if (!birthDate || !birthDate.value) return true;
     const dob = new Date(birthDate.value);
