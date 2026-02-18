@@ -164,17 +164,18 @@ if ($staff_res) {
                                                     </div>
                                                 </form>
                                             </td>
-                                            <td class="small text-muted">
-                                                <?php echo date('d M Y', strtotime((string)$row['created_at'])); ?><br>
-                                                <?php echo date('h:i A', strtotime((string)$row['created_at'])); ?>
-                                            </td>
-                                            <td>
+                                                                                    <td>
     <a href="db/delete/delete_career_application.php?id=<?php echo (int)$row['id']; ?>"
        class="btn btn-sm btn-outline-danger"
        onclick="return confirm('Are you sure you want to delete this application?');">
         <i class="fas fa-trash"></i>
     </a>
 </td>
+                                            <td class="small text-muted">
+                                                <?php echo date('d M Y', strtotime((string)$row['created_at'])); ?><br>
+                                                <?php echo date('h:i A', strtotime((string)$row['created_at'])); ?>
+                                            </td>
+    
 
                                         </tr>
                                     <?php endwhile; ?>

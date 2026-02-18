@@ -1,15 +1,15 @@
 <?php
 session_start();
-include '../../db/config.php';
+include '../../../db/config.php';
 
 if (!isset($_SESSION['admin_id'])) {
-    header("Location: ../../index.php?err=Login required");
+    header("Location: ../../../index.php?err=Login required");
     exit;
 }
 
 $id = (int)($_GET['id'] ?? 0);
 if ($id <= 0) {
-    header("Location: ../career_applications.php?err=Invalid application ID");
+    header("Location: ../../career_applications.php?err=Invalid application ID");
     exit;
 }
 
@@ -18,11 +18,11 @@ $res = mysqli_query($conn, "SELECT resume_path FROM career_applications WHERE id
 $app = $res ? mysqli_fetch_assoc($res) : null;
 
 if (!$app) {
-    header("Location: ../career_applications.php?err=Application not found");
+    header("Location: ../../career_applications.php?err=Application not found");
     exit;
 }
 
-/* Delete DB record */
+/* Delete record */
 if (mysqli_query($conn, "DELETE FROM career_applications WHERE id = $id")) {
 
     /* Delete resume file */
@@ -31,9 +31,9 @@ if (mysqli_query($conn, "DELETE FROM career_applications WHERE id = $id")) {
         @unlink("../../../" . $resume);
     }
 
-    header("Location: ../career_applications.php?msg=Application deleted successfully");
+    header("Location: ../../career_applications.php?msg=Application deleted successfully");
     exit;
 }
 
-header("Location: ../career_applications.php?err=Failed to delete application");
+header("Location: ../../career_applications.php?err=Failed to delete application");
 exit;
