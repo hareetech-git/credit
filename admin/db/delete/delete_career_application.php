@@ -5,7 +5,7 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 
 session_start();
-include '../../../db/config.php';
+include '../config.php';
 
 if (!isset($_SESSION['admin_id'])) {
     header("Location: ../../../index.php?err=Login required");
