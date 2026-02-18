@@ -135,7 +135,7 @@ unset($_SESSION['success_message']);
                 
                 <div class="hero-stats">
                     <div class="stat-item">
-                        <span class="stat-number">48 Min</span>
+                        <span class="stat-number">48 Hours</span>
                         <span class="stat-label">Approval Time</span>
                     </div>
                     <div class="stat-item">
@@ -316,7 +316,123 @@ unset($_SESSION['success_message']);
     </div>
 </section>
  <!-- Why Choose Us Section -->
+<section class="py-5" style="background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);">
+    <div class="container py-4">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-6 text-center position-relative">
+                <div class="presence-map-container">
+                    <div class="map-bg-circle"></div>
+                    <i class="fas fa-map-location-dot map-main-icon"></i>
+                    
+                    <div class="branch-badge shadow-lg animate-bounce">
+                        <span class="d-block fw-bold fs-3">18+</span>
+                        <span class="text-uppercase small">Physical Branches</span>
+                    </div>
+                </div>
+            </div>
 
+            <div class="col-lg-6">
+                <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill mb-3">
+                    <i class="fas fa-earth-asia me-2"></i> Our Footprint
+                </span>
+                <h2 class="fw-bold mb-4" style="color: #1a1a1a;">Expanding Across <span class="text-primary">India</span></h2>
+                <p class="text-muted mb-5">We are committed to bringing financial freedom to every doorstep. With a growing network of branches and digital support, we are now serving customers across major Indian states.</p>
+
+                <div class="row g-3">
+                    <?php 
+                    $states = [
+                        ['name' => 'Uttar Pradesh', 'icon' => 'fa-temple'],
+                        ['name' => 'Bihar', 'icon' => 'fa-archway'],
+                        ['name' => 'Delhi & NCR', 'icon' => 'fa-city'],
+                        ['name' => 'West Bengal', 'icon' => 'fa-bridge'],
+                        ['name' => 'Rajasthan', 'icon' => 'fa-fort-awesome'],
+                        ['name' => 'Maharashtra', 'icon' => 'fa-mountain-sun']
+                    ];
+                    foreach ($states as $state): ?>
+                    <div class="col-6 col-md-4">
+                        <div class="state-card p-3 shadow-sm border-0 rounded-4 bg-white h-100 d-flex align-items-center">
+                            <div class="state-icon-sm me-2 bg-primary bg-opacity-10 text-primary rounded-circle">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <span class="fw-semibold text-dark small"><?= $state['name'] ?></span>
+                        </div>
+                    </div>
+                    <?php endforeach; ?>
+                </div>
+
+                <div class="mt-5 p-4 rounded-4 bg-primary text-white shadow-lg d-flex align-items-center">
+                    <div class="me-3 fs-1 opacity-50"><i class="fas fa-building-circle-check"></i></div>
+                    <div>
+                        <h5 class="mb-1 fw-bold">18 Specialized Branches</h5>
+                        <p class="mb-0 small opacity-90">Visit us for personalized financial consulting and on-the-spot document verification.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<style>
+.presence-map-container {
+    position: relative;
+    padding: 40px;
+}
+
+.map-main-icon {
+    font-size: 180px;
+    color: var(--bs-primary);
+    opacity: 0.15;
+    position: relative;
+    z-index: 2;
+}
+
+.map-bg-circle {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(13, 110, 253, 0.1) 0%, transparent 70%);
+    border-radius: 50%;
+}
+
+.branch-badge {
+    position: absolute;
+    top: 20%;
+    right: 15%;
+    background: #fff;
+    padding: 15px 25px;
+    border-radius: 20px;
+    border-left: 5px solid var(--bs-primary);
+    z-index: 3;
+}
+
+.state-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.state-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.08) !important;
+}
+
+.state-icon-sm {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+.animate-bounce {
+    animation: bounce 4s infinite ease-in-out;
+}
+</style>
 <section class="ud-cap-feature-section" style="background-image: url('includes/assets/why choose us.png');">
     <div class="ud-cap-overlay"></div>
     
@@ -1092,7 +1208,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
                     <div class="faq-stats">
                         <div class="faq-stat">
-                            <h5>48 min</h5>
+                            <h5>48 hours</h5>
                             <span>Fast approvals</span>
                         </div>
                         <div class="faq-stat">
@@ -1311,7 +1427,4 @@ require_once 'includes/footer.php';
 ?>
 </body>
 </html>
-
-
-
 

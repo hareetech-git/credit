@@ -459,37 +459,49 @@ $team = mysqli_query($conn, "SELECT * FROM team_members WHERE status=1 ORDER BY 
 <section class="story-section bg-light" id="our-story">
     <div class="container">
         <div class="row g-5 align-items-center">
-            <div class="col-lg-6 fade-in-up">
-                <div class="story-card">
-                    <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill mb-3">
-                        <i class="fas fa-history me-2"></i> Our Journey
-                    </span>
-                    
-                    <h2 class="fw-bold mb-4">From a Vision to Reality</h2>
-                    
-                    <p class="text-muted mb-4" style="font-size: 1.1rem; line-height: 1.8;">
-                        Udhar Capital was born from a simple observation: millions of Indians struggle to access fair and transparent financial services. Traditional lending was complicated, time-consuming, and often inaccessible to those who needed it most.
-                    </p>
-                    
-                    <p class="text-muted mb-4" style="font-size: 1.1rem; line-height: 1.8;">
-                        We set out to change that. By leveraging technology and maintaining unwavering commitment to customer satisfaction, we've created a lending platform that puts people first – offering quick approvals, minimal documentation, and interest rates that don't burden your dreams.
-                    </p>
-                    
-                    <div class="d-flex align-items-center p-4 bg-white rounded-3 shadow-sm">
-                        <div class="flex-shrink-0 me-3">
-                            <div class="bg-primary bg-opacity-10 rounded-circle p-3">
-                                <i class="fas fa-quote-right fs-3 text-primary"></i>
-                            </div>
-                        </div>
-                        <div>
-                            <p class="mb-0 fst-italic text-muted">
-                                "Making financial freedom accessible to every Indian, one loan at a time."
-                            </p>
-                            <small class="text-primary fw-bold">- Our Mission</small>
-                        </div>
-                    </div>
+        <div class="col-lg-6 fade-in-up">
+    <div class="story-card">
+        <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill mb-3">
+            <i class="fas fa-history me-2"></i> Our Journey
+        </span>
+        
+        <h2 class="fw-bold mb-4">From a Vision to Reality</h2>
+        
+        <p class="text-muted mb-4" style="font-size: 1.1rem; line-height: 1.8;">
+            Udhar Capital (Fundify Communication Pvt Ltd) is a leading direct selling company specializing in loan distribution. 
+            Established in 2023, we are committed to providing accessible and convenient financial solutions to individuals and businesses across India.
+        </p>
+
+        <p class="text-muted mb-4" style="font-size: 1.1rem; line-height: 1.8;">
+            Fundify acts as a trusted platform between you and top banks and NBFCs, helping you secure loans at competitive and low interest rates. 
+            We are tied up with leading banks and financial institutions to assist you in every possible way in financial services.
+        </p>
+
+        <p class="text-muted mb-4" style="font-size: 1.1rem; line-height: 1.8;">
+            We empower our clients by offering tailored loan products that meet their unique financial needs — including personal loans, home loans, and business loans. 
+            Udhar Capital has successfully facilitated loan disbursements exceeding ₹200 crore, serving over one thousand satisfied clients across India.
+        </p>
+
+        <p class="text-muted mb-4" style="font-size: 1.1rem; line-height: 1.8;">
+            Our company also has a co-lending partnership with Capsafe Fintech Pvt. Ltd., strengthening our ability to deliver reliable and efficient financial solutions.
+        </p>
+        
+        <div class="d-flex align-items-center p-4 bg-white rounded-3 shadow-sm">
+            <div class="flex-shrink-0 me-3">
+                <div class="bg-primary bg-opacity-10 rounded-circle p-3">
+                    <i class="fas fa-quote-right fs-3 text-primary"></i>
                 </div>
             </div>
+            <div>
+                <p class="mb-0 fst-italic text-muted">
+                    "Making financial freedom accessible to every Indian, one loan at a time."
+                </p>
+                <small class="text-primary fw-bold">- Our Mission</small>
+            </div>
+        </div>
+    </div>
+</div>
+
             
             <div class="col-lg-6 fade-in-up delay-1">
                 <div class="story-card bg-white">
