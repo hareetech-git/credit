@@ -37,11 +37,18 @@ if ($certificate_result && mysqli_num_rows($certificate_result) > 0) {
                             <div class="certificate-slide">
                                 <div class="certificate-card">
                                     <div class="certificate-image-wrapper">
+                                        <!-- Background Image Layer -->
+                                        <div class="certificate-bg-layer" style="background-image: url('includes/assets/bg_certi.jpg');"></div>
+                                        
+                                        <!-- Foreground Certificate Image -->
                                         <?php if (!empty($certificate['certificate_img'])): ?>
                                             <img src="admin/<?= htmlspecialchars($certificate['certificate_img']) ?>" 
                                                  alt="<?= htmlspecialchars($certificate['name']) ?>"
                                                  class="certificate-image"
-                                                 onerror="this.onerror=null; this.src='https://via.placeholder.com/200x150?text=Certificate';">
+                                                 onerror="this.onerror=null; this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                            <div class="certificate-placeholder" style="display: none;">
+                                                <i class="fas fa-award fa-4x text-primary opacity-25"></i>
+                                            </div>
                                         <?php else: ?>
                                             <div class="certificate-placeholder">
                                                 <i class="fas fa-award fa-4x text-primary opacity-25"></i>
@@ -119,7 +126,8 @@ if ($certificate_result && mysqli_num_rows($certificate_result) > 0) {
 }
 
 .certificate-section .certificate-image-wrapper {
-    height: 150px;
+    position: relative;
+    height: 180px; /* Slightly increased to accommodate background */
     overflow: hidden;
     background: #f8fafc;
     display: flex;
@@ -128,11 +136,43 @@ if ($certificate_result && mysqli_num_rows($certificate_result) > 0) {
     padding: 15px;
 }
 
+/* Background Image Layer */
+.certificate-section .certificate-bg-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0.15; /* Adjust opacity to make it subtle */
+    z-index: 1;
+    pointer-events: none; /* So it doesn't interfere with clicks */
+}
+
+/* Overlay to ensure text/foreground remains readable */
+.certificate-section .certificate-image-wrapper::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.85); /* White overlay to lighten the background */
+    z-index: 2;
+    pointer-events: none;
+}
+
+/* Certificate Image - Now appears above background */
 .certificate-section .certificate-image {
-    max-width: 100%;
+    position: relative;
+    max-width: 85%; /* Slightly smaller to show background */
     max-height: 120px;
     object-fit: contain;
     transition: transform 0.3s ease;
+    z-index: 3;
+    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
 }
 
 .certificate-section .certificate-card:hover .certificate-image {
@@ -140,11 +180,13 @@ if ($certificate_result && mysqli_num_rows($certificate_result) > 0) {
 }
 
 .certificate-section .certificate-placeholder {
+    position: relative;
     width: 100%;
     height: 120px;
     display: flex;
     align-items: center;
     justify-content: center;
+    z-index: 3;
 }
 
 .certificate-section .certificate-name {
@@ -152,6 +194,8 @@ if ($certificate_result && mysqli_num_rows($certificate_result) > 0) {
     text-align: center;
     border-top: 1px solid #f1f5f9;
     background: white;
+    position: relative;
+    z-index: 3;
 }
 
 .certificate-section .certificate-name p {
@@ -231,11 +275,19 @@ if ($certificate_result && mysqli_num_rows($certificate_result) > 0) {
     .certificate-section .certificate-arrow {
         display: none;
     }
+    
+    .certificate-section .certificate-image-wrapper {
+        height: 160px;
+    }
 }
 
 @media (max-width: 576px) {
     .certificate-section .certificate-slide {
         flex: 0 0 calc(50% - 10px); /* 2 items per row */
+    }
+    
+    .certificate-section .certificate-image-wrapper {
+        height: 150px;
     }
 }
 </style>

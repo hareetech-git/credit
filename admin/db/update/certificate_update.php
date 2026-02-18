@@ -1,13 +1,14 @@
 <?php
-session_start();
+// No session_start() here - it's already in header.php
 include '../config.php';
 
 // Initialize error array
 $errors = [];
+$success_message = '';
 
 // Check if form is submitted
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    $_SESSION['errors'] = ['Invalid request method'];
+    $_SESSION['error'] = 'Invalid request method';
     header("Location: ../../certificates.php");
     exit;
 }
@@ -15,8 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 // Get and validate certificate ID
 $certificate_id = isset($_POST['certificate_id']) ? (int)$_POST['certificate_id'] : 0;
 if ($certificate_id <= 0) {
-    $errors[] = 'Invalid certificate ID';
-    $_SESSION['errors'] = $errors;
+    $_SESSION['error'] = 'Invalid certificate ID';
     header("Location: ../../certificates.php");
     exit;
 }
@@ -66,7 +66,7 @@ if (isset($_FILES['certificate_img']) && $_FILES['certificate_img']['error'] == 
     $allowed_extensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
     
     if (!in_array($file_extension, $allowed_extensions)) {
-        $errors[] = 'Only JPG, JPEG, PNG, GIF & WEBP files are allowed. Uploaded file type: ' . $file_extension;
+        $errors[] = 'Only JPG, JPEG, PNG, GIF & WEBP files are allowed.';
         $_SESSION['errors'] = $errors;
         header("Location: ../../certificate_edit.php?id=$certificate_id");
         exit;
@@ -86,34 +86,16 @@ if (isset($_FILES['certificate_img']) && $_FILES['certificate_img']['error'] == 
     $target_file = $target_dir . $new_filename;
     
     if (move_uploaded_file($_FILES['certificate_img']['tmp_name'], $target_file)) {
-        // Delete old image if exists
-        if (!empty($existing_image)) {
+        // Delete old image if exists and not a placeholder
+        if (!empty($existing_image) && strpos($existing_image, 'placeholder') === false) {
             $old_file_path = "../../" . $existing_image;
             if (file_exists($old_file_path)) {
-                if (!unlink($old_file_path)) {
-                    // Log error but don't stop the process
-                    error_log("Failed to delete old certificate image: " . $old_file_path);
-                }
+                unlink($old_file_path); // Don't check result, just try to delete
             }
         }
         $certificate_img = 'assets/certificates/' . $new_filename;
     } else {
-        $upload_error = $_FILES['certificate_img']['error'];
-        $error_messages = [
-            UPLOAD_ERR_INI_SIZE => 'The uploaded file exceeds the upload_max_filesize directive in php.ini',
-            UPLOAD_ERR_FORM_SIZE => 'The uploaded file exceeds the MAX_FILE_SIZE directive in the HTML form',
-            UPLOAD_ERR_PARTIAL => 'The file was only partially uploaded',
-            UPLOAD_ERR_NO_FILE => 'No file was uploaded',
-            UPLOAD_ERR_NO_TMP_DIR => 'Missing a temporary folder',
-            UPLOAD_ERR_CANT_WRITE => 'Failed to write file to disk',
-            UPLOAD_ERR_EXTENSION => 'A PHP extension stopped the file upload'
-        ];
-        
-        $error_msg = isset($error_messages[$upload_error]) 
-            ? $error_messages[$upload_error] 
-            : 'Failed to upload image. Error code: ' . $upload_error;
-        
-        $errors[] = $error_msg;
+        $errors[] = 'Failed to upload image. Please try again.';
         $_SESSION['errors'] = $errors;
         header("Location: ../../certificate_edit.php?id=$certificate_id");
         exit;
@@ -125,8 +107,7 @@ $query = "UPDATE certificates SET name = ?, certificate_img = ? WHERE id = ?";
 $stmt = mysqli_prepare($conn, $query);
 
 if (!$stmt) {
-    $errors[] = "Database error: Failed to prepare statement. " . mysqli_error($conn);
-    $_SESSION['errors'] = $errors;
+    $_SESSION['error'] = "Database error: Failed to prepare statement.";
     header("Location: ../../certificate_edit.php?id=$certificate_id");
     exit;
 }
@@ -134,21 +115,15 @@ if (!$stmt) {
 mysqli_stmt_bind_param($stmt, "ssi", $name, $certificate_img, $certificate_id);
 
 if (mysqli_stmt_execute($stmt)) {
-    // Check if any row was actually updated
-    if (mysqli_stmt_affected_rows($stmt) > 0) {
-        $_SESSION['success_message'] = "Certificate updated successfully!";
-    } else {
-        $_SESSION['success_message'] = "No changes were made to the certificate.";
-    }
+    $_SESSION['success_message'] = "Certificate updated successfully!";
     mysqli_stmt_close($stmt);
     mysqli_close($conn);
     header("Location: ../../certificates.php");
     exit;
 } else {
-    $errors[] = "Database error: " . mysqli_stmt_error($stmt);
+    $_SESSION['error'] = "Database error: " . mysqli_stmt_error($stmt);
     mysqli_stmt_close($stmt);
     mysqli_close($conn);
-    $_SESSION['errors'] = $errors;
     header("Location: ../../certificate_edit.php?id=$certificate_id");
     exit;
 }

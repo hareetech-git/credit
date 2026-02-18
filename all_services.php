@@ -57,7 +57,7 @@ if (isset($conn)) {
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(135deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.5) 100%);
+    background: linear-gradient(135deg, rgba(32, 32, 32, 0.7) 0%, rgba(87, 85, 85, 0.5) 100%);
     z-index: 1;
     pointer-events: none;
 }
@@ -95,7 +95,7 @@ if (isset($conn)) {
     color: white;
     margin: 0 0 20px 0;
     line-height: 1.2;
-    text-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    text-shadow: 0 4px 15px rgba(82, 71, 71, 0.5);
     letter-spacing: -0.02em;
 }
 
