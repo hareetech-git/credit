@@ -8,14 +8,6 @@ include 'includes/connection.php';
 $team = mysqli_query($conn, "SELECT * FROM team_members WHERE status=1 ORDER BY id ASC");
 ?>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About Us - Udhar Capital</title>
-   
-</head>
-<body>
-
 <style>
     /* Hero Section */
     .about-hero {
@@ -1006,4 +998,3 @@ $team = mysqli_query($conn, "SELECT * FROM team_members WHERE status=1 ORDER BY 
 // Include footer
 require_once 'includes/footer.php';
 ?>
-</body>

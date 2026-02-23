@@ -309,7 +309,7 @@ unset($_SESSION['success_message']);
         
         <!-- View All Services Button -->
         <div class="text-center mt-5">
-            <a href="all_services.php" class="btn btn-outline-primary btn-lg rounded-pill px-5">
+            <a href="all_services.php" class="btn btn-lg rounded-pill px-5 view-all-theme-btn">
                 View All Services <i class="fas fa-arrow-right ms-2"></i>
             </a>
         </div>

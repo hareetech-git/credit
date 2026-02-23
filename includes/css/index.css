@@ -176,13 +176,28 @@
     background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
     border: none;
     font-weight: 700;
-    font-size: 0.86rem;
+    font-size: 1.2rem;
     box-shadow: 0 10px 26px rgba(220, 38, 38, 0.32);
+    padding: 18px;
 }
-
 .journey-btn:hover {
     transform: translateY(-2px);
     color: #ffffff;
+    box-shadow: 0 14px 28px rgba(220, 38, 38, 0.38);
+}
+
+.view-all-theme-btn {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+    color: #ffffff;
+    border: none;
+    font-weight: 700;
+    box-shadow: 0 10px 26px rgba(220, 38, 38, 0.32);
+}
+
+.view-all-theme-btn:hover,
+.view-all-theme-btn:focus {
+    color: #ffffff;
+    transform: translateY(-2px);
     box-shadow: 0 14px 28px rgba(220, 38, 38, 0.38);
 }
 
