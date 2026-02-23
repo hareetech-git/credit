@@ -4,6 +4,7 @@ session_start();
 
 // Include database connection
 include '../includes/connection.php';
+require_once '../includes/enquiry_notifications.php';
 
 // Form submission handling
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_enquiry'])) {
@@ -69,6 +70,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_enquiry'])) {
                         ($customer_id_sql, '$full_name_clean', '$phone_clean', '$email_clean', $loan_type_id_clean, '$loan_type_name', '$query_message_clean')";
         
         if (mysqli_query($conn, $insert_query)) {
+            $enquiry_id = (int)mysqli_insert_id($conn);
+            if ($enquiry_id > 0) {
+                enquiryNotifyAdminsOnNewEnquiry($conn, $enquiry_id);
+            }
+
             // Store success message in session
             $_SESSION['success_message'] = "Thank you! Your enquiry has been submitted successfully. We'll contact you shortly.";
 

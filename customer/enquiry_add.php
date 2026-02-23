@@ -2,6 +2,7 @@
 include 'header.php';
 include 'topbar.php';
 include 'sidebar.php';
+require_once __DIR__ . '/../includes/enquiry_notifications.php';
 
 $error = '';
 $success = '';
@@ -51,6 +52,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                          VALUES 
                          ($customer_id, '$full_name_clean', '$phone_clean', '$email_clean', $loan_type_id, '$loan_type_name', '$query_message_clean')";
         if (mysqli_query($conn, $insert_query)) {
+            $enquiry_id = (int)mysqli_insert_id($conn);
+            if ($enquiry_id > 0) {
+                enquiryNotifyAdminsOnNewEnquiry($conn, $enquiry_id);
+            }
             $success = 'Enquiry submitted successfully.';
         } else {
             $error = 'Something went wrong. Please try again.';
