@@ -915,12 +915,15 @@ $team = mysqli_query($conn, "SELECT * FROM team_members WHERE status=1 ORDER BY 
             </div>
         </div>
 
+        <?php $memberDescription = trim((string) ($member['short_description'] ?? '')); ?>
+        <?php if ($memberDescription !== ''): ?>
         <div class="team-divider"></div>
 
         <p class="team-quote">
             <i class="fas fa-quote-left"></i>
-            <?php echo htmlspecialchars($member['short_description']); ?>
+            <?php echo htmlspecialchars($memberDescription); ?>
         </p>
+        <?php endif; ?>
 
         <?php if($member['linkedin_link'] || $member['twitter_link'] || $member['email_link']): ?>
             <div class="team-social">
