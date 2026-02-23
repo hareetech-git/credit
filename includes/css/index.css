@@ -64,7 +64,7 @@
 }
 
 .hero-subtitle {
-    font-size: clamp(0.88rem, 0.94vw, 1.02rem);
+    font-size: clamp(1rem, 0.94vw, 1.02rem);
     font-weight: 500;
     opacity: 0.94;
     margin-bottom: 18px;
@@ -127,7 +127,7 @@
 .stat-label {
     margin-top: 4px;
     display: block;
-    font-size: 0.72rem;
+    font-size: 0.77rem;
     font-weight: 500;
     color: rgba(255, 255, 255, 0.86);
 }
@@ -167,6 +167,8 @@
 
 .hero-section .btn-outline-light:hover {
     background: rgba(255, 255, 255, 0.16);
+    color:white;
+    font-weight: 700;
     border-color: rgba(255, 255, 255, 0.58);
 }
 
@@ -209,7 +211,7 @@
     margin-bottom: 4px;
     color: #0f172a;
     font-weight: 700;
-    font-size: 0.66rem;
+    font-size: 0.86rem;
     text-transform: uppercase;
     letter-spacing: 0.08em;
 }
