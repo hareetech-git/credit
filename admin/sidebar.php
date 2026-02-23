@@ -443,7 +443,67 @@ $website_settings_group_active = $websettings_active;
                 </a>
             </li>
             <li class="side-nav-title">Modules</li>
-
+   <li class="side-nav-item <?= $lead_desk_active ? 'active' : '' ?>">
+                <a href="javascript:void(0);" class="side-nav-link has-arrow">
+                    <i class="ri-briefcase-5-line"></i>
+                    <span>Lead Desk</span>
+                </a>
+                <ul class="side-nav-second-level">
+                    <li class="side-nav-item <?= $lead_loan_group_active ? 'active' : '' ?>">
+                        <a href="javascript:void(0);" class="side-nav-link has-arrow">
+                            <i class="ri-bank-card-2-line"></i> Loan Management
+                        </a>
+                        <ul class="side-nav-third-level">
+                            <li>
+                                <a href="loan_applications.php"
+                                    class="side-nav-link <?= $loan_all_active ? 'active' : '' ?>">
+                                    <i class="fas fa-file-invoice-dollar"></i> All Applications
+                                </a>
+                            </li>
+                            <?php foreach ($loan_categories as $loan_category): ?>
+                                <?php $loan_category_id = (int) $loan_category['id']; ?>
+                                <li>
+                                    <a href="loan_applications.php?cat_id=<?= $loan_category_id ?>"
+                                        class="side-nav-link <?= ($current_page === 'loan_applications.php' && $active_loan_category_id === $loan_category_id) ? 'active' : '' ?>">
+                                        <i class="fas fa-angle-right"></i> <?= htmlspecialchars((string) $loan_category['category_name']) ?>
+                                    </a>
+                                </li>
+                            <?php endforeach; ?>
+                            <li>
+                                <a href="manual_loan_assign.php"
+                                    class="side-nav-link <?= ($current_page === 'manual_loan_assign.php') ? 'active' : '' ?>">
+                                    <i class="ri-user-follow-line"></i> Manual Assign
+                                </a>
+                            </li>
+                            <li>
+                                <a href="loan_applications.php?status=rejected"
+                                    class="side-nav-link <?= $loan_rejected_active ? 'active' : '' ?>">
+                                    <i class="fas fa-ban"></i> Rejected Apps
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="side-nav-item <?= $lead_enquiry_group_active ? 'active' : '' ?>">
+                        <a href="javascript:void(0);" class="side-nav-link has-arrow">
+                            <i class="ri-question-answer-line"></i> Enquiries
+                        </a>
+                        <ul class="side-nav-third-level">
+                            <li>
+                                <a href="enquiries.php"
+                                    class="side-nav-link <?= in_array($current_page, ['enquiries.php', 'enquiry_view.php'], true) ? 'active' : '' ?>">
+                                    <i class="fas fa-eye"></i> View Enquiries
+                                </a>
+                            </li>
+                            <li>
+                                <a href="enquiry_email.php"
+                                    class="side-nav-link <?= ($current_page === 'enquiry_email.php') ? 'active' : '' ?>">
+                                    <i class="ri-mail-send-line"></i> Send Enquiry Email
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
             <li class="side-nav-item <?= $management_active ? 'active' : '' ?>">
                 <a href="javascript:void(0);" class="side-nav-link has-arrow">
                     <i class="ri-settings-5-line"></i>
@@ -613,67 +673,7 @@ $website_settings_group_active = $websettings_active;
                 </ul>
             </li>
 
-            <li class="side-nav-item <?= $lead_desk_active ? 'active' : '' ?>">
-                <a href="javascript:void(0);" class="side-nav-link has-arrow">
-                    <i class="ri-briefcase-5-line"></i>
-                    <span>Lead Desk</span>
-                </a>
-                <ul class="side-nav-second-level">
-                    <li class="side-nav-item <?= $lead_loan_group_active ? 'active' : '' ?>">
-                        <a href="javascript:void(0);" class="side-nav-link has-arrow">
-                            <i class="ri-bank-card-2-line"></i> Loan Management
-                        </a>
-                        <ul class="side-nav-third-level">
-                            <li>
-                                <a href="loan_applications.php"
-                                    class="side-nav-link <?= $loan_all_active ? 'active' : '' ?>">
-                                    <i class="fas fa-file-invoice-dollar"></i> All Applications
-                                </a>
-                            </li>
-                            <?php foreach ($loan_categories as $loan_category): ?>
-                                <?php $loan_category_id = (int) $loan_category['id']; ?>
-                                <li>
-                                    <a href="loan_applications.php?cat_id=<?= $loan_category_id ?>"
-                                        class="side-nav-link <?= ($current_page === 'loan_applications.php' && $active_loan_category_id === $loan_category_id) ? 'active' : '' ?>">
-                                        <i class="fas fa-angle-right"></i> <?= htmlspecialchars((string) $loan_category['category_name']) ?>
-                                    </a>
-                                </li>
-                            <?php endforeach; ?>
-                            <li>
-                                <a href="manual_loan_assign.php"
-                                    class="side-nav-link <?= ($current_page === 'manual_loan_assign.php') ? 'active' : '' ?>">
-                                    <i class="ri-user-follow-line"></i> Manual Assign
-                                </a>
-                            </li>
-                            <li>
-                                <a href="loan_applications.php?status=rejected"
-                                    class="side-nav-link <?= $loan_rejected_active ? 'active' : '' ?>">
-                                    <i class="fas fa-ban"></i> Rejected Apps
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-                    <li class="side-nav-item <?= $lead_enquiry_group_active ? 'active' : '' ?>">
-                        <a href="javascript:void(0);" class="side-nav-link has-arrow">
-                            <i class="ri-question-answer-line"></i> Enquiries
-                        </a>
-                        <ul class="side-nav-third-level">
-                            <li>
-                                <a href="enquiries.php"
-                                    class="side-nav-link <?= in_array($current_page, ['enquiries.php', 'enquiry_view.php'], true) ? 'active' : '' ?>">
-                                    <i class="fas fa-eye"></i> View Enquiries
-                                </a>
-                            </li>
-                            <li>
-                                <a href="enquiry_email.php"
-                                    class="side-nav-link <?= ($current_page === 'enquiry_email.php') ? 'active' : '' ?>">
-                                    <i class="ri-mail-send-line"></i> Send Enquiry Email
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-                </ul>
-            </li>
+         
 
             <li class="side-nav-item <?= $website_mgmt_active ? 'active' : '' ?>">
                 <a href="javascript:void(0);" class="side-nav-link has-arrow">
