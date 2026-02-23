@@ -588,7 +588,7 @@ unset($_SESSION['success_message']);
         
         <!-- CTA Button -->
         <div class="text-center mt-5 pt-3">
-            <a href="apply-loan.php" class="btn btn-primary btn-lg rounded-pill px-5">
+            <a href="apply-loan.php" class="btn btn-primary btn-lg rounded-pill px-5 journey-btn">
                 <i class="fas fa-play-circle me-2"></i> Start Your Journey
             </a>
         </div>
@@ -654,7 +654,7 @@ unset($_SESSION['success_message']);
                                         <small class="text-muted">Choose between 1 and 20 years</small>
                                     </div>
                                     
-                                    <button class="btn btn-primary w-100 py-3 fw-bold" id="calculateBtn">
+                                    <button class="btn w-100 py-3 fw-bold emi-action-btn" id="calculateBtn">
                                         <i class="fas fa-bolt me-2"></i> Calculate EMI
                                     </button>
                                 </div>
@@ -703,7 +703,7 @@ unset($_SESSION['success_message']);
                                     </div>
                                     
                                     <div class="text-center mt-4">
-                                        <a href="#loanForm" class="btn btn-success w-100 py-2">
+                                        <a href="#loanForm" class="btn w-100 py-2 emi-action-btn">
                                             <i class="fas fa-paper-plane me-2"></i> Apply with These Details
                                         </a>
                                     </div>
