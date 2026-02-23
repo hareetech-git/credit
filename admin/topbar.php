@@ -8,12 +8,12 @@ $adminUnreadTotal = (int)($adminNoticeSummary['total'] ?? 0);
 <style>
     .admin-noti-count {
         position: absolute;
-        top: 8px;
+        top: 19px;
         right: 6px;
         min-width: 18px;
         height: 18px;
         border-radius: 50%;
-        background: #ef4444;
+        background: #850d0d;
         color: #fff;
         font-size: 10px;
         line-height: 18px;

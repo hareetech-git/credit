@@ -175,19 +175,50 @@
 	    </div>
 	</div>
 <script>
-    document.querySelectorAll('.has-arrow').forEach(item => {
-        item.addEventListener('click', function(e) {
-            e.preventDefault();
-            const parent = this.parentElement;
-            const menu = parent.querySelector('.side-nav-second-level');
-            
-            if (menu.style.display === "block") {
-                menu.style.display = "none";
-                parent.classList.remove('active');
-            } else {
-                menu.style.display = "block";
-                parent.classList.add('active');
+    document.addEventListener('DOMContentLoaded', function() {
+        const sidebar = document.querySelector('.leftside-menu .side-nav');
+        if (!sidebar) {
+            return;
+        }
+
+        const closeChildGroups = function(item) {
+            item.querySelectorAll('.side-nav-item.active').forEach(function(child) {
+                child.classList.remove('active');
+            });
+        };
+
+        const closeSiblingGroups = function(item) {
+            const parentList = item.parentElement;
+            if (!parentList) {
+                return;
             }
+
+            Array.from(parentList.children).forEach(function(sibling) {
+                if (sibling !== item && sibling.classList && sibling.classList.contains('side-nav-item')) {
+                    sibling.classList.remove('active');
+                    closeChildGroups(sibling);
+                }
+            });
+        };
+
+        sidebar.querySelectorAll('.side-nav-link.has-arrow').forEach(function(toggleLink) {
+            toggleLink.addEventListener('click', function(event) {
+                event.preventDefault();
+
+                const targetItem = this.closest('.side-nav-item');
+                if (!targetItem) {
+                    return;
+                }
+
+                if (targetItem.classList.contains('active')) {
+                    targetItem.classList.remove('active');
+                    closeChildGroups(targetItem);
+                    return;
+                }
+
+                closeSiblingGroups(targetItem);
+                targetItem.classList.add('active');
+            });
         });
     });
 </script>

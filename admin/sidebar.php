@@ -1,52 +1,106 @@
 <?php
 $current_page = basename($_SERVER['PHP_SELF']);
-$testimonial_active = in_array($current_page, ['testimonial_add.php', 'testimonials.php', 'testimonial_edit.php'], true);
-$certificate_active = in_array($current_page, ['certificate_add.php', 'certificates.php', 'certificate_edit.php'], true);
+
+// Page-level active state
+$testimonial_active = in_array(
+    $current_page,
+    ['testimonial_add.php', 'testimonials.php', 'testimonial_edit.php'],
+    true
+);
+$certificate_active = in_array(
+    $current_page,
+    ['certificate_add.php', 'certificates.php', 'certificate_edit.php'],
+    true
+);
 $brand_active = in_array($current_page, ['brand_add.php', 'brands.php', 'brand_edit.php'], true);
 $blog_active = in_array($current_page, ['blogs.php', 'blog_add.php', 'blog_edit.php'], true);
 $dept_active = in_array($current_page, ['add-department.php', 'departments.php'], true);
-$customer_active = in_array($current_page, ['customer_add.php', 'customers.php', 'customer_edit.php', 'customer_view.php'], true);
-$loan_active = in_array($current_page, ['loan_applications.php', 'loan_view.php', 'manual_loan_assign.php', 'rejected_loans.php'], true);
-
+$customer_active = in_array(
+    $current_page,
+    ['customer_add.php', 'customers.php', 'customer_edit.php', 'customer_view.php'],
+    true
+);
+$loan_active = in_array(
+    $current_page,
+    ['loan_applications.php', 'loan_view.php', 'manual_loan_assign.php', 'rejected_loans.php'],
+    true
+);
 $active_loan_category_id = 0;
 if (isset($_GET['cat_id'])) {
     $active_loan_category_id = (int) $_GET['cat_id'];
 } elseif (isset($_GET['category_id'])) {
     $active_loan_category_id = (int) $_GET['category_id'];
 }
+$loan_status_filter = trim((string) ($_GET['status'] ?? ''));
 
 $loan_categories = [];
 if (isset($conn) && $conn instanceof mysqli) {
-    $loanCatRes = mysqli_query(
+    $loan_category_result = mysqli_query(
         $conn,
         "SELECT id, category_name
          FROM service_categories
          WHERE active = 1
          ORDER BY sequence ASC, category_name ASC"
     );
-    if ($loanCatRes) {
-        while ($catRow = mysqli_fetch_assoc($loanCatRes)) {
-            $loan_categories[] = $catRow;
+
+    if ($loan_category_result) {
+        while ($loan_category_row = mysqli_fetch_assoc($loan_category_result)) {
+            $loan_categories[] = $loan_category_row;
         }
     }
 }
-
 $cat_active = in_array($current_page, ['category_add.php', 'category.php'], true);
-$subcat_active = in_array($current_page, ['subcategory_add.php', 'subcategory.php', 'subcategory_edit.php'], true);
-$service_active = in_array($current_page, ['service_add.php', 'services.php', 'service_edit.php', 'service_details.php', 'service_view.php', 'plan-work.php'], true);
-$faq_active = ($current_page === 'faqs.php');
-$career_active = ($current_page === 'career_applications.php');
+$subcat_active = in_array(
+    $current_page,
+    ['subcategory_add.php', 'subcategory.php', 'subcategory_edit.php'],
+    true
+);
+$service_active = in_array(
+    $current_page,
+    ['service_add.php', 'services.php', 'service_edit.php', 'service_details.php', 'service_view.php', 'plan-work.php'],
+    true
+);
+$faq_active = $current_page === 'faqs.php';
+$career_active = $current_page === 'career_applications.php';
 $staff_active = in_array($current_page, ['staff_add.php', 'staff_list.php', 'manage_permissions.php'], true);
-$dsa_active = in_array($current_page, ['dsa_add.php', 'dsa_list.php', 'dsa_requests.php', 'manage_dsa_permissions.php'], true);
+$dsa_active = in_array(
+    $current_page,
+    ['dsa_add.php', 'dsa_list.php', 'dsa_requests.php', 'manage_dsa_permissions.php'],
+    true
+);
 $enquiry_active = in_array($current_page, ['enquiries.php', 'enquiry_view.php', 'enquiry_email.php'], true);
-$team_active = ($current_page === 'team_members.php');
-$websettings_active = ($current_page === 'web_settings.php');
+$team_active = $current_page === 'team_members.php';
+$websettings_active = $current_page === 'web_settings.php';
+
+// Sidebar profile details
 $admin_sidebar_name = trim((string) ($_SESSION['admin_name'] ?? 'Administrator'));
 $admin_sidebar_role = ucfirst((string) ($_SESSION['admin_role'] ?? 'admin'));
 $admin_sidebar_initial = strtoupper(substr($admin_sidebar_name, 0, 1));
 
-$loan_rejected_active = ($current_page === 'loan_applications.php' && ($_GET['status'] ?? '') === 'rejected');
-$loan_all_active = ($current_page === 'loan_applications.php' && $active_loan_category_id === 0 && !$loan_rejected_active);
+// Top-level groups
+$management_active = $staff_active || $dsa_active || $customer_active;
+$service_mgmt_active = $dept_active || $cat_active || $subcat_active || $service_active;
+$lead_desk_active = $loan_active || $enquiry_active;
+$website_mgmt_active = $team_active || $testimonial_active || $certificate_active || $brand_active || $blog_active || $career_active || $faq_active || $websettings_active;
+$loan_rejected_active = $current_page === 'loan_applications.php' && $loan_status_filter === 'rejected';
+$loan_all_active = $current_page === 'loan_applications.php' && $active_loan_category_id === 0 && !$loan_rejected_active;
+$management_staff_group_active = $staff_active;
+$management_dsa_group_active = $dsa_active;
+$management_customer_group_active = $customer_active;
+$service_department_group_active = $dept_active;
+$service_category_group_active = $cat_active;
+$service_subcategory_group_active = $subcat_active;
+$service_listing_group_active = $service_active;
+$lead_loan_group_active = $loan_active;
+$lead_enquiry_group_active = $enquiry_active;
+$website_team_group_active = $team_active;
+$website_testimonial_group_active = $testimonial_active;
+$website_certificate_group_active = $certificate_active;
+$website_brand_group_active = $brand_active;
+$website_blog_group_active = $blog_active;
+$website_career_group_active = $career_active;
+$website_faq_group_active = $faq_active;
+$website_settings_group_active = $websettings_active;
 ?>
 
 <style>
@@ -160,13 +214,13 @@ $loan_all_active = ($current_page === 'loan_applications.php' && $active_loan_ca
         transform: translateX(1px);
     }
 
-    .side-nav-item.active>.side-nav-link {
+    .side-nav-item.active > .side-nav-link {
         background: linear-gradient(135deg, var(--admin-nav-accent-soft), #121212);
         border-color: #3b3b3b;
         box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
     }
 
-    .side-nav-item.active>.side-nav-link i {
+    .side-nav-item.active > .side-nav-link i {
         color: var(--admin-nav-accent) !important;
     }
 
@@ -179,7 +233,7 @@ $loan_all_active = ($current_page === 'loan_applications.php' && $active_loan_ca
         font-size: 1rem;
     }
 
-    .side-nav-item.active>.side-nav-link.has-arrow::after {
+    .side-nav-item.active > .side-nav-link.has-arrow::after {
         transform: rotate(180deg);
         color: var(--admin-nav-accent);
     }
@@ -196,7 +250,7 @@ $loan_all_active = ($current_page === 'loan_applications.php' && $active_loan_ca
     }
 
     .side-nav-item.active .side-nav-second-level {
-        max-height: 520px;
+        max-height: 1500px;
         opacity: 1;
     }
 
@@ -218,6 +272,40 @@ $loan_all_active = ($current_page === 'loan_applications.php' && $active_loan_ca
     .side-nav-second-level .side-nav-link.active {
         background: rgba(255, 255, 255, 0.1) !important;
         border: 1px solid #3f3f46;
+    }
+
+    .side-nav-third-level {
+        list-style: none;
+        padding: 6px 0 0 14px;
+        margin: 4px 0 2px;
+        max-height: 0;
+        opacity: 0;
+        overflow: hidden;
+        transition: max-height 0.28s ease, opacity 0.22s ease;
+    }
+
+    .side-nav-second-level .side-nav-item.active > .side-nav-third-level {
+        max-height: 460px;
+        opacity: 1;
+    }
+
+    .side-nav-second-level .side-nav-item > .side-nav-link.has-arrow::after {
+        font-size: 0.9rem;
+    }
+
+    .side-nav-third-level .side-nav-link {
+        padding: 7px 10px !important;
+        font-size: 0.78rem !important;
+        border-radius: 8px;
+        border-color: #2f2f2f;
+        background: #0d0d0d;
+        color: #cfd6e6 !important;
+        margin-bottom:10px;
+    }
+
+    .side-nav-third-level .side-nav-link i {
+        font-size: 0.75rem;
+        color: #9ca3af;
     }
 
     .sidebar-brand {
@@ -315,13 +403,16 @@ $loan_all_active = ($current_page === 'loan_applications.php' && $active_loan_ca
     }
 
     @media (max-width: 991.98px) {
-
         .leftside-menu,
         .leftside-menu::before {
             width: 100%;
             max-width: 300px;
         }
     }
+
+    .side-nav-item {
+    margin: -5px 0;
+}
 </style>
 
 <div class="leftside-menu">
@@ -351,245 +442,373 @@ $loan_all_active = ($current_page === 'loan_applications.php' && $active_loan_ca
                     <span>Dashboard</span>
                 </a>
             </li>
+            <li class="side-nav-title">Modules</li>
 
-            <li class="side-nav-item <?= $team_active ? 'active' : '' ?>">
-                <a href="team_members.php" class="side-nav-link">
-                    <i class="fas fa-users"></i>
-                    <span>Manage Team</span>
-                </a>
-            </li>
-
-            <li class="side-nav-item <?= $staff_active ? 'active' : '' ?>">
+            <li class="side-nav-item <?= $management_active ? 'active' : '' ?>">
                 <a href="javascript:void(0);" class="side-nav-link has-arrow">
-                    <i class="ri-user-settings-line"></i>
-                    <span>Staff Control</span>
+                    <i class="ri-settings-5-line"></i>
+                    <span>Management</span>
                 </a>
                 <ul class="side-nav-second-level">
-                    <li><a href="staff_add.php"
-                            class="side-nav-link <?= ($current_page === 'staff_add.php') ? 'active' : '' ?>"><i
-                                class="fas fa-plus"></i> Add Staff</a></li>
-                    <li><a href="staff_list.php"
-                            class="side-nav-link <?= ($current_page === 'staff_list.php') ? 'active' : '' ?>"><i
-                                class="fas fa-users-cog"></i> View Staff</a></li>
-                    <li><a href="manage_permissions.php"
-                            class="side-nav-link <?= ($current_page === 'manage_permissions.php') ? 'active' : '' ?>"><i
-                                class="fas fa-user-shield"></i> Manage Access</a></li>
+                    <li class="side-nav-item <?= $management_staff_group_active ? 'active' : '' ?>">
+                        <a href="javascript:void(0);" class="side-nav-link has-arrow">
+                            <i class="ri-user-settings-line"></i> Staff Control
+                        </a>
+                        <ul class="side-nav-third-level">
+                            <li>
+                                <a href="staff_add.php"
+                                    class="side-nav-link <?= ($current_page === 'staff_add.php') ? 'active' : '' ?>">
+                                    <i class="fas fa-plus"></i> Add Staff
+                                </a>
+                            </li>
+                            <li>
+                                <a href="staff_list.php"
+                                    class="side-nav-link <?= ($current_page === 'staff_list.php') ? 'active' : '' ?>">
+                                    <i class="fas fa-eye"></i> View Staff
+                                </a>
+                            </li>
+                            <li>
+                                <a href="manage_permissions.php"
+                                    class="side-nav-link <?= ($current_page === 'manage_permissions.php') ? 'active' : '' ?>">
+                                    <i class="ri-shield-user-line"></i> Manage Access
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="side-nav-item <?= $management_dsa_group_active ? 'active' : '' ?>">
+                        <a href="javascript:void(0);" class="side-nav-link has-arrow">
+                            <i class="ri-user-star-line"></i> DSA Control
+                        </a>
+                        <ul class="side-nav-third-level">
+                            <li>
+                                <a href="dsa_add.php"
+                                    class="side-nav-link <?= ($current_page === 'dsa_add.php') ? 'active' : '' ?>">
+                                    <i class="fas fa-plus"></i> Add DSA
+                                </a>
+                            </li>
+                            <li>
+                                <a href="dsa_list.php"
+                                    class="side-nav-link <?= in_array($current_page, ['dsa_list.php', 'dsa_view.php'], true) ? 'active' : '' ?>">
+                                    <i class="fas fa-eye"></i> View DSA
+                                </a>
+                            </li>
+                            <li>
+                                <a href="manage_dsa_permissions.php"
+                                    class="side-nav-link <?= ($current_page === 'manage_dsa_permissions.php') ? 'active' : '' ?>">
+                                    <i class="ri-shield-keyhole-line"></i> Manage Access
+                                </a>
+                            </li>
+                            <li>
+                                <a href="dsa_requests.php"
+                                    class="side-nav-link <?= ($current_page === 'dsa_requests.php') ? 'active' : '' ?>">
+                                    <i class="ri-mail-open-line"></i> DSA Requests
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="side-nav-item <?= $management_customer_group_active ? 'active' : '' ?>">
+                        <a href="javascript:void(0);" class="side-nav-link has-arrow">
+                            <i class="ri-user-heart-line"></i> Manage Customer
+                        </a>
+                        <ul class="side-nav-third-level">
+                            <li>
+                                <a href="customer_add.php"
+                                    class="side-nav-link <?= ($current_page === 'customer_add.php') ? 'active' : '' ?>">
+                                    <i class="fas fa-plus"></i> Add Customer
+                                </a>
+                            </li>
+                            <li>
+                                <a href="customers.php"
+                                    class="side-nav-link <?= in_array($current_page, ['customers.php', 'customer_view.php', 'customer_edit.php'], true) ? 'active' : '' ?>">
+                                    <i class="fas fa-eye"></i> View Customers
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
                 </ul>
             </li>
 
-            <li class="side-nav-item <?= $dsa_active ? 'active' : '' ?>">
+            <li class="side-nav-item <?= $service_mgmt_active ? 'active' : '' ?>">
                 <a href="javascript:void(0);" class="side-nav-link has-arrow">
-                    <i class="ri-user-star-line"></i>
-                    <span>DSA Control</span>
-                </a>
-                <ul class="side-nav-second-level">
-                    <li><a href="dsa_add.php"
-                            class="side-nav-link <?= ($current_page === 'dsa_add.php') ? 'active' : '' ?>"><i
-                                class="fas fa-plus"></i> Add DSA</a></li>
-                    <li><a href="dsa_list.php"
-                            class="side-nav-link <?= ($current_page === 'dsa_list.php') ? 'active' : '' ?>"><i
-                                class="fas fa-users"></i> View DSA</a></li>
-                    <li><a href="manage_dsa_permissions.php"
-                            class="side-nav-link <?= ($current_page === 'manage_dsa_permissions.php') ? 'active' : '' ?>"><i
-                                class="fas fa-key"></i> Manage Access</a></li>
-                    <li><a href="dsa_requests.php"
-                            class="side-nav-link <?= ($current_page === 'dsa_requests.php') ? 'active' : '' ?>"><i
-                                class="fas fa-user-check"></i> DSA Requests</a></li>
-                </ul>
-            </li>
-
-            <li class="side-nav-title">CRM & Finance</li>
-
-            <li class="side-nav-item <?= $dept_active ? 'active' : '' ?>">
-                <a href="javascript:void(0);" class="side-nav-link has-arrow">
-                    <i class="ri-building-line"></i>
-                    <span>Manage Department</span>
-                </a>
-                <ul class="side-nav-second-level">
-                    <li><a href="add-department.php"
-                            class="side-nav-link <?= ($current_page === 'add-department.php') ? 'active' : '' ?>"><i
-                                class="fas fa-plus"></i> Create</a></li>
-                    <li><a href="departments.php"
-                            class="side-nav-link <?= ($current_page === 'departments.php') ? 'active' : '' ?>"><i
-                                class="fas fa-eye"></i> View</a></li>
-                </ul>
-            </li>
-
-            <li class="side-nav-item <?= $customer_active ? 'active' : '' ?>">
-                <a href="javascript:void(0);" class="side-nav-link has-arrow">
-                    <i class="ri-user-heart-line"></i>
-                    <span>Manage Customer</span>
-                </a>
-                <ul class="side-nav-second-level">
-                    <li><a href="customer_add.php"
-                            class="side-nav-link <?= ($current_page === 'customer_add.php') ? 'active' : '' ?>"><i
-                                class="fas fa-user-plus"></i> Add Customer</a></li>
-                    <li><a href="customers.php"
-                            class="side-nav-link <?= ($current_page === 'customers.php' || $current_page === 'customer_view.php') ? 'active' : '' ?>"><i
-                                class="fas fa-users"></i> View Customers</a></li>
-                </ul>
-            </li>
-
-            <li class="side-nav-item <?= $loan_active ? 'active' : '' ?>">
-                <a href="javascript:void(0);" class="side-nav-link has-arrow">
-                    <i class="ri-bank-card-2-line"></i>
-                    <span>Loan Management</span>
-                </a>
-                <ul class="side-nav-second-level">
-                    <li><a href="loan_applications.php" class="side-nav-link <?= $loan_all_active ? 'active' : '' ?>"><i
-                                class="fas fa-file-invoice-dollar"></i> All Applications</a></li>
-                    <?php foreach ($loan_categories as $loanCat): ?>
-                        <?php $catId = (int) $loanCat['id']; ?>
-                        <li>
-                            <a href="loan_applications.php?cat_id=<?= $catId ?>"
-                                class="side-nav-link <?= ($current_page === 'loan_applications.php' && $active_loan_category_id === $catId) ? 'active' : '' ?>">
-                                <i class="fas fa-angle-right"></i>
-                                <?= htmlspecialchars((string) $loanCat['category_name']) ?>
-                            </a>
-                        </li>
-                    <?php endforeach; ?>
-                    <li><a href="manual_loan_assign.php"
-                            class="side-nav-link <?= ($current_page === 'manual_loan_assign.php') ? 'active' : '' ?>"><i
-                                class="fas fa-user-check"></i> Manual Assign</a></li>
-                    <li><a href="loan_applications.php?status=rejected"
-                            class="side-nav-link <?= $loan_rejected_active ? 'active' : '' ?>"><i
-                                class="fas fa-ban"></i> Rejected Apps</a></li>
-                </ul>
-            </li>
-
-            <li class="side-nav-title">Services & Categories</li>
-
-            <li class="side-nav-item <?= $cat_active ? 'active' : '' ?>">
-                <a href="javascript:void(0);" class="side-nav-link has-arrow">
-                    <i class="ri-folder-line"></i>
-                    <span>Manage Category</span>
-                </a>
-                <ul class="side-nav-second-level">
-                    <li><a href="category_add.php"
-                            class="side-nav-link <?= ($current_page === 'category_add.php') ? 'active' : '' ?>"><i
-                                class="fas fa-plus"></i> Create</a></li>
-                    <li><a href="category.php"
-                            class="side-nav-link <?= ($current_page === 'category.php' || $current_page === 'category_edit.php') ? 'active' : '' ?>"><i
-                                class="fas fa-eye"></i> View</a></li>
-                </ul>
-            </li>
-
-            <li class="side-nav-item <?= $subcat_active ? 'active' : '' ?>">
-                <a href="javascript:void(0);" class="side-nav-link has-arrow">
-                    <i class="ri-folder-shared-line"></i>
-                    <span>Manage Subcategory</span>
-                </a>
-                <ul class="side-nav-second-level">
-                    <li><a href="subcategory_add.php"
-                            class="side-nav-link <?= ($current_page === 'subcategory_add.php') ? 'active' : '' ?>"><i
-                                class="fas fa-plus"></i> Create</a></li>
-                    <li><a href="subcategory.php"
-                            class="side-nav-link <?= ($current_page === 'subcategory.php' || $current_page === 'subcategory_edit.php') ? 'active' : '' ?>"><i
-                                class="fas fa-eye"></i> View</a></li>
-                </ul>
-            </li>
-
-            <li class="side-nav-item <?= $service_active ? 'active' : '' ?>">
-                <a href="javascript:void(0);" class="side-nav-link has-arrow">
-                    <i class="ri-customer-service-2-line"></i>
+                    <i class="ri-flow-chart"></i>
                     <span>Manage Service</span>
                 </a>
                 <ul class="side-nav-second-level">
-                    <li><a href="service_add.php"
-                            class="side-nav-link <?= ($current_page === 'service_add.php') ? 'active' : '' ?>"><i
-                                class="fas fa-plus"></i> Create</a></li>
-                    <li><a href="services.php"
-                            class="side-nav-link <?= ($current_page === 'services.php' || $current_page === 'service_edit.php' || $current_page === 'service_view.php' || $current_page === 'service_details.php') ? 'active' : '' ?>"><i
-                                class="fas fa-eye"></i> View</a></li>
-                </ul>
-            </li>
-            <li class="side-nav-item <?= $testimonial_active ? 'active' : '' ?>">
-                <a href="javascript:void(0);" class="side-nav-link has-arrow">
-                    <i class="ri-star-line"></i>
-                    <span>Manage Testimonials</span>
-                </a>
-                <ul class="side-nav-second-level">
-                    <li><a href="testimonial_add.php"
-                            class="side-nav-link <?= ($current_page === 'testimonial_add.php') ? 'active' : '' ?>"><i
-                                class="fas fa-plus"></i> Add Testimonial</a></li>
-                    <li><a href="testimonials.php"
-                            class="side-nav-link <?= ($current_page === 'testimonials.php' || $current_page === 'testimonial_edit.php') ? 'active' : '' ?>"><i
-                                class="fas fa-eye"></i> View Testimonials</a></li>
-                </ul>
-            </li>
-            <li class="side-nav-item <?= $certificate_active ? 'active' : '' ?>">
-                <a href="javascript:void(0);" class="side-nav-link has-arrow">
-                    <i class="ri-award-line"></i>
-                    <span>Manage Certificates</span>
-                </a>
-                <ul class="side-nav-second-level">
-                    <li><a href="certificate_add.php"
-                            class="side-nav-link <?= ($current_page === 'certificate_add.php') ? 'active' : '' ?>"><i
-                                class="fas fa-plus"></i> Add Certificate</a></li>
-                    <li><a href="certificates.php"
-                            class="side-nav-link <?= ($current_page === 'certificates.php' || $current_page === 'certificate_edit.php') ? 'active' : '' ?>"><i
-                                class="fas fa-eye"></i> View Certificates</a></li>
-                   
-
-                </ul>
-            </li>
-                   <li class="side-nav-item <?= $brand_active ? 'active' : '' ?>">
-                <a href="javascript:void(0);" class="side-nav-link has-arrow">
-                    <i class="ri-building-2-line"></i>
-                    <span>Manage Brands</span>
-                </a>
-                <ul class="side-nav-second-level">
-                    <li><a href="brand_add.php"
-                            class="side-nav-link <?= ($current_page === 'brand_add.php') ? 'active' : '' ?>"><i
-                                class="fas fa-plus"></i> Add Brand</a></li>
-                    <li><a href="brands.php"
-                            class="side-nav-link <?= ($current_page === 'brands.php' || $current_page === 'brand_edit.php') ? 'active' : '' ?>"><i
-                                class="fas fa-eye"></i> View Brands</a></li>
-                </ul>
-            </li>
-                        <li class="side-nav-item <?= $blog_active ? 'active' : '' ?>">
-                <a href="javascript:void(0);" class="side-nav-link has-arrow">
-                    <i class="ri-article-line"></i>
-                    <span>Manage Blogs</span>
-                </a>
-                <ul class="side-nav-second-level">
-                    <li><a href="blog_add.php"
-                            class="side-nav-link <?= ($current_page === 'blog_add.php') ? 'active' : '' ?>"><i
-                                class="fas fa-plus"></i> Add Blog</a></li>
-                    <li><a href="blogs.php"
-                            class="side-nav-link <?= ($current_page === 'blogs.php' || $current_page === 'blog_edit.php') ? 'active' : '' ?>"><i
-                                class="fas fa-eye"></i> View Blogs</a></li>
-                </ul>
-            </li>
-             <li class="side-nav-item <?= $enquiry_active ? 'active' : '' ?>">
-                        <a href="enquiries.php" class="side-nav-link">
-                            <i class="ri-question-answer-line"></i>
-                            <span>Enquiries</span>
+                    <li class="side-nav-item <?= $service_department_group_active ? 'active' : '' ?>">
+                        <a href="javascript:void(0);" class="side-nav-link has-arrow">
+                            <i class="ri-building-line"></i> Department
                         </a>
+                        <ul class="side-nav-third-level">
+                            <li>
+                                <a href="add-department.php"
+                                    class="side-nav-link <?= ($current_page === 'add-department.php') ? 'active' : '' ?>">
+                                    <i class="fas fa-plus"></i> Add Department
+                                </a>
+                            </li>
+                            <li>
+                                <a href="departments.php"
+                                    class="side-nav-link <?= ($current_page === 'departments.php') ? 'active' : '' ?>">
+                                    <i class="fas fa-eye"></i> View Departments
+                                </a>
+                            </li>
+                        </ul>
                     </li>
-
-                    <li class="side-nav-item <?= $career_active ? 'active' : '' ?>">
-                        <a href="career_applications.php" class="side-nav-link">
-                            <i class="ri-briefcase-4-line"></i>
-                            <span>Careers</span>
+                    <li class="side-nav-item <?= $service_category_group_active ? 'active' : '' ?>">
+                        <a href="javascript:void(0);" class="side-nav-link has-arrow">
+                            <i class="ri-folder-line"></i> Category
                         </a>
+                        <ul class="side-nav-third-level">
+                            <li>
+                                <a href="category_add.php"
+                                    class="side-nav-link <?= ($current_page === 'category_add.php') ? 'active' : '' ?>">
+                                    <i class="fas fa-plus"></i> Add Category
+                                </a>
+                            </li>
+                            <li>
+                                <a href="category.php"
+                                    class="side-nav-link <?= in_array($current_page, ['category.php', 'category_edit.php'], true) ? 'active' : '' ?>">
+                                    <i class="fas fa-eye"></i> View Categories
+                                </a>
+                            </li>
+                        </ul>
                     </li>
-
-                    <li class="side-nav-item <?= $faq_active ? 'active' : '' ?>">
-                        <a href="faqs.php" class="side-nav-link">
-                            <i class="ri-question-line"></i>
-                            <span>FAQs</span>
+                    <li class="side-nav-item <?= $service_subcategory_group_active ? 'active' : '' ?>">
+                        <a href="javascript:void(0);" class="side-nav-link has-arrow">
+                            <i class="ri-folder-shared-line"></i> Sub-category
                         </a>
+                        <ul class="side-nav-third-level">
+                            <li>
+                                <a href="subcategory_add.php"
+                                    class="side-nav-link <?= ($current_page === 'subcategory_add.php') ? 'active' : '' ?>">
+                                    <i class="fas fa-plus"></i> Add Sub-category
+                                </a>
+                            </li>
+                            <li>
+                                <a href="subcategory.php"
+                                    class="side-nav-link <?= in_array($current_page, ['subcategory.php', 'subcategory_edit.php'], true) ? 'active' : '' ?>">
+                                    <i class="fas fa-eye"></i> View Sub-categories
+                                </a>
+                            </li>
+                        </ul>
                     </li>
-
-
-            <li class="side-nav-item <?= $websettings_active ? 'active' : '' ?>">
-                <a href="web_settings.php" class="side-nav-link">
-                    <i class="ri-settings-3-line"></i>
-                    <span>Web Settings</span>
-                </a>
+                    <li class="side-nav-item <?= $service_listing_group_active ? 'active' : '' ?>">
+                        <a href="javascript:void(0);" class="side-nav-link has-arrow">
+                            <i class="ri-customer-service-2-line"></i> Service
+                        </a>
+                        <ul class="side-nav-third-level">
+                            <li>
+                                <a href="service_add.php"
+                                    class="side-nav-link <?= ($current_page === 'service_add.php') ? 'active' : '' ?>">
+                                    <i class="fas fa-plus"></i> Add Service
+                                </a>
+                            </li>
+                            <li>
+                                <a href="services.php"
+                                    class="side-nav-link <?= in_array($current_page, ['services.php', 'service_edit.php', 'service_view.php', 'service_details.php', 'plan-work.php'], true) ? 'active' : '' ?>">
+                                    <i class="fas fa-eye"></i> View Services
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
             </li>
-     
+
+            <li class="side-nav-item <?= $lead_desk_active ? 'active' : '' ?>">
+                <a href="javascript:void(0);" class="side-nav-link has-arrow">
+                    <i class="ri-briefcase-5-line"></i>
+                    <span>Lead Desk</span>
+                </a>
+                <ul class="side-nav-second-level">
+                    <li class="side-nav-item <?= $lead_loan_group_active ? 'active' : '' ?>">
+                        <a href="javascript:void(0);" class="side-nav-link has-arrow">
+                            <i class="ri-bank-card-2-line"></i> Loan Management
+                        </a>
+                        <ul class="side-nav-third-level">
+                            <li>
+                                <a href="loan_applications.php"
+                                    class="side-nav-link <?= $loan_all_active ? 'active' : '' ?>">
+                                    <i class="fas fa-file-invoice-dollar"></i> All Applications
+                                </a>
+                            </li>
+                            <?php foreach ($loan_categories as $loan_category): ?>
+                                <?php $loan_category_id = (int) $loan_category['id']; ?>
+                                <li>
+                                    <a href="loan_applications.php?cat_id=<?= $loan_category_id ?>"
+                                        class="side-nav-link <?= ($current_page === 'loan_applications.php' && $active_loan_category_id === $loan_category_id) ? 'active' : '' ?>">
+                                        <i class="fas fa-angle-right"></i> <?= htmlspecialchars((string) $loan_category['category_name']) ?>
+                                    </a>
+                                </li>
+                            <?php endforeach; ?>
+                            <li>
+                                <a href="manual_loan_assign.php"
+                                    class="side-nav-link <?= ($current_page === 'manual_loan_assign.php') ? 'active' : '' ?>">
+                                    <i class="ri-user-follow-line"></i> Manual Assign
+                                </a>
+                            </li>
+                            <li>
+                                <a href="loan_applications.php?status=rejected"
+                                    class="side-nav-link <?= $loan_rejected_active ? 'active' : '' ?>">
+                                    <i class="fas fa-ban"></i> Rejected Apps
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="side-nav-item <?= $lead_enquiry_group_active ? 'active' : '' ?>">
+                        <a href="javascript:void(0);" class="side-nav-link has-arrow">
+                            <i class="ri-question-answer-line"></i> Enquiries
+                        </a>
+                        <ul class="side-nav-third-level">
+                            <li>
+                                <a href="enquiries.php"
+                                    class="side-nav-link <?= in_array($current_page, ['enquiries.php', 'enquiry_view.php'], true) ? 'active' : '' ?>">
+                                    <i class="fas fa-eye"></i> View Enquiries
+                                </a>
+                            </li>
+                            <li>
+                                <a href="enquiry_email.php"
+                                    class="side-nav-link <?= ($current_page === 'enquiry_email.php') ? 'active' : '' ?>">
+                                    <i class="ri-mail-send-line"></i> Send Enquiry Email
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+
+            <li class="side-nav-item <?= $website_mgmt_active ? 'active' : '' ?>">
+                <a href="javascript:void(0);" class="side-nav-link has-arrow">
+                    <i class="ri-global-line"></i>
+                    <span>Website Management</span>
+                </a>
+                <ul class="side-nav-second-level">
+                    <li class="side-nav-item <?= $website_team_group_active ? 'active' : '' ?>">
+                        <a href="javascript:void(0);" class="side-nav-link has-arrow">
+                            <i class="ri-team-line"></i> Manage Team
+                        </a>
+                        <ul class="side-nav-third-level">
+                            <li>
+                                <a href="team_members.php" class="side-nav-link <?= $team_active ? 'active' : '' ?>">
+                                    <i class="fas fa-users"></i> Add / View Team
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="side-nav-item <?= $website_testimonial_group_active ? 'active' : '' ?>">
+                        <a href="javascript:void(0);" class="side-nav-link has-arrow">
+                            <i class="ri-star-line"></i> Manage Testimonials
+                        </a>
+                        <ul class="side-nav-third-level">
+                            <li>
+                                <a href="testimonial_add.php"
+                                    class="side-nav-link <?= ($current_page === 'testimonial_add.php') ? 'active' : '' ?>">
+                                    <i class="fas fa-plus"></i> Add Testimonial
+                                </a>
+                            </li>
+                            <li>
+                                <a href="testimonials.php"
+                                    class="side-nav-link <?= ($current_page === 'testimonials.php' || $current_page === 'testimonial_edit.php') ? 'active' : '' ?>">
+                                    <i class="fas fa-eye"></i> View Testimonials
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="side-nav-item <?= $website_certificate_group_active ? 'active' : '' ?>">
+                        <a href="javascript:void(0);" class="side-nav-link has-arrow">
+                            <i class="ri-award-line"></i> Manage Certificates
+                        </a>
+                        <ul class="side-nav-third-level">
+                            <li>
+                                <a href="certificate_add.php"
+                                    class="side-nav-link <?= ($current_page === 'certificate_add.php') ? 'active' : '' ?>">
+                                    <i class="fas fa-plus"></i> Add Certificate
+                                </a>
+                            </li>
+                            <li>
+                                <a href="certificates.php"
+                                    class="side-nav-link <?= ($current_page === 'certificates.php' || $current_page === 'certificate_edit.php') ? 'active' : '' ?>">
+                                    <i class="fas fa-eye"></i> View Certificates
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="side-nav-item <?= $website_brand_group_active ? 'active' : '' ?>">
+                        <a href="javascript:void(0);" class="side-nav-link has-arrow">
+                            <i class="ri-building-2-line"></i> Manage Brands
+                        </a>
+                        <ul class="side-nav-third-level">
+                            <li>
+                                <a href="brand_add.php"
+                                    class="side-nav-link <?= ($current_page === 'brand_add.php') ? 'active' : '' ?>">
+                                    <i class="fas fa-plus"></i> Add Brand
+                                </a>
+                            </li>
+                            <li>
+                                <a href="brands.php"
+                                    class="side-nav-link <?= ($current_page === 'brands.php' || $current_page === 'brand_edit.php') ? 'active' : '' ?>">
+                                    <i class="fas fa-eye"></i> View Brands
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="side-nav-item <?= $website_blog_group_active ? 'active' : '' ?>">
+                        <a href="javascript:void(0);" class="side-nav-link has-arrow">
+                            <i class="ri-article-line"></i> Manage Blogs
+                        </a>
+                        <ul class="side-nav-third-level">
+                            <li>
+                                <a href="blog_add.php"
+                                    class="side-nav-link <?= ($current_page === 'blog_add.php') ? 'active' : '' ?>">
+                                    <i class="fas fa-plus"></i> Add Blog
+                                </a>
+                            </li>
+                            <li>
+                                <a href="blogs.php"
+                                    class="side-nav-link <?= ($current_page === 'blogs.php' || $current_page === 'blog_edit.php') ? 'active' : '' ?>">
+                                    <i class="fas fa-eye"></i> View Blogs
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="side-nav-item <?= $website_career_group_active ? 'active' : '' ?>">
+                        <a href="javascript:void(0);" class="side-nav-link has-arrow">
+                            <i class="ri-briefcase-4-line"></i> Careers
+                        </a>
+                        <ul class="side-nav-third-level">
+                            <li>
+                                <a href="career_applications.php"
+                                    class="side-nav-link <?= $career_active ? 'active' : '' ?>">
+                                    <i class="fas fa-eye"></i> View Applications
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="side-nav-item <?= $website_faq_group_active ? 'active' : '' ?>">
+                        <a href="javascript:void(0);" class="side-nav-link has-arrow">
+                            <i class="ri-question-line"></i> FAQs
+                        </a>
+                        <ul class="side-nav-third-level">
+                            <li>
+                                <a href="faqs.php" class="side-nav-link <?= $faq_active ? 'active' : '' ?>">
+                                    <i class="fas fa-eye"></i> Manage FAQs
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="side-nav-item <?= $website_settings_group_active ? 'active' : '' ?>">
+                        <a href="javascript:void(0);" class="side-nav-link has-arrow">
+                            <i class="ri-settings-3-line"></i> Web Settings
+                        </a>
+                        <ul class="side-nav-third-level">
+                            <li>
+                                <a href="web_settings.php"
+                                    class="side-nav-link <?= $websettings_active ? 'active' : '' ?>">
+                                    <i class="fas fa-sliders-h"></i> Site Configuration
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
 
             <li class="side-nav-item">
                 <a href="db/auth-logout.php" class="side-nav-link text-danger">
