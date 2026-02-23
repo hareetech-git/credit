@@ -1,14 +1,17 @@
 <?php
 include 'db/config.php';
+require_once __DIR__ . '/db/notification_helper.php';
 include 'header.php';
 
 // Ensure FontAwesome is loaded
 echo '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">';
-include 'topbar.php';
-include 'sidebar.php';
 
 $loan_id = (int)$_GET['id'];
 if (!$loan_id) die("Invalid Loan ID");
+adminMarkLoanAsRead($conn, $loan_id);
+
+include 'topbar.php';
+include 'sidebar.php';
 
 // Staff list for reassignment
 $staff_list = [];

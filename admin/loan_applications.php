@@ -1,5 +1,6 @@
 <?php
 include 'db/config.php';
+require_once __DIR__ . '/db/notification_helper.php';
 include 'header.php';
 
 // Ensure FontAwesome is loaded
@@ -86,6 +87,7 @@ if ($category_id > 0) {
 
 $query .= " ORDER BY $sort_column $sort_order";
 $result = mysqli_query($conn, $query);
+$readFlagsReady = adminNotificationsReady($conn);
 
 // Serial Number Counter
 $sr_no = 1;
@@ -118,6 +120,30 @@ function getSortUrl($col, $next_order, $search, $status, $staff, $category_id) {
         border-radius: 4px;
         font-size: 0.7rem;
         margin-left: 10px;
+    }
+
+    .row-unread {
+        background: #eff6ff;
+    }
+    .notice-pill {
+        display: inline-block;
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        padding: 2px 8px;
+        border-radius: 999px;
+        margin-top: 4px;
+    }
+    .notice-pill.unread {
+        background: #dbeafe;
+        color: #1d4ed8;
+        border: 1px solid #93c5fd;
+    }
+    .notice-pill.read {
+        background: #f1f5f9;
+        color: #475569;
+        border: 1px solid #cbd5e1;
     }
 </style>
 
@@ -230,7 +256,8 @@ function getSortUrl($col, $next_order, $search, $status, $staff, $category_id) {
                             <tbody>
                                 <?php if (mysqli_num_rows($result) > 0) : ?>
                                     <?php while ($row = mysqli_fetch_assoc($result)) : ?>
-                                        <tr>
+                                        <?php $isUnread = $readFlagsReady && ((int)($row['is_read'] ?? 0) === 0); ?>
+                                        <tr class="<?= $isUnread ? 'row-unread' : '' ?>">
                                             <td class="text-muted fw-bold"><?= $sr_no++ ?></td>
                                             <td>
                                                 <div class="d-flex align-items-center">
@@ -238,6 +265,11 @@ function getSortUrl($col, $next_order, $search, $status, $staff, $category_id) {
                                                     <div>
                                                         <div class="fw-bold text-dark"><?= htmlspecialchars($row['full_name']) ?></div>
                                                         <div class="text-muted" style="font-size: 0.75rem;"><i class="fas fa-phone-alt"></i> <?= $row['phone'] ?></div>
+                                                        <?php if ($readFlagsReady): ?>
+                                                            <span class="notice-pill <?= $isUnread ? 'unread' : 'read' ?>">
+                                                                <?= $isUnread ? 'Unread' : 'Read' ?>
+                                                            </span>
+                                                        <?php endif; ?>
                                                     </div>
                                                 </div>
                                             </td>

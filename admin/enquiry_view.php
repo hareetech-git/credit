@@ -1,14 +1,17 @@
 <?php
 include 'db/config.php';
+require_once __DIR__ . '/db/notification_helper.php';
 include 'header.php';
-include 'topbar.php';
-include 'sidebar.php';
 
 $enquiry_id = (int)($_GET['id'] ?? 0);
 if ($enquiry_id <= 0) {
     header("Location: enquiries.php?err=Invalid enquiry");
     exit;
 }
+adminMarkEnquiryAsRead($conn, $enquiry_id);
+
+include 'topbar.php';
+include 'sidebar.php';
 
 $enquiry_sql = "SELECT e.*, 
                         s.name AS assigned_staff_name, s.email AS assigned_staff_email,

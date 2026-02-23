@@ -1,5 +1,6 @@
 <?php
 include 'db/config.php';
+require_once __DIR__ . '/db/notification_helper.php';
 include 'header.php';
 // Ensure FontAwesome is loaded
 echo '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">';
@@ -36,6 +37,7 @@ if (!empty($status_filter) && in_array($status_filter, $allowed_status, true)) {
 
 $query .= " ORDER BY e.$sort_by $sort_order";
 $result = mysqli_query($conn, $query);
+$readFlagsReady = adminNotificationsReady($conn);
 
 $staff_list = [];
 $staff_res = mysqli_query($conn, "SELECT id, name, email FROM staff WHERE status = 'active' ORDER BY name ASC");
@@ -128,6 +130,31 @@ if ($staff_res) {
         color: var(--slate-600);
         font-size: 0.85rem;
     }
+
+    .row-unread {
+        background: #eff6ff;
+    }
+
+    .notice-pill {
+        display: inline-block;
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        padding: 2px 8px;
+        border-radius: 999px;
+        margin-top: 4px;
+    }
+    .notice-pill.unread {
+        background: #dbeafe;
+        color: #1d4ed8;
+        border: 1px solid #93c5fd;
+    }
+    .notice-pill.read {
+        background: #f1f5f9;
+        color: #475569;
+        border: 1px solid #cbd5e1;
+    }
 </style>
 
 <div class="content-page">
@@ -196,11 +223,19 @@ if ($staff_res) {
                             <tbody>
                                 <?php if (mysqli_num_rows($result) > 0) {
                                     while ($row = mysqli_fetch_assoc($result)) { ?>
-                                        <tr>
+                                        <?php $isUnread = $readFlagsReady && ((int)($row['is_read'] ?? 0) === 0); ?>
+                                        <tr class="<?= $isUnread ? 'row-unread' : '' ?>">
                                             <td class="text-muted fw-bold">#<?= $row['id'] ?></td>
                                             
                                             <td class="fw-semibold text-dark">
                                                 <?= htmlspecialchars($row['full_name']) ?>
+                                                <?php if ($readFlagsReady): ?>
+                                                    <div>
+                                                        <span class="notice-pill <?= $isUnread ? 'unread' : 'read' ?>">
+                                                            <?= $isUnread ? 'Unread' : 'Read' ?>
+                                                        </span>
+                                                    </div>
+                                                <?php endif; ?>
                                             </td>
                                             
                                             <td>

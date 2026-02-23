@@ -1,5 +1,6 @@
 <?php
 include 'db/config.php';
+require_once __DIR__ . '/db/notification_helper.php';
 
 /* --- LOGIC REMAINS IDENTICAL --- */
 function getCount($conn, $table, $where = '') {
@@ -24,6 +25,9 @@ $dsaCount         = getCount($conn, 'dsa');
 $pendingDsaRequests = getCount($conn, 'dsa_requests', "status='pending'");
 $loanCount        = getCount($conn, 'loan_applications');
 $teamCount = getCount($conn, 'team_members');
+$todayLoanCount = getCount($conn, 'loan_applications', "DATE(created_at)=CURDATE()");
+$todayEnquiryCount = getCount($conn, 'enquiries', "DATE(created_at)=CURDATE()");
+$todayCustomerCount = getCount($conn, 'customers', "DATE(created_at)=CURDATE()");
 
 // Status specific counts
 $loanPending = getCount($conn, 'loan_applications', "status='pending'");
@@ -64,6 +68,8 @@ $adminName = $_SESSION['admin_name'] ?? 'Admin';
 $portfolioBase = max(1, $customerCount + $loanCount + $enquiryCount + $staffCount + $dsaCount + $teamCount);
 $approvalRate = $loanCount > 0 ? (int) round(($loanApproved / $loanCount) * 100) : 0;
 $enquiryConversionRate = $enquiryCount > 0 ? (int) round(($enquiryConverted / $enquiryCount) * 100) : 0;
+$adminNoticeSummary = adminGetUnreadSummary($conn);
+$adminUnreadNotifications = adminGetUnreadNotifications($conn, 30);
 $kpis = [
     [
         'label' => 'Customers',
@@ -242,11 +248,218 @@ include 'sidebar.php';
         color: #166534;
     }
 
-    .spotlight-grid {
+    .greeting-subpanel {
+        border-radius: 20px;
+        border: 1px solid #dde5ff;
+        background: linear-gradient(145deg, #ffffff, #f5f7ff);
+        box-shadow: 0 10px 22px rgba(36, 41, 84, 0.1);
+        padding: 18px 20px;
+        animation: fadeInUp 0.58s ease both;
+    }
+
+    .subpanel-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 12px;
+    }
+
+    .subpanel-title {
+        font-size: 0.9rem;
+        font-weight: 800;
+        color: #1e293b;
+        margin: 0;
+    }
+
+    .subpanel-note {
+        font-size: 0.75rem;
+        color: #64748b;
+        margin: 2px 0 0;
+    }
+
+    .subpanel-chip {
+        font-size: 0.7rem;
+        font-weight: 700;
+        padding: 4px 10px;
+        border-radius: 999px;
+        border: 1px solid #cbd5e1;
+        background: #f8fafc;
+        color: #334155;
+        white-space: nowrap;
+    }
+
+    .mini-metric-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        gap: 16px;
-        margin: 0 0 22px;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 10px;
+        margin-bottom: 12px;
+    }
+
+    .mini-metric {
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        padding: 10px 12px;
+        background: #fff;
+    }
+
+    .mini-metric .label {
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #64748b;
+        font-weight: 700;
+        margin-bottom: 5px;
+    }
+
+    .mini-metric .value {
+        font-size: 1.15rem;
+        font-weight: 800;
+        color: #0f172a;
+        line-height: 1;
+    }
+
+    .subpanel-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .subpanel-btn {
+        border: 1px solid #cbd5e1;
+        background: #fff;
+        color: #334155;
+        border-radius: 999px;
+        padding: 6px 12px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+
+    .subpanel-btn:hover {
+        border-color: #a5b4fc;
+        color: #312e81;
+        background: #eef2ff;
+        transform: translateY(-1px);
+    }
+
+    .notice-panel {
+        border-radius: 24px;
+        border: 1px solid #dbe4ff;
+        background: linear-gradient(155deg, #ffffff, #f7f8ff);
+        box-shadow: 0 14px 30px rgba(36, 41, 84, 0.1);
+        padding: 18px;
+        animation: fadeInUp 0.6s ease both;
+    }
+
+    .notice-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 12px;
+    }
+
+    .notice-title {
+        font-size: 0.95rem;
+        font-weight: 800;
+        color: #111827;
+        margin: 0;
+    }
+
+    .notice-sub {
+        font-size: 0.75rem;
+        color: #64748b;
+        margin: 2px 0 0;
+    }
+
+    .notice-count {
+        font-size: 0.72rem;
+        font-weight: 700;
+        border-radius: 999px;
+        padding: 5px 10px;
+        background: #fee2e2;
+        color: #b91c1c;
+        border: 1px solid #fecaca;
+    }
+
+    .notice-scroll {
+        max-height: 330px;
+        overflow-y: auto;
+        overflow-x: hidden;
+        padding-right: 4px;
+    }
+
+    .notice-scroll::-webkit-scrollbar {
+        width: 6px;
+    }
+    .notice-scroll::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 999px;
+    }
+    .notice-scroll::-webkit-scrollbar-track {
+        background: #f1f5f9;
+    }
+
+    .notice-item {
+        display: block;
+        text-decoration: none;
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        padding: 10px 11px;
+        margin-bottom: 9px;
+        transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+        background: #fff;
+    }
+
+    .notice-item:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 18px rgba(35, 43, 99, 0.12);
+    }
+
+    .notice-item.loan {
+        border-left: 4px solid #2563eb;
+    }
+
+    .notice-item.enquiry {
+        border-left: 4px solid #0891b2;
+    }
+
+    .notice-item-top {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 2px;
+    }
+
+    .notice-item-title {
+        font-size: 0.82rem;
+        font-weight: 700;
+        color: #0f172a;
+        line-height: 1.25;
+    }
+
+    .notice-item-time {
+        font-size: 0.7rem;
+        color: #64748b;
+        white-space: nowrap;
+    }
+
+    .notice-item-meta {
+        font-size: 0.75rem;
+        color: #475569;
+        line-height: 1.3;
+    }
+
+    .notice-empty {
+        border: 1px dashed #cbd5e1;
+        border-radius: 12px;
+        padding: 14px;
+        text-align: center;
+        color: #64748b;
+        font-size: 0.8rem;
+        background: #f8fafc;
     }
 
     .spotlight-card {
@@ -637,7 +850,8 @@ include 'sidebar.php';
         .spotlight-card,
         .stat-card,
         .chart-card,
-        .greeting-header {
+        .greeting-header,
+        .greeting-subpanel {
             animation: none !important;
             transition: none !important;
         }
@@ -647,32 +861,113 @@ include 'sidebar.php';
             animation: none !important;
         }
     }
+
+    @media (max-width: 767.98px) {
+        .mini-metric-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
 </style>
 
 <div class="content-page">
     <div class="content">
         <div class="container-fluid">
 
-            <div class="greeting-header">
-                <h1>Hi, <?= htmlspecialchars($adminName) ?> <i class="ri-hand-heart-line"></i></h1>
-                <p class="mb-0">Here's what's happening with your lending platform today.</p>
-                <div class="greeting-strips">
-                    <span class="greeting-strip">Total Departments: <?= number_format($departmentCount) ?></span>
-                    <span class="greeting-strip warning">Pending DSA Requests: <?= number_format($pendingDsaRequests) ?></span>
-                    <span class="greeting-strip success">Team Members: <?= number_format($teamCount) ?></span>
+            <div class="row g-4 align-items-start">
+                <div class="col-xl-8 d-flex flex-column gap-3">
+                    <div class="greeting-header mb-0">
+                        <h1>Hi, <?= htmlspecialchars($adminName) ?> <i class="ri-hand-heart-line"></i></h1>
+                        <p class="mb-0">Here's what's happening with your lending platform today.</p>
+                        <div class="greeting-strips">
+                            <span class="greeting-strip">Total Departments: <?= number_format($departmentCount) ?></span>
+                            <span class="greeting-strip warning">Pending DSA Requests: <?= number_format($pendingDsaRequests) ?></span>
+                            <span class="greeting-strip success">Team Members: <?= number_format($teamCount) ?></span>
+                        </div>
+                    </div>
+
+                    <div class="greeting-subpanel card-tilt">
+                        <div class="subpanel-top">
+                            <div>
+                                <p class="subpanel-title">Today's Snapshot</p>
+                                <p class="subpanel-note">Live counters for current-day activity</p>
+                            </div>
+                            <span class="subpanel-chip"><?= (int)($adminNoticeSummary['total'] ?? 0) ?> unread notices</span>
+                        </div>
+
+                        <div class="mini-metric-grid">
+                            <div class="mini-metric">
+                                <div class="label">New Applications</div>
+                                <div class="value"><?= number_format($todayLoanCount) ?></div>
+                            </div>
+                            <div class="mini-metric">
+                                <div class="label">New Enquiries</div>
+                                <div class="value"><?= number_format($todayEnquiryCount) ?></div>
+                            </div>
+                            <div class="mini-metric">
+                                <div class="label">New Customers</div>
+                                <div class="value"><?= number_format($todayCustomerCount) ?></div>
+                            </div>
+                        </div>
+
+                        <div class="subpanel-actions">
+                            <a href="loan_applications.php" class="subpanel-btn">Open Loan Queue</a>
+                            <a href="enquiries.php" class="subpanel-btn">Open Enquiries</a>
+                            <a href="dsa_requests.php" class="subpanel-btn">Review DSA Requests</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-4">
+                    <div class="notice-panel card-tilt" id="admin-notice-panel">
+                        <div class="notice-head">
+                            <div>
+                                <p class="notice-title">Unread Notices</p>
+                                <p class="notice-sub">Loan applications and enquiries awaiting review</p>
+                            </div>
+                            <span class="notice-count"><?= (int)($adminNoticeSummary['total'] ?? 0) ?> unread</span>
+                        </div>
+
+                        <div class="notice-scroll">
+                            <?php if (empty($adminNoticeSummary['ready'])): ?>
+                                <div class="notice-empty">Run read-flag SQL migration to enable unread notices.</div>
+                            <?php elseif (empty($adminUnreadNotifications)): ?>
+                                <div class="notice-empty">No unread notifications right now.</div>
+                            <?php else: ?>
+                                <?php foreach ($adminUnreadNotifications as $item): ?>
+                                    <?php
+                                        $type = ($item['type'] === 'loan') ? 'loan' : 'enquiry';
+                                        $titlePrefix = ($type === 'loan') ? 'Loan #' : 'Enquiry #';
+                                        $createdTs = strtotime((string)($item['created_at'] ?? ''));
+                                        $timeLabel = $createdTs ? date('d M, h:i A', $createdTs) : '';
+                                    ?>
+                                    <a href="<?= htmlspecialchars((string)$item['url']) ?>" class="notice-item <?= $type ?>">
+                                        <div class="notice-item-top">
+                                            <span class="notice-item-title"><?= $titlePrefix . (int)$item['ref_id'] ?> - <?= htmlspecialchars((string)($item['full_name'] ?: 'Customer')) ?></span>
+                                            <span class="notice-item-time"><?= htmlspecialchars($timeLabel) ?></span>
+                                        </div>
+                                        <div class="notice-item-meta"><?= htmlspecialchars((string)($item['subject'] ?: 'New request')) ?> | Status: <?= htmlspecialchars(ucfirst((string)($item['status'] ?: 'new'))) ?></div>
+                                    </a>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <div class="spotlight-grid">
-                <div class="spotlight-card spotlight-primary card-tilt">
-                    <div class="spotlight-title">Loan Approval Rate</div>
-                    <div class="spotlight-value"><?= $approvalRate ?>%</div>
-                    <div class="spotlight-meta"><?= number_format($loanApproved) ?> approved from <?= number_format($loanCount) ?> total applications</div>
+            <div class="row g-4 mt-1">
+                <div class="col-lg-6">
+                    <div class="spotlight-card spotlight-primary card-tilt h-100">
+                        <div class="spotlight-title">Loan Approval Rate</div>
+                        <div class="spotlight-value"><?= $approvalRate ?>%</div>
+                        <div class="spotlight-meta"><?= number_format($loanApproved) ?> approved from <?= number_format($loanCount) ?> total applications</div>
+                    </div>
                 </div>
-                <div class="spotlight-card spotlight-secondary card-tilt">
-                    <div class="spotlight-title">Enquiry Conversion</div>
-                    <div class="spotlight-value"><?= $enquiryConversionRate ?>%</div>
-                    <div class="spotlight-meta"><?= number_format($enquiryConverted) ?> converted from <?= number_format($enquiryCount) ?> total enquiries</div>
+                <div class="col-lg-6">
+                    <div class="spotlight-card spotlight-secondary card-tilt h-100">
+                        <div class="spotlight-title">Enquiry Conversion</div>
+                        <div class="spotlight-value"><?= $enquiryConversionRate ?>%</div>
+                        <div class="spotlight-meta"><?= number_format($enquiryConverted) ?> converted from <?= number_format($enquiryCount) ?> total enquiries</div>
+                    </div>
                 </div>
             </div>
 

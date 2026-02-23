@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 11, 2026 at 11:33 AM
+-- Generation Time: Feb 23, 2026 at 09:50 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -43,7 +43,56 @@ CREATE TABLE `admin` (
 --
 
 INSERT INTO `admin` (`id`, `uuid`, `name`, `email`, `password`, `role`, `created_at`, `updated_at`) VALUES
-(1, '', 'admin', 'admin@gmail.com', '$2y$10$d.HjZm4Xs3kIhH7FrbPEhOj9T9ueD7lXn6UhCStB9LR8pv6UE5B5O', 'admin', '2026-01-28 06:44:17', '2026-02-07 05:53:41');
+(1, '', 'admin', 'info@udharcapital.com', '$2y$10$d.HjZm4Xs3kIhH7FrbPEhOj9T9ueD7lXn6UhCStB9LR8pv6UE5B5O', 'admin', '2026-01-28 06:44:17', '2026-02-23 07:45:05');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `blogs`
+--
+
+CREATE TABLE `blogs` (
+  `id` int(11) NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `slug` varchar(255) NOT NULL,
+  `short_description` text DEFAULT NULL,
+  `content` longtext NOT NULL,
+  `featured_image` varchar(255) DEFAULT NULL,
+  `status` tinyint(1) NOT NULL DEFAULT 1 COMMENT '1=published,0=draft',
+  `created_by` int(11) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `blogs`
+--
+
+INSERT INTO `blogs` (`id`, `title`, `slug`, `short_description`, `content`, `featured_image`, `status`, `created_by`, `created_at`, `updated_at`) VALUES
+(1, 'Personal Loan Complete Guide 2026', 'personal-loan-complete-guide-2026', 'Everything you need to know before applying for a personal loan in India.', '<h2>Introduction</h2><p>Personal loans are one of the fastest ways to manage planned and unplanned expenses. They are unsecured, flexible, and available with quick disbursal from banks and NBFCs.</p><h2>Eligibility Basics</h2><p>Most lenders check age, monthly income, employment type, city category, repayment history, and credit profile. Keeping these strong improves your approval probability.</p><h2>Documents Required</h2><ul><li>Identity proof</li><li>Address proof</li><li>Income proof</li><li>Bank statements</li></ul><h2>Final Tip</h2><p>Always compare multiple offers and choose the one with the lowest total repayment, not just the lowest EMI.</p>', 'uploads/blog/blog_1771231198_853.jpeg', 1, 1, '2026-02-16 08:58:35', '2026-02-16 08:58:35'),
+(2, 'How to Improve CIBIL Score Fast', 'how-to-improve-cibil-score-fast', 'Simple actions to increase your credit score before applying for a loan.', '<h2>Why Score Matters</h2><p>Your credit score strongly impacts approval, interest rate, and loan amount. A better score often means better terms.</p><h2>Practical Steps</h2><ol><li>Pay all EMIs and credit cards on time.</li><li>Keep utilization below 30%.</li><li>Avoid multiple loan applications together.</li><li>Check report errors and raise disputes.</li></ol><h2>Expected Timeline</h2><p>With consistent discipline, score improvement may be visible within a few months.</p>', 'uploads/blog/blog_1771231198_853.jpeg', 1, 1, '2026-02-16 08:58:35', '2026-02-16 08:58:35'),
+(3, 'Home Loan EMI Planning Strategy', 'home-loan-emi-planning-strategy', 'Plan your EMI smartly to keep long-term finances healthy.', '<h2>Start with Budgeting</h2><p>Calculate fixed monthly obligations first. Keep housing EMI at a manageable percentage of net monthly income.</p><h2>Choose Tenure Wisely</h2><p>Long tenure reduces EMI but increases total interest. Short tenure saves interest but increases monthly burden.</p><h2>Use Part-Prepayment</h2><p>Even occasional part-prepayment can significantly reduce overall loan cost.</p>', 'uploads/blog/blog_1771231198_853.jpeg', 1, 1, '2026-02-16 08:58:35', '2026-02-16 08:58:35'),
+(4, 'Business Loan for Small Enterprises', 'business-loan-for-small-enterprises', 'A practical guide for MSMEs and small businesses to secure funding.', '<h2>Funding Needs</h2><p>Business loans can support inventory, expansion, working capital, machinery purchase, and seasonal cash-flow gaps.</p><h2>What Lenders Check</h2><ul><li>Business vintage</li><li>Turnover trend</li><li>Banking behavior</li><li>GST/IT returns</li></ul><h2>Improve Approval Chances</h2><p>Maintain clear books, stable transactions, and complete documentation.</p>', 'uploads/blog/blog_1771231198_853.jpeg', 1, 1, '2026-02-16 08:58:35', '2026-02-16 08:58:35'),
+(5, 'Top Reasons Loan Applications Get Rejected', 'top-reasons-loan-applications-get-rejected', 'Understand common rejection factors and how to avoid them.', '<h2>Frequent Rejection Causes</h2><ol><li>Low or unstable income</li><li>Poor credit score</li><li>Existing high obligations</li><li>Incomplete documentation</li><li>Frequent job changes</li></ol><h2>How to Prevent Rejection</h2><p>Apply with accurate details, improve score first, and pick products matching your profile.</p>', 'uploads/blog/blog_1771231198_853.jpeg', 1, 1, '2026-02-16 08:58:35', '2026-02-16 08:58:35'),
+(6, 'Gold Loan Explained for Beginners', 'gold-loan-explained-for-beginners', 'Fast liquidity through gold loans: process, benefits, and costs.', '<h2>Why Gold Loan</h2><p>Gold loans are secured, quick, and usually require minimal paperwork compared to other loan types.</p><h2>Key Terms</h2><ul><li>Loan-to-Value (LTV)</li><li>Interest rate type</li><li>Auction policy on default</li><li>Processing and valuation charges</li></ul><h2>Important Note</h2><p>Check repayment schedule and hidden charges before finalizing.</p>', 'uploads/blog/blog_1771231198_853.jpeg', 1, 1, '2026-02-16 08:58:35', '2026-02-16 08:58:35'),
+(7, 'Balance Transfer: When It Saves Money', 'balance-transfer-when-it-saves-money', 'Know the right time to shift your existing loan to a lower rate.', '<h2>What is Balance Transfer</h2><p>It allows you to move your outstanding loan to another lender offering better terms.</p><h2>When to Consider</h2><p>Consider transfer when rate gap is meaningful and remaining tenure is long enough to recover switching costs.</p><h2>Checklist</h2><ol><li>Processing fee</li><li>Legal/technical charges</li><li>New EMI impact</li><li>Net savings</li></ol>', 'uploads/blog/blog_1771231198_853.jpeg', 1, 1, '2026-02-16 08:58:35', '2026-02-16 08:58:35'),
+(8, 'Car Loan Offer Comparison Framework', 'car-loan-offer-comparison-framework', 'A clear method to compare car loan options from different lenders.', '<h2>Compare Total Cost</h2><p>Do not compare only interest rates. Include processing fees, insurance bundling, foreclosure terms, and penalty clauses.</p><h2>Down Payment Impact</h2><p>Higher down payment reduces principal and can improve rate eligibility.</p><h2>Final Selection</h2><p>Choose the lender offering transparent terms and lower effective cost over tenure.</p>', 'uploads/blog/blog_1771231198_853.jpeg', 1, 1, '2026-02-16 08:58:35', '2026-02-16 08:58:35'),
+(9, 'EMI vs Tenure: Smart Decision Guide', 'emi-vs-tenure-smart-decision-guide', 'How to choose between low EMI comfort and low-interest savings.', '<h2>Two Opposite Priorities</h2><p>Long tenure supports cash flow with lower EMI. Short tenure minimizes total interest outgo.</p><h2>Decision Formula</h2><p>If monthly cash flow is tight, prioritize EMI comfort. If income is stable, reduce tenure to save total interest.</p><h2>Pro Tip</h2><p>Start with safer EMI and prepay whenever possible.</p>', 'uploads/blog/blog_1771231198_853.jpeg', 1, 1, '2026-02-16 08:58:35', '2026-02-16 08:58:35'),
+(10, 'MSME Loan Document Readiness Checklist', 'msme-loan-document-readiness-checklist', 'Prepare the right documents to get MSME loan approvals faster.', '<h2>Core Documents</h2><ul><li>Business registration proof</li><li>PAN and identity/address proof</li><li>Bank statements</li><li>Income tax returns</li><li>GST returns (if applicable)</li></ul><h2>Why Readiness Matters</h2><p>Complete documentation reduces verification delays and increases lender confidence.</p><h2>Before You Apply</h2><p>Ensure all records are updated and consistent across documents.</p>', 'uploads/blog/blog_1771231198_853.jpeg', 1, 1, '2026-02-16 08:58:35', '2026-02-16 08:58:35');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `brands`
+--
+
+CREATE TABLE `brands` (
+  `id` int(11) NOT NULL,
+  `brand_name` varchar(255) NOT NULL,
+  `brand_img` varchar(255) DEFAULT NULL,
+  `active` tinyint(1) DEFAULT 1,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -73,6 +122,19 @@ INSERT INTO `career_applications` (`id`, `email`, `resume_path`, `resume_origina
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `certificates`
+--
+
+CREATE TABLE `certificates` (
+  `id` int(11) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `certificate_img` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `customers`
 --
 
@@ -87,13 +149,6 @@ CREATE TABLE `customers` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `customers`
---
-
-INSERT INTO `customers` (`id`, `full_name`, `email`, `phone`, `password`, `aadhaar_number`, `status`, `created_at`, `updated_at`) VALUES
-(1, 'Sanyam Srivastava', 'srivastavasanyam8052@gmail.com', '9984278970', '$2y$10$SFB4qjz.GVs5zHxYw2K8mOn6.72GYpzrUWrAZiQP7O2/2jsjClZmS', NULL, 'active', '2026-02-11 10:32:50', '2026-02-11 10:32:50');
 
 -- --------------------------------------------------------
 
@@ -119,13 +174,6 @@ CREATE TABLE `customer_profiles` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `customer_profiles`
---
-
-INSERT INTO `customer_profiles` (`id`, `customer_id`, `pan_number`, `birth_date`, `state`, `city`, `pin_code`, `employee_type`, `company_name`, `monthly_income`, `reference1_name`, `reference1_phone`, `reference2_name`, `reference2_phone`, `created_at`, `updated_at`) VALUES
-(1, 1, 'enc:v1:e_E_iZ7UU40fOd1lEbyUjo-zRKYelUhgHad-pgrIXF019bpjFpl745mK47mX2k9QjxrXUCthC4Tw_dP0GGASUA', '2008-02-02', 'Uttar Pradesh', 'Lakhimpur', '261506', 'salaried', '', 90000.00, 'dfsaf', '9984278970', 'Sanyam Srivastavaa', '9984278976', '2026-02-11 10:32:50', '2026-02-11 10:32:50');
 
 -- --------------------------------------------------------
 
@@ -324,9 +372,7 @@ CREATE TABLE `enquiries` (
 --
 
 INSERT INTO `enquiries` (`id`, `customer_id`, `full_name`, `phone`, `email`, `loan_type_id`, `loan_type_name`, `query_message`, `status`, `assigned_staff_id`, `assigned_by`, `assigned_at`, `converted_by_role`, `converted_by_id`, `converted_at`, `closed_by_role`, `closed_by_id`, `closed_at`, `created_at`) VALUES
-(3, 2, 'Sanyam Customer', '9984278970', 'sanyam.fullstackdev@gmail.com', 2, 'Business Loans', 'fujyuj', 'converted', 1, 1, '2026-02-05 10:21:44', 'staff', 1, '2026-02-05 10:22:58', NULL, NULL, NULL, '2026-02-05 10:17:09'),
-(4, NULL, 'Sanyam Customer', '9948728807', 'fgadmin@gmail.com', 1, 'Personal Loan', 'gfd', 'new', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2026-02-05 12:00:59'),
-(5, NULL, 'new test', '7878787878', 'custohgjgjkgjhgymer@gmail.com', 1, 'Personal Loan', 'fddrtd', 'new', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2026-02-06 14:27:44');
+(7, NULL, 'Sanyam Srivastava', '9984278970', 'srivastavasanyam8052@gmail.com', 2, 'Business Loans', 'This is test', 'new', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2026-02-23 08:00:18');
 
 -- --------------------------------------------------------
 
@@ -339,13 +385,6 @@ CREATE TABLE `enquiry_conversations` (
   `enquiry_id` int(11) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `enquiry_conversations`
---
-
-INSERT INTO `enquiry_conversations` (`id`, `enquiry_id`, `created_at`) VALUES
-(1, 3, '2026-02-05 10:21:53');
 
 -- --------------------------------------------------------
 
@@ -362,16 +401,6 @@ CREATE TABLE `enquiry_messages` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data for table `enquiry_messages`
---
-
-INSERT INTO `enquiry_messages` (`id`, `conversation_id`, `sender_role`, `sender_id`, `message`, `created_at`) VALUES
-(1, 1, 'admin', 1, 'jhj', '2026-02-05 10:21:53'),
-(2, 1, 'customer', 2, 'hfghfg', '2026-02-05 10:22:06'),
-(3, 1, 'customer', 2, 'hfghfgh', '2026-02-05 10:22:16'),
-(4, 1, 'staff', 1, 'nrtr', '2026-02-05 10:22:33');
-
 -- --------------------------------------------------------
 
 --
@@ -386,13 +415,6 @@ CREATE TABLE `enquiry_notes` (
   `created_by_id` bigint(20) UNSIGNED NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `enquiry_notes`
---
-
-INSERT INTO `enquiry_notes` (`id`, `enquiry_id`, `note`, `created_by_role`, `created_by_id`, `created_at`) VALUES
-(1, 3, 'jkhj', 'staff', 1, '2026-02-05 10:54:05');
 
 -- --------------------------------------------------------
 
@@ -459,7 +481,12 @@ INSERT INTO `loan_applications` (`id`, `customer_id`, `service_id`, `dsa_id`, `a
 (8, 2, 7, NULL, NULL, NULL, NULL, 0.00, 'year', 900000.00, 0, 0.00, 'pending', '2026-02-11 09:47:40', NULL),
 (9, 1, 3, NULL, NULL, NULL, NULL, 0.00, 'year', 9000.00, 0, 0.00, 'pending', '2026-02-11 10:19:08', NULL),
 (10, 2, 3, NULL, NULL, NULL, NULL, 0.00, 'year', 90000.00, 0, 0.00, 'pending', '2026-02-11 10:28:53', NULL),
-(11, 1, 3, NULL, NULL, NULL, NULL, 0.00, 'year', 89997.00, 0, 0.00, 'pending', '2026-02-11 10:32:50', NULL);
+(11, 1, 3, NULL, NULL, NULL, NULL, 0.00, 'year', 89997.00, 0, 0.00, 'pending', '2026-02-11 10:32:50', NULL),
+(12, 1, 1, NULL, 1, 1, '2026-02-23 07:48:20', 4.00, 'year', 909.00, 4, 229.15, 'approved', '2026-02-13 07:20:23', ''),
+(13, 2, 2, NULL, NULL, NULL, NULL, 0.00, 'year', 90000.00, 0, 0.00, 'pending', '2026-02-13 07:24:24', NULL),
+(14, 3, 2, NULL, NULL, NULL, NULL, 0.00, 'year', 90000.00, 0, 0.00, 'pending', '2026-02-13 07:29:10', NULL),
+(15, 4, 1, NULL, NULL, NULL, NULL, 0.00, 'year', 900000.00, 0, 0.00, 'pending', '2026-02-13 07:34:33', NULL),
+(16, 5, 2, NULL, NULL, NULL, NULL, 0.00, 'year', 9000.00, 0, 0.00, 'pending', '2026-02-23 07:52:14', NULL);
 
 -- --------------------------------------------------------
 
@@ -885,8 +912,19 @@ CREATE TABLE `staff_permissions` (
 
 INSERT INTO `staff_permissions` (`staff_id`, `permission_id`) VALUES
 (1, 1),
+(1, 2),
+(1, 3),
 (1, 4),
-(1, 13);
+(1, 5),
+(1, 6),
+(1, 7),
+(1, 8),
+(1, 9),
+(1, 10),
+(1, 11),
+(1, 12),
+(1, 13),
+(1, 14);
 
 -- --------------------------------------------------------
 
@@ -913,6 +951,30 @@ CREATE TABLE `team_members` (
 
 INSERT INTO `team_members` (`id`, `name`, `designation`, `short_description`, `image`, `linkedin_link`, `twitter_link`, `email_link`, `status`, `created_at`) VALUES
 (1, 'kratika gupta', 'CEO', 'she is brilliant', 'admin/assets/team/team_1770796860_198.jpg', 'https://www.linkedin.com/in/rajesh-kumar-finance', 'https://twitter.com/rajesh_kumar_ceo', 'priya@udharcapital.in', 1, '2026-02-11 08:01:00');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `testimonials`
+--
+
+CREATE TABLE `testimonials` (
+  `id` int(11) NOT NULL,
+  `partner_name` varchar(255) NOT NULL,
+  `designation` varchar(255) DEFAULT NULL,
+  `testimonial_text` text NOT NULL,
+  `partner_img` varchar(255) DEFAULT NULL,
+  `active` tinyint(1) DEFAULT 1,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `testimonials`
+--
+
+INSERT INTO `testimonials` (`id`, `partner_name`, `designation`, `testimonial_text`, `partner_img`, `active`, `created_at`) VALUES
+(1, 'Sarthak Srivastava', 'Developer', 'qwerty', 'assets/testimonials/1771239376_Sarthak_Srivastava.jpeg', 1, '2026-02-16 10:56:16'),
+(2, 'Kratitka', 'Freelancer', 'gdfgdfgdfhfghfgjjgjsrserfsefsgsfgdhf', 'assets/testimonials/1771239994_Kratitka.jpeg', 1, '2026-02-16 11:06:34');
 
 -- --------------------------------------------------------
 
@@ -950,6 +1012,21 @@ ALTER TABLE `admin`
   ADD UNIQUE KEY `unique_admin_uuid` (`uuid`);
 
 --
+-- Indexes for table `blogs`
+--
+ALTER TABLE `blogs`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `uniq_blog_slug` (`slug`),
+  ADD KEY `idx_blog_status` (`status`),
+  ADD KEY `idx_blog_created_at` (`created_at`);
+
+--
+-- Indexes for table `brands`
+--
+ALTER TABLE `brands`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `career_applications`
 --
 ALTER TABLE `career_applications`
@@ -957,6 +1034,12 @@ ALTER TABLE `career_applications`
   ADD KEY `idx_career_status` (`status`),
   ADD KEY `idx_career_assigned_staff` (`assigned_staff_id`),
   ADD KEY `idx_career_created_at` (`created_at`);
+
+--
+-- Indexes for table `certificates`
+--
+ALTER TABLE `certificates`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `customers`
@@ -1182,6 +1265,12 @@ ALTER TABLE `team_members`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `testimonials`
+--
+ALTER TABLE `testimonials`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `web_settings`
 --
 ALTER TABLE `web_settings`
@@ -1198,22 +1287,40 @@ ALTER TABLE `admin`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
+-- AUTO_INCREMENT for table `blogs`
+--
+ALTER TABLE `blogs`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+
+--
+-- AUTO_INCREMENT for table `brands`
+--
+ALTER TABLE `brands`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `career_applications`
 --
 ALTER TABLE `career_applications`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
+-- AUTO_INCREMENT for table `certificates`
+--
+ALTER TABLE `certificates`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `customers`
 --
 ALTER TABLE `customers`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `customer_profiles`
 --
 ALTER TABLE `customer_profiles`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `departments`
@@ -1249,7 +1356,7 @@ ALTER TABLE `dsa_requests`
 -- AUTO_INCREMENT for table `enquiries`
 --
 ALTER TABLE `enquiries`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `enquiry_conversations`
@@ -1279,7 +1386,7 @@ ALTER TABLE `faqs`
 -- AUTO_INCREMENT for table `loan_applications`
 --
 ALTER TABLE `loan_applications`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT for table `loan_application_docs`
@@ -1376,6 +1483,12 @@ ALTER TABLE `staff`
 --
 ALTER TABLE `team_members`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT for table `testimonials`
+--
+ALTER TABLE `testimonials`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `web_settings`
