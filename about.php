@@ -239,87 +239,139 @@ $team = mysqli_query($conn, "SELECT * FROM team_members WHERE status=1 ORDER BY 
     
     /* Team Section */
     .team-card {
-        background: white;
-        border-radius: 20px;
-        overflow: hidden;
-        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
-        transition: all 0.3s ease;
+        position: relative;
         height: 100%;
+        display: flex;
+        flex-direction: column;
+        padding: 22px;
+        border-radius: 22px;
+        overflow: hidden;
+        color: #f8fafc;
+        background: linear-gradient(135deg, #0f172a 0%, #131a2b 52%, var(--primary-color) 100%);
+        border: 1px solid rgba(148, 163, 184, 0.34);
+        box-shadow: 0 16px 34px rgba(17, 24, 39, 0.22);
+        transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
     }
-    
+
+    .team-card::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background:
+            radial-gradient(circle at 12% 18%, rgba(59, 130, 246, 0.22), transparent 40%),
+            radial-gradient(circle at 90% 86%, rgba(139, 92, 246, 0.18), transparent 44%);
+        pointer-events: none;
+        z-index: 0;
+    }
+
     .team-card:hover {
         transform: translateY(-10px);
-        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        border-color: rgba(59, 130, 246, 0.58);
+        box-shadow: 0 24px 48px rgba(15, 23, 42, 0.36);
+    }
+
+    .team-head {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        align-items: center;
+        gap: 16px;
     }
     
     .team-image {
-        width: 100%;
-        height: 280px;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        position: relative;
+        width: 88px;
+        height: 88px;
+        min-width: 88px;
+        border-radius: 50%;
         overflow: hidden;
+        border: 3px solid rgba(255, 255, 255, 0.85);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.35);
+        background: #f3f4f6;
     }
-    
-    .team-image::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-      
-    }
-    
-    .team-image i {
-        font-size: 80px;
-        color: rgba(255, 255, 255, 0.9);
-        position: relative;
-        z-index: 1;
+
+    .team-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
     }
     
     .team-info {
-        padding: 25px;
-        text-align: center;
+        position: relative;
+        z-index: 1;
+        text-align: left;
     }
     
     .team-name {
         font-weight: 700;
-        font-size: 1.25rem;
-        margin-bottom: 5px;
-        color: #1f2937;
+        font-size: 1.45rem;
+        margin-bottom: 4px;
+        color: #ffffff;
+        line-height: 1.2;
     }
     
     .team-role {
-        color: var(--primary-color);
-        font-weight: 600;
-        margin-bottom: 10px;
+        color: #60a5fa;
+        font-weight: 700;
+        font-size: 0.8rem;
+        margin-bottom: 0;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+    }
+
+    .team-divider {
+        position: relative;
+        z-index: 1;
+        height: 1px;
+        margin: 18px 0 14px;
+        background: linear-gradient(90deg, rgba(96, 165, 250, 0.55), rgba(148, 163, 184, 0.08));
+    }
+
+    .team-quote {
+        position: relative;
+        z-index: 1;
+        background: rgba(59, 130, 246, 0.14);
+        border-left: 3px solid #3b82f6;
+        border-radius: 10px;
+        padding: 12px 14px;
+        margin-bottom: 16px;
+        color: #e2e8f0;
+        font-size: 0.92rem;
+        font-style: italic;
+        line-height: 1.65;
+    }
+
+    .team-quote i {
+        color: #60a5fa;
+        margin-right: 8px;
     }
     
     .team-social {
+        position: relative;
+        z-index: 1;
         display: flex;
-        justify-content: center;
+        justify-content: flex-start;
         gap: 10px;
-        margin-top: 15px;
+        margin-top: auto;
     }
     
     .team-social a {
-        width: 35px;
-        height: 35px;
-        background: rgba(220, 38, 38, 0.1);
+        width: 34px;
+        height: 34px;
+        background: rgba(148, 163, 184, 0.12);
+        border: 1px solid rgba(148, 163, 184, 0.34);
         border-radius: 8px;
         display: flex;
         align-items: center;
         justify-content: center;
-        color: var(--primary-color);
+        color: #e2e8f0;
         transition: all 0.3s ease;
+        text-decoration: none;
     }
     
     .team-social a:hover {
-        background: var(--primary-color);
-        color: white;
+        background: #3b82f6;
+        border-color: #3b82f6;
+        color: #ffffff;
         transform: translateY(-3px);
     }
     
@@ -414,6 +466,33 @@ $team = mysqli_query($conn, "SELECT * FROM team_members WHERE status=1 ORDER BY 
         
         .timeline-item::before {
             left: -38px;
+        }
+
+        .team-card {
+            padding: 18px;
+        }
+
+        .team-name {
+            font-size: 1.2rem;
+        }
+
+        .team-role {
+            font-size: 0.72rem;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .team-head {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .team-info {
+            text-align: center;
+        }
+
+        .team-social {
+            justify-content: center;
         }
     }
 </style>
@@ -811,7 +890,7 @@ $team = mysqli_query($conn, "SELECT * FROM team_members WHERE status=1 ORDER BY 
 </section>
 
 <!-- Team Section -->
-<section class="py-5 bg-light">
+<section class="py-5 bg-white">
     <div class="container py-4">
         <div class="text-center mb-5 fade-in-up">
             <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill mb-2">
@@ -823,18 +902,27 @@ $team = mysqli_query($conn, "SELECT * FROM team_members WHERE status=1 ORDER BY 
         
 <div class="row g-4">
 <?php while($member = mysqli_fetch_assoc($team)): ?>
-<div class="col-lg-3 col-md-6 fade-in-up">
+<div class="col-lg-6 col-md-6 fade-in-up">
     <div class="team-card">
-        <div class="team-image" style="background: #f3f4f6;">
-            <img src="<?php echo htmlspecialchars($member['image']); ?>" 
-                 alt="<?php echo htmlspecialchars($member['name']); ?>"
-                 style="width:100%; height:100%; object-fit:cover;">
+        <div class="team-head">
+            <div class="team-image">
+                <img src="<?php echo htmlspecialchars($member['image']); ?>" 
+                     alt="<?php echo htmlspecialchars($member['name']); ?>">
+            </div>
+            <div class="team-info">
+                <h5 class="team-name"><?php echo htmlspecialchars($member['name']); ?></h5>
+                <p class="team-role"><?php echo htmlspecialchars($member['designation']); ?></p>
+            </div>
         </div>
-        <div class="team-info">
-            <h5 class="team-name"><?php echo htmlspecialchars($member['name']); ?></h5>
-            <p class="team-role"><?php echo htmlspecialchars($member['designation']); ?></p>
-            <p class="text-muted small"><?php echo htmlspecialchars($member['short_description']); ?></p>
-            
+
+        <div class="team-divider"></div>
+
+        <p class="team-quote">
+            <i class="fas fa-quote-left"></i>
+            <?php echo htmlspecialchars($member['short_description']); ?>
+        </p>
+
+        <?php if($member['linkedin_link'] || $member['twitter_link'] || $member['email_link']): ?>
             <div class="team-social">
                 <?php if($member['linkedin_link']): ?>
                 <a href="<?php echo $member['linkedin_link']; ?>"><i class="fab fa-linkedin-in"></i></a>
@@ -848,7 +936,7 @@ $team = mysqli_query($conn, "SELECT * FROM team_members WHERE status=1 ORDER BY 
                 <a href="mailto:<?php echo $member['email_link']; ?>"><i class="fas fa-envelope"></i></a>
                 <?php endif; ?>
             </div>
-        </div>
+        <?php endif; ?>
     </div>
 </div>
 <?php endwhile; ?>
