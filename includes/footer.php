@@ -20,7 +20,8 @@
                 <h2 class="fw-bold mb-0 footer-logo" style=" font-size: 2rem; letter-spacing: -0.5px;">
                     UDHAR CAPITAL
                 </h2>
-                <p class="footer-tagline">Your Trusted Partner in Financial Growth</p>
+
+                <p class="footer-tagline">Powered by Fundify Communication Pvt Ltd</p>
             </div>
         </div>
 
@@ -151,8 +152,10 @@
         <div class="row">
             <div class="col-12 text-center">
                 <p class="text-muted small mb-0">
-                    Copyright © <?php echo date('Y'); ?> Udhar Capital India. All rights reserved.
-                </p>
+    Copyright © <?php echo date('Y'); ?> <strong>Udhar Capital</strong> 
+    (A unit of Fundify Communication Pvt Ltd). 
+    All rights reserved.
+</p>
             </div>
         </div>
         <!-- Sticky Loan Marquee -->
