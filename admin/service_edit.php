@@ -288,7 +288,7 @@ if ($selected_category) {
 
     <?php if (!empty($service_data['hero_image'])): ?>
         <div class="mb-2">
-            <img src="../<?= htmlspecialchars($service_data['hero_image']) ?>"
+            <img src="<?= htmlspecialchars(uc_admin_file_url((string)$service_data['hero_image'])) ?>"
                  style="max-height:80px; border-radius:6px;">
             <span class="text-muted small ms-2">Current</span>
         </div>
@@ -311,7 +311,7 @@ if ($selected_category) {
 
     <?php if (!empty($service_data['card_img'])): ?>
         <div class="mb-2">
-            <img src="../<?= htmlspecialchars($service_data['card_img']) ?>"
+            <img src="<?= htmlspecialchars(uc_admin_file_url((string)$service_data['card_img'])) ?>"
                  style="max-height:80px; border-radius:6px;">
             <span class="text-muted small ms-2">Current</span>
         </div>
@@ -406,7 +406,7 @@ if ($selected_category) {
     <!-- WHY CHOOSE US (unchanged) -->
     <?php if(!empty($row['image'])): ?>
         <div class="mb-1">
-            <img src="<?= '../'.$row['image'] ?>"
+            <img src="<?= htmlspecialchars(uc_admin_file_url((string)$row['image'])) ?>"
                  style="height:30px; border-radius:4px;">
             <span class="text-muted small">Current</span>
         </div>
@@ -419,7 +419,7 @@ if ($selected_category) {
     <!-- ✅ BANK IMAGE (NEW LOGIC) -->
     <?php if(!empty($row['bank_image'])): ?>
         <div class="mb-1">
-            <img src="<?= '../'.$row['bank_image'] ?>"
+            <img src="<?= htmlspecialchars(uc_admin_file_url((string)$row['bank_image'])) ?>"
                  style="height:30px; border-radius:4px;">
             <span class="text-muted small">Current</span>
         </div>
