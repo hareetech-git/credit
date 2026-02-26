@@ -256,7 +256,8 @@ $docs_res = mysqli_query($conn, "SELECT * FROM loan_application_docs WHERE loan_
                                             <tr>
                                                 <td>
                                                     <div class="fw-bold text-dark"><?= htmlspecialchars($doc['doc_name']) ?></div>
-                                                    <a href="../<?= $doc['doc_path'] ?>" target="_blank" class="text-primary small fw-bold">
+                                                    <?php $docUrl = uc_admin_file_url((string)($doc['doc_path'] ?? '')); ?>
+                                                    <a href="<?= htmlspecialchars($docUrl) ?>" target="_blank" class="text-primary small fw-bold">
                                                         <i class="fas fa-external-link-alt me-1"></i> Open File
                                                     </a>
                                                 </td>
