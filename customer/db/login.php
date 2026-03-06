@@ -20,7 +20,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $customer = mysqli_fetch_assoc($result);
 
         if ($customer['status'] !== 'active') {
-            header("Location: ../login.php?err=Account blocked");
+            header("Location: ../../login.php?err=Account blocked");
             exit;
         }
 
