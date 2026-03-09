@@ -280,7 +280,7 @@ if (isset($conn)) {
     <div class="container py-4">
         <div class="text-center mb-5 animate-up">
             <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill mb-2">Our Services</span>
-            <h2 class="fw-bold mb-2">Tailored Financial Solutions</h2>
+            <h2 class="fw-bold mb-2">Udhaar Capital Financial Solutions</h2>
             <p class="text-muted">Powered by Fundify Communication Pvt Ltd</p>
         </div>
         

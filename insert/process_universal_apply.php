@@ -8,9 +8,13 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST')
 
 $session_customer_id = $_SESSION['customer_id'] ?? null;
 $session_dsa_id = $_SESSION['dsa_id'] ?? null;
-$cid = $session_customer_id;
 $mode = $_POST['mode'] ?? 'apply';
-$is_guest_apply = !$session_customer_id && $mode !== 'register';
+$request_customer_id = (int) ($_POST['user_id'] ?? $_POST['customer_id'] ?? 0);
+$cid = $session_customer_id ? (int) $session_customer_id : 0;
+if ($cid <= 0 && $mode !== 'register' && $request_customer_id > 0) {
+    $cid = $request_customer_id;
+}
+$is_guest_apply = !$cid && $mode !== 'register';
 mysqli_begin_transaction($conn);
 $has_dsa_column = false;
 $dsa_col_res = mysqli_query($conn, "SHOW COLUMNS FROM loan_applications LIKE 'dsa_id'");
@@ -25,6 +29,13 @@ if ($dsa_perm_tbl_res && mysqli_num_rows($dsa_perm_tbl_res) > 0 && $dsa_user_per
 }
 
 try {
+    if ($cid > 0 && !$session_customer_id) {
+        $customer_exists_res = mysqli_query($conn, "SELECT id FROM customers WHERE id = $cid LIMIT 1");
+        if (!$customer_exists_res || mysqli_num_rows($customer_exists_res) === 0) {
+            throw new Exception("Invalid user id. Please login again.");
+        }
+    }
+
     if (!empty($session_dsa_id) && $dsa_perm_tables_ready) {
         $dsa_id = (int) $session_dsa_id;
         $dsa_create_perm_res = mysqli_query($conn, "SELECT 1
@@ -238,10 +249,20 @@ if ($r1p_norm === $r2p_norm) {
             'uploaded_docs' => $uploaded_docs
         ];
 
+        if (!$session_customer_id && $request_customer_id > 0) {
+            $mobile_success_redirect = "../apply-loan.php?user_id=$request_customer_id&msg=" . urlencode("Application submitted successfully.");
+            header("Location: " . $mobile_success_redirect);
+            exit;
+        }
+
         header("Location: ../application-submit.php");
         exit;
     }
 } catch (Exception $e) {
     mysqli_rollback($conn);
-    header("Location: ../apply-loan.php?err=" . urlencode($e->getMessage()));
+    $error_redirect = "../apply-loan.php?err=" . urlencode($e->getMessage());
+    if (!$session_customer_id && $request_customer_id > 0 && $mode !== 'register') {
+        $error_redirect .= "&user_id=$request_customer_id";
+    }
+    header("Location: " . $error_redirect);
 }

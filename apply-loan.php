@@ -3,15 +3,30 @@ include 'includes/connection.php';
 require_once 'insert/service_detail.php';
 session_start();
 
-$is_logged_in = isset($_SESSION['customer_id']);
-$cid = $is_logged_in ? $_SESSION['customer_id'] : null;
+// Detect if the user just wants to register
+$is_register_only = isset($_GET['mode']) && $_GET['mode'] === 'register';
+
+$session_customer_id = isset($_SESSION['customer_id']) ? (int) $_SESSION['customer_id'] : 0;
+$request_customer_id = $is_register_only ? 0 : (int) ($_GET['user_id'] ?? $_GET['customer_id'] ?? 0);
+$mobile_param_customer_id = 0;
+$mobile_param_invalid = false;
+
+if ($session_customer_id <= 0 && $request_customer_id > 0) {
+    $customer_check_res = mysqli_query($conn, "SELECT id FROM customers WHERE id = $request_customer_id LIMIT 1");
+    if ($customer_check_res && mysqli_num_rows($customer_check_res) > 0) {
+        $mobile_param_customer_id = $request_customer_id;
+    } else {
+        $mobile_param_invalid = true;
+    }
+}
+
+$cid = $session_customer_id > 0 ? $session_customer_id : $mobile_param_customer_id;
+$is_mobile_param_login = $session_customer_id <= 0 && $mobile_param_customer_id > 0;
+$is_logged_in = $cid > 0;
 
 // --- REDIRECT LOGIC ---
 $current_slug = isset($_GET['slug']) ? "slug=" . urlencode($_GET['slug']) : "";
 $return_path = "apply-loan.php" . ($current_slug ? "?" . $current_slug : "");
-
-// Detect if the user just wants to register
-$is_register_only = isset($_GET['mode']) && $_GET['mode'] === 'register';
 
 $pData = [];
 if ($is_logged_in) {
@@ -177,6 +192,11 @@ include 'includes/header.php';
                     <?= htmlspecialchars($_GET['err']) ?>
                 </div>
             <?php endif; ?>
+            <?php if ($mobile_param_invalid): ?>
+                <div class="alert alert-danger border-0 shadow-sm rounded-4 mb-4">
+                    Invalid user selected. Please login again.
+                </div>
+            <?php endif; ?>
 
             <?php if (!$is_logged_in): ?>
                 <div class="text-center">
@@ -216,6 +236,9 @@ include 'includes/header.php';
                 <form id="loanForm" action="insert/process_universal_apply.php" method="POST"
                     enctype="multipart/form-data">
                     <input type="hidden" name="mode" value="<?= $is_register_only ? 'register' : 'apply' ?>">
+                    <?php if ($is_mobile_param_login): ?>
+                        <input type="hidden" name="user_id" value="<?= (int) $cid ?>">
+                    <?php endif; ?>
 
                     <div class="p-4 p-md-5">
 
