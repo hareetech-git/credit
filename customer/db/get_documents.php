@@ -81,9 +81,14 @@ if ($action === 'upload' && $_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $loan_id = (int)($_POST['loan_id'] ?? 0);
     $doc_name = trim($_POST['doc_name'] ?? '');
+    $doc_password = trim($_POST['doc_password'] ?? '');
 
     if ($loan_id <= 0 || $doc_name === '' || empty($_FILES['doc_file']['name'])) {
         header("Location: ../view-application-detail.php?id=$loan_id&err=Missing document data");
+        exit;
+    }
+    if (strlen($doc_password) > 100) {
+        header("Location: ../view-application-detail.php?id=$loan_id&err=Password must be 100 characters or fewer");
         exit;
     }
 
@@ -124,8 +129,9 @@ if ($action === 'upload' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     $db_path = "uploads/loans/" . $new_name;
-    $sql = "INSERT INTO loan_application_docs (loan_application_id, doc_name, doc_path, status)
-            VALUES ($loan_id, '$safe_doc_name', '$db_path', 'pending')";
+    $safe_doc_password = mysqli_real_escape_string($conn, $doc_password);
+    $sql = "INSERT INTO loan_application_docs (loan_application_id, doc_name, doc_path, doc_password, status)
+            VALUES ($loan_id, '$safe_doc_name', '$db_path', '$safe_doc_password', 'pending')";
     if (mysqli_query($conn, $sql)) {
         header("Location: ../view-application-detail.php?id=$loan_id&msg=Document uploaded");
     } else {

@@ -47,8 +47,8 @@ if (isset($conn)) {
         position: relative;
         padding: 90px 0 60px;
         background: radial-gradient(circle at 10% 20%, rgba(11, 8, 27, 0.35), transparent 52%),
-                    radial-gradient(circle at 85% 15%, rgba(0, 212, 170, 0.2), transparent 45%),
-                    linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 45%, #0f172a 100%);
+            radial-gradient(circle at 85% 15%, rgba(0, 212, 170, 0.2), transparent 45%),
+            linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 45%, #0f172a 100%);
         color: #fff;
         overflow: hidden;
     }
@@ -646,9 +646,9 @@ if (isset($conn)) {
                         </div>
                         <div class="detail-content">
                             <h4>Call us anytime</h4>
-<p><?php echo htmlspecialchars($webSettings['site_phone']); ?></p>
-<a href="tel:<?php echo htmlspecialchars($webSettings['site_phone']); ?>">
-<i class="fas fa-phone-alt me-1"></i>Call now</a>
+                            <p><?php echo htmlspecialchars($webSettings['site_phone']); ?></p>
+                            <a href="tel:<?php echo htmlspecialchars($webSettings['site_phone']); ?>">
+                                <i class="fas fa-phone-alt me-1"></i>Call now</a>
                         </div>
                     </div>
 
@@ -659,8 +659,8 @@ if (isset($conn)) {
 
                         <div class="detail-content">
                             <h4>Email us</h4>
-<p><?php echo htmlspecialchars($webSettings['site_email']); ?></p>
-<a href="mailto:<?php echo htmlspecialchars($webSettings['site_email']); ?>">
+                            <p><?php echo htmlspecialchars($webSettings['site_email']); ?></p>
+                            <a href="mailto:<?php echo htmlspecialchars($webSettings['site_email']); ?>">
 
                         </div>
                     </div>
@@ -671,9 +671,9 @@ if (isset($conn)) {
                         </div>
                         <div class="detail-content">
                             <h4>Visit our office</h4>
-                          <p>
-    <?php echo nl2br(htmlspecialchars($webSettings['site_address'])); ?>
-</p>
+                            <p>
+                                <?php echo nl2br(htmlspecialchars($webSettings['site_address'])); ?>
+                            </p>
 
                             <a href="https://maps.google.com/?q=Kasana+Tower+Greater+Noida" target="_blank">
                                 <i class="fas fa-map me-1"></i>View on map
@@ -696,7 +696,8 @@ if (isset($conn)) {
                 <?php if (!empty($errors)): ?>
                     <div class="alert alert-danger">
                         <?php foreach ($errors as $error): ?>
-                            <div class="mb-1"><i class="fas fa-exclamation-circle me-2"></i><?php echo htmlspecialchars($error); ?></div>
+                            <div class="mb-1"><i
+                                    class="fas fa-exclamation-circle me-2"></i><?php echo htmlspecialchars($error); ?></div>
                         <?php endforeach; ?>
                     </div>
                 <?php endif; ?>
@@ -709,14 +710,14 @@ if (isset($conn)) {
                             <div class="form-group">
                                 <label class="form-label" for="full_name">Full name *</label>
                                 <input type="text" name="full_name" id="full_name" class="form-control"
-                                       placeholder="Enter your full name" required>
+                                    placeholder="Enter your full name" required>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label class="form-label" for="phone">Phone number *</label>
                                 <input type="tel" name="phone" id="phone" class="form-control"
-                                       placeholder="Enter Your Mobile Number" pattern="[0-9]{10}" maxlength="10" required>
+                                    placeholder="Enter Your Mobile Number" pattern="[0-9]{10}" maxlength="10" required>
                             </div>
                         </div>
                     </div>
@@ -724,7 +725,7 @@ if (isset($conn)) {
                     <div class="form-group">
                         <label class="form-label" for="email">Email *</label>
                         <input type="email" name="email" id="email" class="form-control"
-                               placeholder="devkratika8726@gmail.com" required>
+                            placeholder="devkratika8726@gmail.com" required>
                     </div>
 
                     <div class="form-group">
@@ -746,7 +747,7 @@ if (isset($conn)) {
                     <div class="form-group">
                         <label class="form-label" for="query_message">Your query or message *</label>
                         <textarea name="query_message" id="query_message" class="form-control"
-                                  placeholder="Please describe your requirements" rows="4" required></textarea>
+                            placeholder="Please describe your requirements" rows="4" required></textarea>
                     </div>
 
                     <button type="submit" name="submit_enquiry" class="submit-btn">
@@ -814,15 +815,13 @@ if (isset($conn)) {
                 <h3 class="mb-3">Frequently asked questions</h3>
                 <div class="faq-list">
                     <?php if (!empty($faq_items)): ?>
-                        <?php foreach ($faq_items as $index => $faq): 
-                            $faq_id = 'contactFaq' . (int)$faq['id'];
+                        <?php foreach ($faq_items as $index => $faq):
+                            $faq_id = 'contactFaq' . (int) $faq['id'];
                             $is_open = $index === 0;
-                        ?>
+                            ?>
                             <div class="faq-item">
-                                <button type="button"
-                                        class="faq-toggle"
-                                        aria-expanded="<?= $is_open ? 'true' : 'false' ?>"
-                                        aria-controls="<?= $faq_id ?>">
+                                <button type="button" class="faq-toggle" aria-expanded="<?= $is_open ? 'true' : 'false' ?>"
+                                    aria-controls="<?= $faq_id ?>">
                                     <span><?= htmlspecialchars($faq['question']) ?></span>
                                 </button>
                                 <div id="<?= $faq_id ?>" class="faq-body <?= $is_open ? 'show' : '' ?>">
@@ -855,21 +854,19 @@ if (isset($conn)) {
         </div>
 
         <div class="contact-map">
-  <iframe 
-               src="https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d12584.172480502648!2d80.98895420485427!3d26.890442876563796!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zMjbCsDUzJzMyLjYiTiA4McKwMDAnMjYuOCJF!5e1!3m2!1sen!2sin!4v1770789581193!5m2!1sen!2sin" 
-                allowfullscreen="" 
-                loading="lazy" 
-                referrerpolicy="no-referrer-when-downgrade">
+            <iframe
+                src="https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d12584.172480502648!2d80.98895420485427!3d26.890442876563796!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zMjbCsDUzJzMyLjYiTiA4McKwMDAnMjYuOCJF!5e1!3m2!1sen!2sin!4v1770789581193!5m2!1sen!2sin"
+                allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade">
             </iframe>
         </div>
     </div>
 </section>
 
 <script>
-    (function() {
+    (function () {
         const phoneInput = document.getElementById('phone');
         if (phoneInput) {
-            phoneInput.addEventListener('input', function() {
+            phoneInput.addEventListener('input', function () {
                 this.value = this.value.replace(/\D/g, '').substring(0, 10);
             });
         }

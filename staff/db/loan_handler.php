@@ -247,7 +247,14 @@ if ($action == 'manual_create_assign') {
                     $moved_files[] = $dest;
                     $db_path = "uploads/loans/$new_name";
                     $title = str_replace('_', ' ', (string)$key);
-                    mysqli_query($conn, "INSERT INTO loan_application_docs (loan_application_id, doc_name, doc_path) VALUES ($loan_id, '$title', '$db_path')");
+                    $safe_title = mysqli_real_escape_string($conn, $title);
+                    $doc_password_raw = trim((string)($_POST['loan_doc_passwords'][$key] ?? ''));
+                    if (strlen($doc_password_raw) > 100) {
+                        $doc_error = 'Document password must be 100 characters or fewer';
+                        break;
+                    }
+                    $safe_doc_password = mysqli_real_escape_string($conn, $doc_password_raw);
+                    mysqli_query($conn, "INSERT INTO loan_application_docs (loan_application_id, doc_name, doc_path, doc_password) VALUES ($loan_id, '$safe_title', '$db_path', '$safe_doc_password')");
                 }
             }
         }
@@ -386,9 +393,14 @@ if ($action == 'upload_doc') {
     }
     $loan_id = (int)$_POST['loan_id'];
     $doc_name = trim($_POST['doc_name'] ?? '');
+    $doc_password = trim($_POST['doc_password'] ?? '');
 
     if ($loan_id <= 0 || $doc_name === '' || empty($_FILES['doc_file']['name'])) {
         header("Location: ../loan_view.php?id=$loan_id&err=Missing document data");
+        exit;
+    }
+    if (strlen($doc_password) > 100) {
+        header("Location: ../loan_view.php?id=$loan_id&err=Password must be 100 characters or fewer");
         exit;
     }
 
@@ -423,8 +435,9 @@ if ($action == 'upload_doc') {
     }
 
     $db_path = "uploads/loans/" . $new_name;
-    $sql = "INSERT INTO loan_application_docs (loan_application_id, doc_name, doc_path, status)
-            VALUES ($loan_id, '$safe_doc_name', '$db_path', 'pending')";
+    $safe_doc_password = mysqli_real_escape_string($conn, $doc_password);
+    $sql = "INSERT INTO loan_application_docs (loan_application_id, doc_name, doc_path, doc_password, status)
+            VALUES ($loan_id, '$safe_doc_name', '$db_path', '$safe_doc_password', 'pending')";
     if (mysqli_query($conn, $sql)) {
         header("Location: ../loan_view.php?id=$loan_id&msg=Document uploaded");
     } else {

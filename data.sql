@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 23, 2026 at 09:50 AM
+-- Generation Time: Mar 09, 2026 at 11:05 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -150,6 +150,13 @@ CREATE TABLE `customers` (
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `customers`
+--
+
+INSERT INTO `customers` (`id`, `full_name`, `email`, `phone`, `password`, `aadhaar_number`, `status`, `created_at`, `updated_at`) VALUES
+(6, 'Sanyam Srivastava', 'srivastavasanyam8052@gmail.com', '9984278970', '$2y$10$OBBszpaAaNLWUhSLoRTq9Omoks/FqNw.sz6rPyKf1vxgEmbk8dQSK', NULL, 'active', '2026-02-23 09:07:17', '2026-03-06 10:10:58');
+
 -- --------------------------------------------------------
 
 --
@@ -174,6 +181,13 @@ CREATE TABLE `customer_profiles` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `customer_profiles`
+--
+
+INSERT INTO `customer_profiles` (`id`, `customer_id`, `pan_number`, `birth_date`, `state`, `city`, `pin_code`, `employee_type`, `company_name`, `monthly_income`, `reference1_name`, `reference1_phone`, `reference2_name`, `reference2_phone`, `created_at`, `updated_at`) VALUES
+(6, 6, 'enc:v1:se7hR2nfE-da-3ETbhDFLf4TyCoEeXpsTiR0uskhb3HWRLwAczgFJVvc0dGC3qsfAE1B3XydcaeQdFIWbfwRAA', '2008-01-30', 'Uttar Pradesh', 'Lakhimpur', '261506', 'salaried', '', 90000.00, 'dfsaf', '9984278970', 'Sanyam Srivastava', '9984278975', '2026-02-23 09:07:17', '2026-02-23 09:07:17');
 
 -- --------------------------------------------------------
 
@@ -355,6 +369,8 @@ CREATE TABLE `enquiries` (
   `loan_type_name` varchar(255) NOT NULL,
   `query_message` text NOT NULL,
   `status` enum('new','assigned','conversation','converted','closed') NOT NULL DEFAULT 'new',
+  `is_read` tinyint(1) NOT NULL DEFAULT 0,
+  `read_at` timestamp NULL DEFAULT NULL,
   `assigned_staff_id` bigint(20) UNSIGNED DEFAULT NULL,
   `assigned_by` bigint(20) UNSIGNED DEFAULT NULL,
   `assigned_at` timestamp NULL DEFAULT NULL,
@@ -371,8 +387,9 @@ CREATE TABLE `enquiries` (
 -- Dumping data for table `enquiries`
 --
 
-INSERT INTO `enquiries` (`id`, `customer_id`, `full_name`, `phone`, `email`, `loan_type_id`, `loan_type_name`, `query_message`, `status`, `assigned_staff_id`, `assigned_by`, `assigned_at`, `converted_by_role`, `converted_by_id`, `converted_at`, `closed_by_role`, `closed_by_id`, `closed_at`, `created_at`) VALUES
-(7, NULL, 'Sanyam Srivastava', '9984278970', 'srivastavasanyam8052@gmail.com', 2, 'Business Loans', 'This is test', 'new', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2026-02-23 08:00:18');
+INSERT INTO `enquiries` (`id`, `customer_id`, `full_name`, `phone`, `email`, `loan_type_id`, `loan_type_name`, `query_message`, `status`, `is_read`, `read_at`, `assigned_staff_id`, `assigned_by`, `assigned_at`, `converted_by_role`, `converted_by_id`, `converted_at`, `closed_by_role`, `closed_by_id`, `closed_at`, `created_at`) VALUES
+(7, 6, 'Sanyam Srivastava', '9984278970', 'srivastavasanyam8052@gmail.com', 2, 'Business Loans', 'This is test', 'new', 0, '2026-02-23 09:03:04', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2026-02-23 08:00:18'),
+(8, NULL, 'Sanyamm Srivastava', '9984278970', 'srivastavadfgdfgdfsanyam8052@gmail.com', 3, 'Professional Loan', 'vxv', 'new', 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2026-02-23 09:08:33');
 
 -- --------------------------------------------------------
 
@@ -463,6 +480,8 @@ CREATE TABLE `loan_applications` (
   `tenure_years` int(11) NOT NULL,
   `emi_amount` decimal(15,2) NOT NULL,
   `status` enum('pending','approved','rejected','disbursed') DEFAULT 'pending',
+  `is_read` tinyint(1) NOT NULL DEFAULT 0,
+  `read_at` timestamp NULL DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `rejection_note` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -471,22 +490,9 @@ CREATE TABLE `loan_applications` (
 -- Dumping data for table `loan_applications`
 --
 
-INSERT INTO `loan_applications` (`id`, `customer_id`, `service_id`, `dsa_id`, `assigned_staff_id`, `assigned_by`, `assigned_at`, `interest_rate`, `interest_type`, `requested_amount`, `tenure_years`, `emi_amount`, `status`, `created_at`, `rejection_note`) VALUES
-(2, 2, 1, NULL, 1, 1, '2026-02-07 08:37:09', 1.00, 'year', 100000.00, 12, 8378.54, 'approved', '2026-02-07 06:06:11', ''),
-(3, 3, 5, NULL, NULL, NULL, NULL, 0.00, 'year', 90000.00, 0, 0.00, 'pending', '2026-02-07 09:09:41', NULL),
-(4, 4, 3, 1, NULL, NULL, NULL, 0.00, 'year', 5000000.00, 0, 0.00, 'pending', '2026-02-09 09:00:21', NULL),
-(5, 2, 4, NULL, 1, 1, '2026-02-09 12:16:54', 7.00, 'year', 200000.00, 12, 17305.35, 'pending', '2026-02-09 12:16:54', NULL),
-(6, 4, 5, NULL, 1, 1, '2026-02-09 12:54:07', 10.00, 'year', 2000000.00, 36, 64534.37, 'pending', '2026-02-09 12:54:07', NULL),
-(7, 4, 5, NULL, NULL, NULL, NULL, 5.00, 'year', 900000.00, 56, 18052.59, 'approved', '2026-02-11 06:55:10', ''),
-(8, 2, 7, NULL, NULL, NULL, NULL, 0.00, 'year', 900000.00, 0, 0.00, 'pending', '2026-02-11 09:47:40', NULL),
-(9, 1, 3, NULL, NULL, NULL, NULL, 0.00, 'year', 9000.00, 0, 0.00, 'pending', '2026-02-11 10:19:08', NULL),
-(10, 2, 3, NULL, NULL, NULL, NULL, 0.00, 'year', 90000.00, 0, 0.00, 'pending', '2026-02-11 10:28:53', NULL),
-(11, 1, 3, NULL, NULL, NULL, NULL, 0.00, 'year', 89997.00, 0, 0.00, 'pending', '2026-02-11 10:32:50', NULL),
-(12, 1, 1, NULL, 1, 1, '2026-02-23 07:48:20', 4.00, 'year', 909.00, 4, 229.15, 'approved', '2026-02-13 07:20:23', ''),
-(13, 2, 2, NULL, NULL, NULL, NULL, 0.00, 'year', 90000.00, 0, 0.00, 'pending', '2026-02-13 07:24:24', NULL),
-(14, 3, 2, NULL, NULL, NULL, NULL, 0.00, 'year', 90000.00, 0, 0.00, 'pending', '2026-02-13 07:29:10', NULL),
-(15, 4, 1, NULL, NULL, NULL, NULL, 0.00, 'year', 900000.00, 0, 0.00, 'pending', '2026-02-13 07:34:33', NULL),
-(16, 5, 2, NULL, NULL, NULL, NULL, 0.00, 'year', 9000.00, 0, 0.00, 'pending', '2026-02-23 07:52:14', NULL);
+INSERT INTO `loan_applications` (`id`, `customer_id`, `service_id`, `dsa_id`, `assigned_staff_id`, `assigned_by`, `assigned_at`, `interest_rate`, `interest_type`, `requested_amount`, `tenure_years`, `emi_amount`, `status`, `is_read`, `read_at`, `created_at`, `rejection_note`) VALUES
+(17, 6, 7, NULL, NULL, NULL, NULL, 0.00, 'year', 9000.00, 0, 0.00, 'pending', 1, '2026-02-26 07:46:23', '2026-02-23 09:07:17', NULL),
+(18, 6, 2, NULL, NULL, NULL, NULL, 0.00, 'year', 8980980.00, 0, 0.00, 'pending', 0, NULL, '2026-03-09 09:51:05', NULL);
 
 -- --------------------------------------------------------
 
@@ -499,6 +505,7 @@ CREATE TABLE `loan_application_docs` (
   `loan_application_id` bigint(20) UNSIGNED NOT NULL,
   `doc_name` varchar(255) NOT NULL,
   `doc_path` varchar(255) NOT NULL,
+  `doc_password` varchar(100) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `status` enum('pending','verified','rejected') DEFAULT 'pending',
   `rejection_reason` text DEFAULT NULL
@@ -950,7 +957,7 @@ CREATE TABLE `team_members` (
 --
 
 INSERT INTO `team_members` (`id`, `name`, `designation`, `short_description`, `image`, `linkedin_link`, `twitter_link`, `email_link`, `status`, `created_at`) VALUES
-(1, 'kratika gupta', 'CEO', 'she is brilliant', 'admin/assets/team/team_1770796860_198.jpg', 'https://www.linkedin.com/in/rajesh-kumar-finance', 'https://twitter.com/rajesh_kumar_ceo', 'priya@udharcapital.in', 1, '2026-02-11 08:01:00');
+(2, 'Sanyam Srivastava', 'Developer', '', 'admin/assets/team/team_1771847158_516.jpeg', '', '', '', 1, '2026-02-23 11:40:01');
 
 -- --------------------------------------------------------
 
@@ -1109,7 +1116,8 @@ ALTER TABLE `enquiries`
   ADD KEY `idx_enquiry_customer` (`customer_id`),
   ADD KEY `idx_enquiry_status` (`status`),
   ADD KEY `idx_enquiry_assigned_staff` (`assigned_staff_id`),
-  ADD KEY `idx_enquiry_assigned_by` (`assigned_by`);
+  ADD KEY `idx_enquiry_assigned_by` (`assigned_by`),
+  ADD KEY `idx_enquiries_is_read_created_at` (`is_read`,`created_at`);
 
 --
 -- Indexes for table `enquiry_conversations`
@@ -1148,7 +1156,8 @@ ALTER TABLE `loan_applications`
   ADD PRIMARY KEY (`id`),
   ADD KEY `idx_assigned_staff` (`assigned_staff_id`),
   ADD KEY `idx_assigned_by` (`assigned_by`),
-  ADD KEY `idx_dsa_id` (`dsa_id`);
+  ADD KEY `idx_dsa_id` (`dsa_id`),
+  ADD KEY `idx_loan_applications_is_read_created_at` (`is_read`,`created_at`);
 
 --
 -- Indexes for table `loan_application_docs`
@@ -1314,13 +1323,13 @@ ALTER TABLE `certificates`
 -- AUTO_INCREMENT for table `customers`
 --
 ALTER TABLE `customers`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `customer_profiles`
 --
 ALTER TABLE `customer_profiles`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `departments`
@@ -1356,7 +1365,7 @@ ALTER TABLE `dsa_requests`
 -- AUTO_INCREMENT for table `enquiries`
 --
 ALTER TABLE `enquiries`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `enquiry_conversations`
@@ -1386,7 +1395,7 @@ ALTER TABLE `faqs`
 -- AUTO_INCREMENT for table `loan_applications`
 --
 ALTER TABLE `loan_applications`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT for table `loan_application_docs`
@@ -1482,7 +1491,7 @@ ALTER TABLE `staff`
 -- AUTO_INCREMENT for table `team_members`
 --
 ALTER TABLE `team_members`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `testimonials`

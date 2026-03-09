@@ -205,7 +205,13 @@ if ($r1p_norm === $r2p_norm) {
                 if (move_uploaded_file($_FILES['loan_docs']['tmp_name'][$key], "../uploads/loans/$new_name")) {
                     $db_path = "uploads/loans/$new_name";
                     $title = str_replace('_', ' ', $key);
-                    mysqli_query($conn, "INSERT INTO loan_application_docs (loan_application_id, doc_name, doc_path) VALUES ($loan_id, '$title', '$db_path')");
+                    $safe_title = mysqli_real_escape_string($conn, $title);
+                    $doc_password_raw = trim((string) ($_POST['loan_doc_passwords'][$key] ?? ''));
+                    if (strlen($doc_password_raw) > 100) {
+                        throw new Exception("Document password must be 100 characters or fewer.");
+                    }
+                    $safe_doc_password = mysqli_real_escape_string($conn, $doc_password_raw);
+                    mysqli_query($conn, "INSERT INTO loan_application_docs (loan_application_id, doc_name, doc_path, doc_password) VALUES ($loan_id, '$safe_title', '$db_path', '$safe_doc_password')");
                     $uploaded_docs[] = $title;
                 }
             }

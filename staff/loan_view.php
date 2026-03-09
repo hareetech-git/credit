@@ -229,6 +229,10 @@ $docs_res = mysqli_query($conn, "SELECT * FROM loan_application_docs WHERE loan_
                                     <h6 class="fw-bold text-dark mb-1"><?= htmlspecialchars($doc['doc_name']) ?></h6>
                                     <div class="d-flex align-items-center gap-3">
                                         <a href="../<?= $doc['doc_path'] ?>" target="_blank" class="text-blue-600 small fw-bold"><i class="fas fa-eye me-1"></i> Preview Asset</a>
+                                        <?php $docPassword = trim((string)($doc['doc_password'] ?? '')); ?>
+                                        <?php if ($docPassword !== ''): ?>
+                                            <span class="small text-muted">Password: <span class="fw-bold text-dark"><?= htmlspecialchars($docPassword) ?></span></span>
+                                        <?php endif; ?>
                                         <?php if($doc['status'] == 'verified'): ?>
                                             <span class="status-pill bg-success text-white">VERIFIED</span>
                                         <?php elseif($doc['status'] == 'rejected'): ?>

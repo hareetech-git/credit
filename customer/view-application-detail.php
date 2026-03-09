@@ -109,6 +109,7 @@ include 'sidebar.php';
                                         <input type="hidden" name="loan_id" value="<?= $loan_id ?>">
                                         <input type="text" name="doc_name" class="form-control form-control-sm" placeholder="Document name" required>
                                         <input type="file" name="doc_file" class="form-control form-control-sm" required>
+                                        <input type="text" name="doc_password" class="form-control form-control-sm" placeholder="Password (optional)" maxlength="100" autocomplete="off">
                                         <button type="submit" class="btn btn-sm btn-primary">Upload</button>
                                     </form>
                                 <?php endif; ?>

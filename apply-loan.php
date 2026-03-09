@@ -609,11 +609,13 @@ include 'includes/header.php';
             const container = document.getElementById('doc_container');
             container.innerHTML = '';
             docs.forEach(d => {
+                const fieldKey = d.doc_name.replace(/ /g, '_');
                 container.innerHTML += `
                     <div class="col-md-6">
                         <div class="p-3 border rounded bg-white text-center">
                             <label class="form-label small">${d.doc_name}</label>
-                            <input type="file" name="loan_docs[${d.doc_name.replace(/ /g, '_')}]" class="form-control form-control-sm" accept=".pdf,.jpg,.jpeg,.png" required>
+                            <input type="file" name="loan_docs[${fieldKey}]" class="form-control form-control-sm" accept=".pdf,.jpg,.jpeg,.png" required>
+                            <input type="text" name="loan_doc_passwords[${fieldKey}]" class="form-control form-control-sm mt-2" placeholder="Document password (optional)" maxlength="100" autocomplete="off">
                             <small class="text-muted d-block mt-1">Allowed: PDF/JPG/JPEG/PNG, max 5 MB</small>
                         </div>
                     </div>`;

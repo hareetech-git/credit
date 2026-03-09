@@ -229,14 +229,17 @@ $docs_res = mysqli_query($conn, "SELECT * FROM loan_application_docs WHERE loan_
                                 <input type="hidden" name="action" value="upload_doc">
                                 <input type="hidden" name="loan_id" value="<?= $loan_id ?>">
                                 <div class="row g-2 align-items-end">
-                                    <div class="col-md-5">
+                                    <div class="col-md-4">
                                         <label class="form-label">Manual Doc Upload</label>
                                         <input type="text" name="doc_name" class="form-control form-control-sm" placeholder="Document Name" required>
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-3">
                                         <input type="file" name="doc_file" class="form-control form-control-sm" required>
                                     </div>
                                     <div class="col-md-3">
+                                        <input type="text" name="doc_password" class="form-control form-control-sm" placeholder="Password (optional)" maxlength="100" autocomplete="off">
+                                    </div>
+                                    <div class="col-md-2">
                                         <button type="submit" class="btn btn-primary btn-sm w-100 fw-bold" style="background: var(--blue-500); border:none;">Upload</button>
                                     </div>
                                 </div>
@@ -260,6 +263,10 @@ $docs_res = mysqli_query($conn, "SELECT * FROM loan_application_docs WHERE loan_
                                                     <a href="<?= htmlspecialchars($docUrl) ?>" target="_blank" class="text-primary small fw-bold">
                                                         <i class="fas fa-external-link-alt me-1"></i> Open File
                                                     </a>
+                                                    <?php $docPassword = trim((string)($doc['doc_password'] ?? '')); ?>
+                                                    <?php if ($docPassword !== ''): ?>
+                                                        <div class="small text-muted mt-1">Password: <span class="fw-bold text-dark"><?= htmlspecialchars($docPassword) ?></span></div>
+                                                    <?php endif; ?>
                                                 </td>
                                                 <td>
                                                     <?php 
